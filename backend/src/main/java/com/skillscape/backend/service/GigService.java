@@ -43,7 +43,8 @@ public class GigService {
                          User creator,
                          java.math.BigDecimal price,
                          Long categoryId,
-                         Boolean biddable
+                         Boolean biddable,
+                         Boolean hourly
     ) {
         Gig gig = Gig.builder()
                      .title(title)
@@ -53,7 +54,10 @@ public class GigService {
                      .status(com.skillscape.backend.model.GigStatus.OPEN)
                      .biddable(biddable)
                      .category(resolveCategory(categoryId))
+                     .biddable(biddable)
+                     .hourly(hourly)
                      .build();
+                     
         return gigRepository.save(gig);
     }
 
@@ -112,7 +116,8 @@ public class GigService {
                          java.math.BigDecimal newPrice,
                          Long categoryId,
                          User principal,
-                         Boolean biddable
+                         Boolean biddable,
+                         Boolean hourly
     ) {
         Gig gig = getGig(gigId);
         if (!gig.getCreator().getId().equals(principal.getId())) {
@@ -123,6 +128,8 @@ public class GigService {
         gig.setPrice(newPrice);
         gig.setCategory(resolveCategory(categoryId));
         gig.setBiddable(biddable);
+        gig.setBiddable(biddable);
+        gig.setHourly(hourly);
         return gigRepository.save(gig);
     }
 
@@ -190,5 +197,9 @@ public class GigService {
             .and(GigSpecification.isBiddable(biddable));
 
         return gigRepository.findAll(spec, pageable);
+    }
+
+    public Gig save(Gig gig) {
+        return gigRepository.save(gig);
     }
 }

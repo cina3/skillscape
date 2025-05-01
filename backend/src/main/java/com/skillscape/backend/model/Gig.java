@@ -60,6 +60,10 @@ public class Gig {
     @Column(nullable = false)
     private boolean biddable = false;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean hourly = false;
+
     @Formula("(select coalesce(avg(r.rating),0) from reviews r where r.gig_id = id)")
     private double averageRating;
  
@@ -68,4 +72,7 @@ public class Gig {
  
     @Formula("(select count(*) from gig_orders o where o.gig_id = id)")
     private int orderCount;
+
+    @Column(length = 500)
+    private String coverUrl;
 }

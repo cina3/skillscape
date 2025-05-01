@@ -4,6 +4,11 @@ import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.*;
 import com.skillscape.backend.repository.CategoryRepository;
 import com.skillscape.backend.repository.JobRepository;
+import com.skillscape.backend.specification.JobSpecification;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -41,7 +46,8 @@ public class JobService {
                          BigDecimal budget,
                          User creator,
                          Long categoryId,
-                         Boolean biddable) {
+                         Boolean biddable,
+                         Boolean hourly) {
         Category cat = resolveCategory(categoryId);
         Job job = Job.builder()
                      .title(title)
@@ -50,6 +56,7 @@ public class JobService {
                      .creator(creator)
                      .category(cat)
                      .biddable(biddable)
+                     .hourly(hourly)
                      .status(JobStatus.OPEN)
                      .build();
         return jobRepository.save(job);
@@ -72,7 +79,8 @@ public class JobService {
                          BigDecimal newBudget,
                          Long categoryId,
                          Boolean biddable,
-                         User principal) {
+                         User principal,
+                         Boolean hourly) {
         Job job = getJob(jobId);
         if (!job.getCreator().getId().equals(principal.getId())) {
             throw new IllegalArgumentException("Not your job to update");
@@ -82,6 +90,7 @@ public class JobService {
         job.setBudget(newBudget);
         job.setCategory(resolveCategory(categoryId));
         job.setBiddable(biddable);
+        job.setHourly(hourly);
         return jobRepository.save(job);
     }
 
@@ -106,5 +115,43 @@ public class JobService {
         }
         job.setStatus(newStatus);
         return jobRepository.save(job);
+    }
+
+    public Job save(Job job) {
+        return jobRepository.save(job);
+    }
+
+    public Page<Job> searchJobs(
+            String q,
+            BigDecimal minBudget,
+            BigDecimal maxBudget,
+            JobStatus status,
+            Long categoryId,
+            Boolean biddable,
+            Integer minProposals,
+            Integer maxProposals,
+            Integer minReviews,
+            Integer maxReviews,
+            Double minFreelancerRating,
+            Double maxFreelancerRating,
+            Double minJobRating,
+            Double maxJobRating,
+            Pageable pageable
+    ) {
+        Specification<Job> spec = Specification.where(JobSpecification.hasTitleLike(q))
+            .and(JobSpecification.budgetBetween(minBudget, maxBudget))
+            .and(JobSpecification.hasStatus(status))
+            .and(JobSpecification.hasCategory(categoryId))
+            .and(JobSpecification.isBiddable(biddable))
+            .and(JobSpecification.minProposalCount(minProposals))
+            .and(JobSpecification.maxProposalCount(maxProposals))
+            .and(JobSpecification.minReviewCount(minReviews))
+            .and(JobSpecification.maxReviewCount(maxReviews))
+            .and(JobSpecification.minFreelancerRating(minFreelancerRating))
+            .and(JobSpecification.maxFreelancerRating(maxFreelancerRating))
+            .and(JobSpecification.minJobRating(minJobRating))
+            .and(JobSpecification.maxJobRating(maxJobRating));
+
+        return jobRepository.findAll(spec, pageable);
     }
 }

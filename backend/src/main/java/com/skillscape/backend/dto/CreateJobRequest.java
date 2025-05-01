@@ -20,4 +20,7 @@ public class CreateJobRequest {
 
     @NotNull
     private Boolean biddable;
+
+    @NotNull
+    private Boolean hourly;
 }

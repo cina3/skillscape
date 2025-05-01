@@ -60,6 +60,10 @@ public class Job {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean hourly = false;
+
     @Formula("(select coalesce(avg(r.rating),0) from job_reviews r where r.job_id = id)")
     private double averageRating;
 
@@ -68,4 +72,7 @@ public class Job {
 
     @Formula("(select count(*) from job_applications a where a.job_id = id)")
     private int proposalCount;
+
+    @Column(length = 500)
+    private String coverUrl;
 }

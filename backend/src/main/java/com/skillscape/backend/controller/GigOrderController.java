@@ -24,7 +24,7 @@ public class GigOrderController {
 
     public GigOrderController(GigOrderService orderService,
                               UserService userService
-) {
+    ) {
         this.orderService = orderService;
         this.userService  = userService;
     }

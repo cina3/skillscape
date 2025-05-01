@@ -26,4 +26,7 @@ public class CreateGigRequest {
 
     @NotNull
     private Boolean biddable;
+
+    @NotNull
+    private Boolean hourly;
 }

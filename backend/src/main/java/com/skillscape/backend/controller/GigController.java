@@ -6,17 +6,24 @@ import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.Gig;
 import com.skillscape.backend.model.GigStatus;
 import com.skillscape.backend.model.User;
+import com.skillscape.backend.service.CoverService;
 import com.skillscape.backend.service.GigService;
 import com.skillscape.backend.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.net.URLConnection;
 import java.util.List;
 
 @RestController
@@ -25,12 +32,15 @@ import java.util.List;
 public class GigController {
     private final GigService gigService;
     private final UserService userService;
+    private final CoverService coverService;
 
     public GigController(GigService gigService,
-                         UserService userService
+                         UserService userService,
+                         CoverService coverService
     ) {
         this.gigService = gigService;
         this.userService = userService;
+        this.coverService = coverService;
     }
 
     @PostMapping
@@ -47,12 +57,12 @@ public class GigController {
                 creator,
                 req.getPrice(),
                 req.getCategoryId(),
-                req.getBiddable()
+                req.getBiddable(),
+                req.getHourly()
         );
         return new ResponseEntity<>(gig, HttpStatus.CREATED);
     }
 
-    
     @GetMapping
     public List<Gig> listGigs(
         @RequestParam(value = "q",                   required = false) String      q,
@@ -98,7 +108,8 @@ public class GigController {
             req.getPrice(),
             req.getCategoryId(),
             principal,
-            req.getBiddable()
+            req.getBiddable(),
+            req.getHourly()
         );
     }
 
@@ -151,5 +162,45 @@ public class GigController {
             minGigRating, maxGigRating, biddable,
             pageable
         );
+    }
+
+    @PostMapping("/{id}/cover")
+    public ResponseEntity<Void> uploadCover(
+            @RequestHeader("X-User-Email") String email,
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) throws Exception {
+        User u = userService.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        Gig gig = gigService.getGig(id);
+        if (!gig.getCreator().getId().equals(u.getId())) 
+            throw new IllegalArgumentException("Not your gig");
+        String stored = coverService.storeCover(file);
+        gig.setCoverUrl("/api/gigs/cover/"+stored);
+        gigService.save(gig);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/cover/{filename:.+}")
+    public ResponseEntity<Resource> serveCover(
+            @PathVariable String filename,
+            HttpServletRequest request
+    ) throws Exception {
+        Resource resource = coverService.load(filename);
+        
+        String contentType = request.getServletContext()
+                                    .getMimeType(resource.getFile().getAbsolutePath());
+        
+        if (contentType == null) {
+            contentType = URLConnection.guessContentTypeFromName(resource.getFilename());
+        }
+        
+        if (contentType == null) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
     }
 }

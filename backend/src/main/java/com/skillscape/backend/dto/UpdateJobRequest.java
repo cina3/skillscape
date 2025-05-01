@@ -20,4 +20,7 @@ public class UpdateJobRequest {
 
     @NotNull
     private Boolean biddable;
+
+    @NotNull
+    private Boolean hourly;
 }
