@@ -12,7 +12,6 @@ import java.util.List;
 @Service
 @Transactional
 public class JobApplicationService {
-
     private final JobApplicationRepository appRepo;
     private final JobRepository jobRepo;
 

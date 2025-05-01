@@ -3,6 +3,7 @@ package com.skillscape.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -47,7 +48,7 @@ public class Job {
 
     @Builder.Default
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
+    private List<GigReview> reviews = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -58,4 +59,13 @@ public class Job {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Formula("(select coalesce(avg(r.rating),0) from job_reviews r where r.job_id = id)")
+    private double averageRating;
+
+    @Formula("(select count(*) from job_reviews r where r.job_id = id)")
+    private int reviewCount;
+
+    @Formula("(select count(*) from job_applications a where a.job_id = id)")
+    private int proposalCount;
 }

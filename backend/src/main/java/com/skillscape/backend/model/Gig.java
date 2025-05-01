@@ -3,6 +3,7 @@ package com.skillscape.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class Gig {
 
     @Builder.Default
     @OneToMany(mappedBy = "gig", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
+    private List<GigReview> reviews = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
@@ -58,4 +59,13 @@ public class Gig {
     @Builder.Default
     @Column(nullable = false)
     private boolean biddable = false;
+
+    @Formula("(select coalesce(avg(r.rating),0) from reviews r where r.gig_id = id)")
+    private double averageRating;
+ 
+    @Formula("(select count(*) from reviews r where r.gig_id = id)")
+    private int reviewCount;
+ 
+    @Formula("(select count(*) from gig_orders o where o.gig_id = id)")
+    private int orderCount;
 }

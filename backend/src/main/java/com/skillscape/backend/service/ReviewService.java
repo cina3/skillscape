@@ -27,13 +27,13 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<Review> listReviews(Long gigId) {
+    public List<GigReview> listReviews(Long gigId) {
         Gig gig = gigRepo.findById(gigId)
                          .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
         return reviewRepo.findByGig(gig);
     }
 
-    public Review addReview(Long gigId,
+    public GigReview addReview(Long gigId,
                             User reviewer,
                             int rating,
                             String comment
@@ -51,7 +51,7 @@ public class ReviewService {
             );
         }
 
-        Review review = Review.builder()
+        GigReview review = GigReview.builder()
             .gig(gig)
             .reviewer(reviewer)
             .rating(rating)
