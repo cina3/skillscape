@@ -4,6 +4,7 @@ import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.Gig;
 import com.skillscape.backend.model.GigOrder;
 import com.skillscape.backend.model.GigOrderStatus;
+import com.skillscape.backend.model.GigStatus;
 import com.skillscape.backend.model.User;
 import com.skillscape.backend.repository.GigOrderRepository;
 import com.skillscape.backend.repository.GigRepository;
@@ -31,19 +32,32 @@ public class GigOrderService {
                                User customer
     ) {
         Gig gig = gigRepo.findById(gigId)
-                .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
+                        .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
 
         if (gig.getCreator().getId().equals(customer.getId())) {
             throw new IllegalArgumentException("Cannot order your own gig");
         }
 
-        BigDecimal price = offeredPrice != null ? offeredPrice : gig.getPrice();
+        BigDecimal price = gig.isBiddable()
+            ? (offeredPrice != null ? offeredPrice : gig.getPrice())
+            : gig.getPrice();
+
+        GigOrderStatus initialStatus = gig.isBiddable()
+            ? GigOrderStatus.PENDING
+            : GigOrderStatus.ACCEPTED;
+
         GigOrder order = GigOrder.builder()
-                .gig(gig)
-                .customer(customer)
-                .agreedPrice(price)
-                .status(GigOrderStatus.PENDING)
-                .build();
+                                 .gig(gig)
+                                 .customer(customer)
+                                 .agreedPrice(price)
+                                 .status(initialStatus)
+                                 .build();
+
+        if (!gig.isBiddable()) {
+            gig.setStatus(GigStatus.AWARDED);
+            gigRepo.save(gig);
+        }
+
         return orderRepo.save(order);
     }
 

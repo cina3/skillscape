@@ -44,19 +44,36 @@ public class GigController {
                 req.getDescription(),
                 creator,
                 req.getPrice(),
-                req.getCategoryId()
+                req.getCategoryId(),
+                req.getBiddable()
         );
         return new ResponseEntity<>(gig, HttpStatus.CREATED);
     }
 
+    
     @GetMapping
     public List<Gig> listGigs(
-        @RequestParam(value = "q", required = false) String q,
-        @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
-        @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
-        @RequestParam(value = "status", required = false) GigStatus status
+        @RequestParam(value = "q",                   required = false) String      q,
+        @RequestParam(value = "category",            required = false) Long        categoryId,
+        @RequestParam(value = "minPrice",            required = false) BigDecimal  minPrice,
+        @RequestParam(value = "maxPrice",            required = false) BigDecimal  maxPrice,
+        @RequestParam(value = "status",              required = false) GigStatus   status,
+        @RequestParam(value = "minOrders",           required = false) Integer     minOrders,
+        @RequestParam(value = "maxOrders",           required = false) Integer     maxOrders,
+        @RequestParam(value = "minReviews",          required = false) Integer     minReviews,
+        @RequestParam(value = "maxReviews",          required = false) Integer     maxReviews,
+        @RequestParam(value = "minFreelancerRating", required = false) Double      minFreelancerRating,
+        @RequestParam(value = "maxFreelancerRating", required = false) Double      maxFreelancerRating,
+        @RequestParam(value = "minGigRating",        required = false) Double      minGigRating,   
+        @RequestParam(value = "maxGigRating",        required = false) Double      maxGigRating,
+        @RequestParam(value= "biddable",             required=false)   Boolean     biddable
     ) {
-        return gigService.listGigs(q, minPrice, maxPrice, status);
+        return gigService.listGigs(
+        q, minPrice, maxPrice, status, categoryId,
+        minOrders, maxOrders, minReviews, maxReviews,
+        minFreelancerRating, maxFreelancerRating,
+        minGigRating, maxGigRating, biddable    
+        );
     }
 
     @GetMapping("/{id}")
@@ -78,7 +95,8 @@ public class GigController {
             req.getDescription(),
             req.getPrice(),
             req.getCategoryId(),
-            principal
+            principal,
+            req.getBiddable()
         );
     }
 

@@ -23,4 +23,7 @@ public class CreateGigRequest {
 
     @NotNull
     private Long categoryId;
+
+    @NotNull
+    private Boolean biddable;
 }

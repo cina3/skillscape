@@ -40,7 +40,8 @@ public class GigService {
                          String description,
                          User creator,
                          java.math.BigDecimal price,
-                         Long categoryId
+                         Long categoryId,
+                         Boolean biddable
     ) {
         Gig gig = Gig.builder()
                      .title(title)
@@ -48,6 +49,7 @@ public class GigService {
                      .creator(creator)
                      .price(price)
                      .status(com.skillscape.backend.model.GigStatus.OPEN)
+                     .biddable(biddable)
                      .category(resolveCategory(categoryId))
                      .build();
         return gigRepository.save(gig);
@@ -70,15 +72,35 @@ public class GigService {
     }
 
     @Transactional(readOnly = true)
-    public List<Gig> listGigs(  String titleKeyword,
-                                BigDecimal minPrice,
-                                BigDecimal maxPrice,
-                                GigStatus status
+    public List<Gig> listGigs(
+        String titleKeyword,
+        BigDecimal minPrice,
+        BigDecimal maxPrice,
+        GigStatus status,
+        Long categoryId,
+        Integer minOrders,
+        Integer maxOrders,
+        Integer minReviews,
+        Integer maxReviews,
+        Double  minFreelancerRating,
+        Double  maxFreelancerRating,
+        Double  minGigRating,       
+        Double  maxGigRating,      
+        Boolean biddable 
     ) {
         Specification<Gig> spec = Specification.where(GigSpecification.hasTitleLike(titleKeyword))
-                                            .and(GigSpecification.priceBetween(minPrice, maxPrice))
-                                            .and(GigSpecification.hasStatus(status));
-
+        .and(GigSpecification.priceBetween(minPrice, maxPrice))
+        .and(GigSpecification.hasStatus(status))
+        .and(GigSpecification.hasCategory(categoryId))
+        .and(GigSpecification.minOrderCount(minOrders))
+        .and(GigSpecification.maxOrderCount(maxOrders))
+        .and(GigSpecification.minReviewCount(minReviews))
+        .and(GigSpecification.maxReviewCount(maxReviews))
+        .and(GigSpecification.minFreelancerRating(minFreelancerRating))
+        .and(GigSpecification.maxFreelancerRating(maxFreelancerRating))
+        .and(GigSpecification.minGigRating(minGigRating))
+        .and(GigSpecification.maxGigRating(maxGigRating))
+        .and(GigSpecification.isBiddable(biddable));  
         return gigRepository.findAll(spec);
     }
 
@@ -87,7 +109,8 @@ public class GigService {
                          String newDescription,
                          java.math.BigDecimal newPrice,
                          Long categoryId,
-                         User principal
+                         User principal,
+                         Boolean biddable
     ) {
         Gig gig = getGig(gigId);
         if (!gig.getCreator().getId().equals(principal.getId())) {
@@ -97,6 +120,7 @@ public class GigService {
         gig.setDescription(newDescription);
         gig.setPrice(newPrice);
         gig.setCategory(resolveCategory(categoryId));
+        gig.setBiddable(biddable);
         return gigRepository.save(gig);
     }
 
