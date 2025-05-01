@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -122,5 +124,32 @@ public class GigController {
                 .orElseThrow(() -> new NotFoundException("User not found: " + email));
 
         gigService.deleteGig(id, principal);
+    }
+
+    @GetMapping
+    public Page<Gig> listGigs(
+        @RequestParam(value = "q",                   required = false) String      q,
+        @RequestParam(value = "category",            required = false) Long        categoryId,
+        @RequestParam(value = "minPrice",            required = false) BigDecimal  minPrice,
+        @RequestParam(value = "maxPrice",            required = false) BigDecimal  maxPrice,
+        @RequestParam(value = "status",              required = false) GigStatus   status,
+        @RequestParam(value = "minOrders",           required = false) Integer     minOrders,
+        @RequestParam(value = "maxOrders",           required = false) Integer     maxOrders,
+        @RequestParam(value = "minReviews",          required = false) Integer     minReviews,
+        @RequestParam(value = "maxReviews",          required = false) Integer     maxReviews,
+        @RequestParam(value = "minFreelancerRating", required = false) Double      minFreelancerRating,
+        @RequestParam(value = "maxFreelancerRating", required = false) Double      maxFreelancerRating,
+        @RequestParam(value = "minGigRating",        required = false) Double      minGigRating,
+        @RequestParam(value = "maxGigRating",        required = false) Double      maxGigRating,
+        @RequestParam(value = "biddable",            required = false) Boolean     biddable,
+        Pageable pageable
+    ) {
+        return gigService.searchGigs(
+            q, minPrice, maxPrice, status, categoryId,
+            minOrders, maxOrders, minReviews, maxReviews,
+            minFreelancerRating, maxFreelancerRating,
+            minGigRating, maxGigRating, biddable,
+            pageable
+        );
     }
 }

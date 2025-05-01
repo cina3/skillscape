@@ -9,8 +9,10 @@ import com.skillscape.backend.repository.CategoryRepository;
 import com.skillscape.backend.repository.GigRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.jpa.domain.Specification;
 import com.skillscape.backend.specification.GigSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -155,5 +157,38 @@ public class GigService {
         return categoryRepository.findById(categoryId)
             .orElseThrow(() ->
                 new NotFoundException("Category not found: " + categoryId));
+    }
+
+    public Page<Gig> searchGigs(String titleKeyword,
+                                BigDecimal minPrice,
+                                BigDecimal maxPrice,
+                                GigStatus status,
+                                Long categoryId,
+                                Integer minOrders,
+                                Integer maxOrders,
+                                Integer minReviews,
+                                Integer maxReviews,
+                                Double minFreelancerRating,
+                                Double maxFreelancerRating,
+                                Double minGigRating,
+                                Double maxGigRating,
+                                Boolean biddable,
+                                Pageable pageable
+    ) {
+        Specification<Gig> spec = Specification.where(GigSpecification.hasTitleLike(titleKeyword))
+            .and(GigSpecification.priceBetween(minPrice, maxPrice))
+            .and(GigSpecification.hasStatus(status))
+            .and(GigSpecification.hasCategory(categoryId))
+            .and(GigSpecification.minOrderCount(minOrders))
+            .and(GigSpecification.maxOrderCount(maxOrders))
+            .and(GigSpecification.minReviewCount(minReviews))
+            .and(GigSpecification.maxReviewCount(maxReviews))
+            .and(GigSpecification.minFreelancerRating(minFreelancerRating))
+            .and(GigSpecification.maxFreelancerRating(maxFreelancerRating))
+            .and(GigSpecification.minGigRating(minGigRating))
+            .and(GigSpecification.maxGigRating(maxGigRating))
+            .and(GigSpecification.isBiddable(biddable));
+
+        return gigRepository.findAll(spec, pageable);
     }
 }
