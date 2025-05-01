@@ -20,4 +20,7 @@ public class CreateGigRequest {
     @NotNull
     @DecimalMin("0.0")
     private BigDecimal price;
+
+    @NotNull
+    private Long categoryId;
 }

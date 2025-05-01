@@ -43,7 +43,8 @@ public class GigController {
                 req.getTitle(),
                 req.getDescription(),
                 creator,
-                req.getPrice()
+                req.getPrice(),
+                req.getCategoryId()
         );
         return new ResponseEntity<>(gig, HttpStatus.CREATED);
     }
@@ -76,6 +77,7 @@ public class GigController {
             req.getTitle(),
             req.getDescription(),
             req.getPrice(),
+            req.getCategoryId(),
             principal
         );
     }

@@ -37,4 +37,11 @@ public class GigSpecification {
             return cb.equal(root.get("status"), status);
         };
     }
+
+    public static Specification<Gig> hasCategory(Long categoryId) {
+        return (root, query, cb) -> {
+            if (categoryId == null) return null;
+            return cb.equal(root.get("category").get("id"), categoryId);
+        };
+    }
 }

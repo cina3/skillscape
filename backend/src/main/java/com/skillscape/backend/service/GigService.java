@@ -1,9 +1,11 @@
 package com.skillscape.backend.service;
 
 import com.skillscape.backend.exception.NotFoundException;
+import com.skillscape.backend.model.Category;
 import com.skillscape.backend.model.Gig;
 import com.skillscape.backend.model.GigStatus;
 import com.skillscape.backend.model.User;
+import com.skillscape.backend.repository.CategoryRepository;
 import com.skillscape.backend.repository.GigRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.util.Set;
 @Transactional
 public class GigService {
     private final GigRepository gigRepository;
+    private final CategoryRepository categoryRepository;
 
     private static final Map<GigStatus, Set<GigStatus>> ALLOWED = Map.of(
         GigStatus.OPEN, Set.of(GigStatus.AWARDED, GigStatus.CANCELLED),
@@ -27,14 +30,17 @@ public class GigService {
         GigStatus.CANCELLED, Set.of()    
     );
 
-    public GigService(GigRepository gigRepository) {
+    public GigService(GigRepository gigRepository
+                     ,CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
         this.gigRepository = gigRepository;
     }
 
     public Gig createGig(String title,
                          String description,
                          User creator,
-                         java.math.BigDecimal price
+                         java.math.BigDecimal price,
+                         Long categoryId
     ) {
         Gig gig = Gig.builder()
                      .title(title)
@@ -42,6 +48,7 @@ public class GigService {
                      .creator(creator)
                      .price(price)
                      .status(com.skillscape.backend.model.GigStatus.OPEN)
+                     .category(resolveCategory(categoryId))
                      .build();
         return gigRepository.save(gig);
     }
@@ -79,6 +86,7 @@ public class GigService {
                          String newTitle,
                          String newDescription,
                          java.math.BigDecimal newPrice,
+                         Long categoryId,
                          User principal
     ) {
         Gig gig = getGig(gigId);
@@ -88,6 +96,7 @@ public class GigService {
         gig.setTitle(newTitle);
         gig.setDescription(newDescription);
         gig.setPrice(newPrice);
+        gig.setCategory(resolveCategory(categoryId));
         return gigRepository.save(gig);
     }
 
@@ -116,5 +125,11 @@ public class GigService {
 
         gig.setStatus(newStatus);
         return gigRepository.save(gig);
+    }
+
+    private Category resolveCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+            .orElseThrow(() ->
+                new NotFoundException("Category not found: " + categoryId));
     }
 }

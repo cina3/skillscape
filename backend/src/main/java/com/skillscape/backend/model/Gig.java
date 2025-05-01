@@ -37,6 +37,10 @@ public class Gig {
     @OneToMany(mappedBy = "gig", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GigOrder> orders = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GigStatus status;

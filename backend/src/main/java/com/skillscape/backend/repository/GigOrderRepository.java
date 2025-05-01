@@ -12,4 +12,5 @@ public interface GigOrderRepository extends JpaRepository<GigOrder, Long> {
     List<GigOrder> findByGig(Gig gig);
     List<GigOrder> findByCustomer(User customer);
     List<GigOrder> findByGigAndStatus(Gig gig, GigOrderStatus status);
+    List<GigOrder> findByGigAndCustomerAndStatus(Gig gig, User customer, GigOrderStatus status);
 }
