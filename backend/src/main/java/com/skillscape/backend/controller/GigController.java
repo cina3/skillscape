@@ -4,6 +4,7 @@ import com.skillscape.backend.dto.CreateGigRequest;
 import com.skillscape.backend.dto.UpdateGigRequest;
 import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.Gig;
+import com.skillscape.backend.model.GigStatus;
 import com.skillscape.backend.model.User;
 import com.skillscape.backend.service.GigService;
 import com.skillscape.backend.service.UserService;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -46,8 +49,13 @@ public class GigController {
     }
 
     @GetMapping
-    public List<Gig> listAllGigs() {
-        return gigService.listAllGigs();
+    public List<Gig> listGigs(
+        @RequestParam(value = "q", required = false) String q,
+        @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
+        @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
+        @RequestParam(value = "status", required = false) GigStatus status
+    ) {
+        return gigService.listGigs(q, minPrice, maxPrice, status);
     }
 
     @GetMapping("/{id}")
@@ -57,20 +65,31 @@ public class GigController {
 
     @PutMapping("/{id}")
     public Gig updateGig(
-            @RequestHeader("X-User-Email") String email,
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateGigRequest req
+        @RequestHeader("X-User-Email") String email,
+        @PathVariable Long id,
+        @Valid @RequestBody UpdateGigRequest req
     ) {
         User principal = userService.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found: " + email));
-
+                                    .orElseThrow(() -> new NotFoundException("User not found: " + email));
         return gigService.updateGig(
-                id,
-                req.getTitle(),
-                req.getDescription(),
-                req.getPrice(),
-                principal
+            id,
+            req.getTitle(),
+            req.getDescription(),
+            req.getPrice(),
+            principal
         );
+    }
+
+    @PutMapping("/{id}/status")
+    public Gig changeStatus(
+        @RequestHeader("X-User-Email") String email,
+        @PathVariable Long id,
+        @RequestParam GigStatus status
+    ) {
+        User principal = userService.findByEmail(email)
+                                    .orElseThrow(() -> new NotFoundException("User not found: " + email));
+
+        return gigService.changeStatus(id, status, principal);
     }
 
     @DeleteMapping("/{id}")

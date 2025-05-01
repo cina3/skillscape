@@ -2,17 +2,30 @@ package com.skillscape.backend.service;
 
 import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.Gig;
+import com.skillscape.backend.model.GigStatus;
 import com.skillscape.backend.model.User;
 import com.skillscape.backend.repository.GigRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.jpa.domain.Specification;
+import com.skillscape.backend.specification.GigSpecification;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @Transactional
 public class GigService {
     private final GigRepository gigRepository;
+
+    private static final Map<GigStatus, Set<GigStatus>> ALLOWED = Map.of(
+        GigStatus.OPEN, Set.of(GigStatus.AWARDED, GigStatus.CANCELLED),
+        GigStatus.AWARDED, Set.of(GigStatus.IN_PROGRESS, GigStatus.CANCELLED),
+        GigStatus.IN_PROGRESS, Set.of(GigStatus.COMPLETED, GigStatus.CANCELLED),
+        GigStatus.COMPLETED, Set.of(),    
+        GigStatus.CANCELLED, Set.of()    
+    );
 
     public GigService(GigRepository gigRepository) {
         this.gigRepository = gigRepository;
@@ -49,6 +62,19 @@ public class GigService {
             .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
     }
 
+    @Transactional(readOnly = true)
+    public List<Gig> listGigs(  String titleKeyword,
+                                BigDecimal minPrice,
+                                BigDecimal maxPrice,
+                                GigStatus status
+    ) {
+        Specification<Gig> spec = Specification.where(GigSpecification.hasTitleLike(titleKeyword))
+                                            .and(GigSpecification.priceBetween(minPrice, maxPrice))
+                                            .and(GigSpecification.hasStatus(status));
+
+        return gigRepository.findAll(spec);
+    }
+
     public Gig updateGig(Long gigId,
                          String newTitle,
                          String newDescription,
@@ -71,5 +97,24 @@ public class GigService {
             throw new IllegalArgumentException("Not your gig to delete");
         }
         gigRepository.delete(gig);
+    }
+
+    public Gig changeStatus(Long gigId, GigStatus newStatus, User principal) {
+        Gig gig = gigRepository.findById(gigId)
+                                .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
+
+        if (!gig.getCreator().getId().equals(principal.getId())) {
+            throw new IllegalArgumentException("Not authorized to change status");
+        }
+
+        GigStatus current = gig.getStatus();
+        if (!ALLOWED.getOrDefault(current, Set.of()).contains(newStatus)) {
+            throw new IllegalArgumentException(
+                "Cannot transition gig from " + current + " to " + newStatus
+            );
+        }
+
+        gig.setStatus(newStatus);
+        return gigRepository.save(gig);
     }
 }

@@ -20,7 +20,8 @@ public class GigOrderService {
     private final GigRepository gigRepo;
 
     public GigOrderService(GigOrderRepository orderRepo,
-                           GigRepository gigRepo) {
+                           GigRepository gigRepo
+    ) {
         this.orderRepo = orderRepo;
         this.gigRepo   = gigRepo;
     }
