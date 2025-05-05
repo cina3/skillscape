@@ -14,11 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/gigs/{gigId}/reviews")
-public class ReviewController {
+public class GigReviewController {
     private final GigReviewService reviewService;
     private final UserService userService;
 
-    public ReviewController(GigReviewService reviewService,
+    public GigReviewController(GigReviewService reviewService,
                             UserService userService
     ) {
         this.reviewService = reviewService;

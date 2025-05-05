@@ -3,6 +3,11 @@ package com.skillscape.backend.service;
 import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.*;
 import com.skillscape.backend.repository.*;
+import com.skillscape.backend.specification.FreelancerProfileSpecification;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -71,5 +76,20 @@ public class FreelancerProfileService {
             throw new IllegalArgumentException("Not your portfolio item");
         }
         itemRepo.delete(item);
+    }
+
+        @Transactional(readOnly = true)
+    public Page<FreelancerProfile> searchProfiles(
+            String name,
+            String headline,
+            Double minRating,
+            Pageable pageable
+    ) {
+        Specification<FreelancerProfile> spec = Specification.where(
+            FreelancerProfileSpecification.nameLike(name)
+        ).and(FreelancerProfileSpecification.headlineLike(headline))
+        .and(FreelancerProfileSpecification.minRating(minRating));
+
+        return profileRepo.findAll(spec, pageable);
     }
 }
