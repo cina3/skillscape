@@ -76,4 +76,11 @@ public class GigAttachmentService {
         }
         return file;
     }
+
+    @Transactional(readOnly = true)
+    public List<GigAttachment> listForGig(Long gigId) {
+        Gig gig = gigRepo.findById(gigId)
+            .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
+        return attachRepo.findByGig(gig);
+    }
 }

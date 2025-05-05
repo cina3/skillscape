@@ -23,6 +23,7 @@ import java.util.Set;
 public class GigService {
     private final GigRepository gigRepository;
     private final CategoryRepository categoryRepository;
+    private final UserService userService;
 
     private static final Map<GigStatus, Set<GigStatus>> ALLOWED = Map.of(
         GigStatus.OPEN, Set.of(GigStatus.AWARDED, GigStatus.CANCELLED),
@@ -32,10 +33,12 @@ public class GigService {
         GigStatus.CANCELLED, Set.of()    
     );
 
-    public GigService(GigRepository gigRepository
-                     ,CategoryRepository categoryRepository) {
+    public GigService(GigRepository gigRepository,
+                     CategoryRepository categoryRepository,
+                     UserService userService) {
         this.categoryRepository = categoryRepository;
         this.gigRepository = gigRepository;
+        this.userService = userService;
     }
 
     public Gig createGig(String title,
@@ -201,5 +204,12 @@ public class GigService {
 
     public Gig save(Gig gig) {
         return gigRepository.save(gig);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Gig> findByCreatorEmail(String email) {
+        User user = userService.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("User not found: " + email));
+        return gigRepository.findByCreator(user);
     }
 }

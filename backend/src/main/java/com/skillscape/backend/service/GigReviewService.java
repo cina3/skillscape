@@ -12,12 +12,12 @@ import java.util.List;
 
 @Service
 @Transactional
-public class ReviewService {
+public class GigReviewService {
     private final ReviewRepository reviewRepo;
     private final GigRepository gigRepo;
     private final GigOrderRepository orderRepo;
 
-    public ReviewService(ReviewRepository reviewRepo,
+    public GigReviewService(ReviewRepository reviewRepo,
                          GigRepository gigRepo,
                          GigOrderRepository orderRepo
     ) {
@@ -58,5 +58,12 @@ public class ReviewService {
             .comment(comment)
             .build();
         return reviewRepo.save(review);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GigReview> listReviewsByGig(Long gigId) {
+        Gig gig = gigRepo.findById(gigId)
+            .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
+        return reviewRepo.findByGig(gig);
     }
 }

@@ -2,9 +2,9 @@ package com.skillscape.backend.controller;
 
 import com.skillscape.backend.dto.ReviewRequest;
 import com.skillscape.backend.exception.NotFoundException;
-import com.skillscape.backend.model.Review;
+import com.skillscape.backend.model.GigReview;
 import com.skillscape.backend.model.User;
-import com.skillscape.backend.service.ReviewService;
+import com.skillscape.backend.service.GigReviewService;
 import com.skillscape.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/gigs/{gigId}/reviews")
 public class ReviewController {
-    private final ReviewService reviewService;
+    private final GigReviewService reviewService;
     private final UserService userService;
 
-    public ReviewController(ReviewService reviewService,
+    public ReviewController(GigReviewService reviewService,
                             UserService userService
     ) {
         this.reviewService = reviewService;
@@ -26,12 +26,12 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<Review> listReviews(@PathVariable Long gigId) {
+    public List<GigReview> listReviews(@PathVariable Long gigId) {
         return reviewService.listReviews(gigId);
     }
 
     @PostMapping
-    public ResponseEntity<Review> addReview(
+    public ResponseEntity<GigReview> addReview(
             @RequestHeader("X-User-Email") String email,
             @PathVariable Long gigId,
             @Valid @RequestBody ReviewRequest req
@@ -39,7 +39,7 @@ public class ReviewController {
         User reviewer = userService.findByEmail(email)
                                    .orElseThrow(() -> new NotFoundException("User not found: " + email));
 
-        Review saved = reviewService.addReview(
+        GigReview saved = reviewService.addReview(
             gigId,
             reviewer,
             req.getRating(),

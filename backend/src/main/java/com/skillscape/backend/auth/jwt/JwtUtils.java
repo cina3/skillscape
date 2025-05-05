@@ -1,4 +1,4 @@
-package com.skillscape.backend.security;
+package com.skillscape.backend.auth.jwt;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
