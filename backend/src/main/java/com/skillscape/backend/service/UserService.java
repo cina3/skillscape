@@ -64,4 +64,45 @@ public class UserService implements UserDetailsService {
         user.setDisplayName(displayName);
         return userRepository.save(user);
     }
+
+    @Transactional
+    public void changePassword(Long userId, String rawPassword) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+    user.setPassword(passwordEncoder.encode(rawPassword));
+    userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteAccount(Long userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+    userRepository.delete(user);
+    }
+
+    @Transactional
+    public void verifyAndChangePassword(String email, String oldPwd, String newPwd) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("User not found: " + email));
+        if (!passwordEncoder.matches(oldPwd, user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(newPwd));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("User not found: " + email));
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public void updateAvatarUrl(Long userId, String url) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+        user.setAvatarUrl(url);
+        userRepository.save(user);
+    }
 }

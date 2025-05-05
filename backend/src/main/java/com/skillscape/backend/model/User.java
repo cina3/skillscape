@@ -40,4 +40,7 @@ public class User {
     @Column(name="role")
     @Builder.Default
     private Set<String> roles = new HashSet<>();
+
+    @Column(length=500)
+    private String avatarUrl;
 }
