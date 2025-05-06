@@ -3,7 +3,6 @@ package com.skillscape.backend.service;
 import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.GigOrder;
 import com.skillscape.backend.model.GigOrderAttachment;
-import com.skillscape.backend.model.GigOrderStatus;
 import com.skillscape.backend.model.User;
 import com.skillscape.backend.repository.GigOrderAttachmentRepository;
 import com.skillscape.backend.repository.GigOrderRepository;
@@ -19,43 +18,43 @@ public class GigOrderAttachmentService {
 
     private final GigOrderAttachmentRepository attachRepo;
     private final GigOrderRepository orderRepo;
-    private final CoverService coverService; 
+    private final NotificationService notiService;
     public GigOrderAttachmentService(GigOrderAttachmentRepository attachRepo,
                                      GigOrderRepository orderRepo,
-                                     CoverService coverService) {
+                                     NotificationService notiService) {
         this.attachRepo   = attachRepo;
         this.orderRepo    = orderRepo;
-        this.coverService = coverService;
+        this.notiService  = notiService;
     }
 
     public GigOrderAttachment upload(Long orderId,
-                                     MultipartFile file,
-                                     User principal) throws Exception {
+        MultipartFile file,
+        User principal) throws Exception {
         GigOrder order = orderRepo.findById(orderId)
-            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
-        boolean isCustomer   = order.getCustomer().getId().equals(principal.getId());
-        boolean isFreelancer = order.getGig().getCreator().getId().equals(principal.getId());
-        if (!(isCustomer || isFreelancer)) {
-            throw new IllegalArgumentException("Not authorized to attach to this order");
-        }
-
-        if (order.getStatus() != GigOrderStatus.ACCEPTED) {
-            throw new IllegalStateException(
-                "Cannot upload attachments until order is accepted");
-        }
-
-        String stored = coverService.storeCover(file);
-        String url    = "/api/orders/attachments/" + stored;
-
+        String url    = "/api/chat/orders/" + orderId + "/attachments";
         GigOrderAttachment att = GigOrderAttachment.builder()
-            .gigOrder(order)
-            .filename(file.getOriginalFilename())
-            .url(url)
-            .build();
+        .gigOrder(order)
+        .filename(file.getOriginalFilename())
+        .url(url)
+        .build();
+        att = attachRepo.save(att);
 
-        return attachRepo.save(att);
-    }
+        Long otherId = order.getCustomer().getId().equals(principal.getId())
+        ? order.getGig().getCreator().getId()
+        : order.getCustomer().getId();
+        notiService.notifyUser(
+        otherId,
+        "NEW_ATTACHMENT",
+        principal.getDisplayName() +
+        " uploaded a new file on order #" + orderId,
+        "/orders/" + orderId + "/attachments",
+        false
+        );
+
+        return att;
+}
 
     @Transactional(readOnly = true)
     public List<GigOrderAttachment> list(Long orderId) {

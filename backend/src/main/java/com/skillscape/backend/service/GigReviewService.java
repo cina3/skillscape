@@ -16,14 +16,20 @@ public class GigReviewService {
     private final ReviewRepository reviewRepo;
     private final GigRepository gigRepo;
     private final GigOrderRepository orderRepo;
+    private final UserService userService;
+    private final NotificationService notiService;
 
     public GigReviewService(ReviewRepository reviewRepo,
-                         GigRepository gigRepo,
-                         GigOrderRepository orderRepo
+                            GigRepository gigRepo,
+                            GigOrderRepository orderRepo,
+                            UserService userService,
+                            NotificationService notiService
     ) {
         this.reviewRepo = reviewRepo;
         this.gigRepo    = gigRepo;
         this.orderRepo  = orderRepo;
+        this.userService = userService;
+        this.notiService = notiService;
     }
 
     @Transactional(readOnly = true)
@@ -66,4 +72,35 @@ public class GigReviewService {
             .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
         return reviewRepo.findByGig(gig);
     }
+
+    @Transactional
+    public GigReview createReview(Long gigId,
+                              String reviewerEmail,
+                              int rating,
+                              String comment) {
+    User reviewer = userService.findByEmail(reviewerEmail)
+        .orElseThrow(() -> new NotFoundException("User not found: " + reviewerEmail));
+    Gig gig = gigRepo.findById(gigId)
+        .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
+
+    GigReview review = GigReview.builder()
+        .gig(gig)
+        .reviewer(reviewer)
+        .rating(rating)
+        .comment(comment)
+        .build();
+    review = reviewRepo.save(review);
+
+    Long ownerId = gig.getCreator().getId();
+    notiService.notifyUser(
+      ownerId,
+      "NEW_REVIEW",
+      reviewer.getDisplayName() +
+        " left a review on your gig #" + gigId,
+      "/gigs/" + gigId + "/reviews",
+      true
+    );
+
+    return review;
+}
 }

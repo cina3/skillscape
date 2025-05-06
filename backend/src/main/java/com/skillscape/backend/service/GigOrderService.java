@@ -9,10 +9,8 @@ import com.skillscape.backend.model.User;
 import com.skillscape.backend.repository.GigOrderRepository;
 import com.skillscape.backend.repository.GigRepository;
 import com.skillscape.backend.repository.UserRepository;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -23,16 +21,19 @@ public class GigOrderService {
     private final GigRepository gigRepo;
     private final UserRepository     userRepo;
     private final BadgeService       badgeService;
+    private final NotificationService notiService;
 
     public GigOrderService(GigOrderRepository orderRepo,
                            GigRepository gigRepo,
                             UserRepository userRepo,
-                            BadgeService badgeService
+                            BadgeService badgeService,
+                            NotificationService notiService
     ) {
         this.orderRepo = orderRepo;
         this.gigRepo   = gigRepo;
         this.userRepo  = userRepo;
         this.badgeService = badgeService;
+        this.notiService = notiService;
     }
 
     public GigOrder placeOrder(Long gigId,
@@ -81,6 +82,26 @@ public class GigOrderService {
         }
 
         order.setStatus(accept ? GigOrderStatus.ACCEPTED : GigOrderStatus.REJECTED);
+        String statusText = accept ? "accepted" : "rejected";
+        Long customerId  = order.getCustomer().getId();
+        Long freelancerId = order.getGig().getCreator().getId();
+
+        notiService.notifyUser(
+        customerId,
+        "ORDER_" + (accept ? "ACCEPTED" : "REJECTED"),
+        "Your order #" + orderId + " was " + statusText,
+        "/orders/" + orderId,
+        true
+        );
+
+        notiService.notifyUser(
+        freelancerId,
+        "ORDER_RESPONSE",
+        "You have " + (accept ? "accepted" : "rejected") +
+        " order #" + orderId,
+        "/orders/" + orderId,
+        false
+        );
         return orderRepo.save(order);
     }
 

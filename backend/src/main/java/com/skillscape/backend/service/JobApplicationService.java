@@ -17,15 +17,18 @@ public class JobApplicationService {
     private final JobRepository jobRepo;
     private final UserRepository userRepo;
     private final BadgeService badgeService;
+    private final NotificationService notiService;
 
     public JobApplicationService(JobApplicationRepository appRepo,
                                  JobRepository jobRepo,
                                  UserRepository userRepo,
-                                 BadgeService badgeService) {
+                                 BadgeService badgeService,
+                                 NotificationService notiService) {
         this.appRepo = appRepo;
         this.jobRepo = jobRepo;
         this.userRepo = userRepo;
         this.badgeService = badgeService;
+        this.notiService = notiService;
     }
 
     public JobApplication placeApplication(Long jobId,
@@ -74,6 +77,27 @@ public class JobApplicationService {
         app.setStatus(accept
             ? ApplicationStatus.ACCEPTED
             : ApplicationStatus.REJECTED);
+
+        String statusText = accept ? "accepted" : "rejected";
+        Long applicantId = app.getApplicant().getId();
+        Long creatorId   = app.getJob().getCreator().getId();
+
+        notiService.notifyUser(
+        applicantId,
+        "APPLICATION_" + (accept ? "ACCEPTED" : "REJECTED"),
+        "Your application #" + applicationId + " was " + statusText,
+        "/applications/" + applicationId,
+        true
+        );
+
+        notiService.notifyUser(
+        creatorId,
+        "APPLICATION_RESPONSE",
+        "You have " + (accept ? "accepted" : "rejected") +
+            " application #" + applicationId,
+        "/applications/" + applicationId,
+        false
+        );
 
         return appRepo.save(app);
     }

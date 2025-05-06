@@ -16,13 +16,19 @@ public class JobReviewService {
     private final JobReviewRepository reviewRepo;
     private final JobRepository jobRepo;
     private final JobApplicationRepository appRepo;
+    private final UserService userService;
+    private final NotificationService notiService;
 
     public JobReviewService(JobReviewRepository reviewRepo,
                             JobRepository jobRepo,
-                            JobApplicationRepository appRepo) {
+                            JobApplicationRepository appRepo,
+                            UserService userService,
+                            NotificationService notiService) {
         this.reviewRepo = reviewRepo;
         this.jobRepo    = jobRepo;
         this.appRepo    = appRepo;
+        this.userService = userService;
+        this.notiService = notiService;
     }
 
     @Transactional(readOnly = true)
@@ -56,5 +62,36 @@ public class JobReviewService {
                 .comment(comment)
                 .build();
         return reviewRepo.save(review);
+    }
+
+    @Transactional
+    public JobReview createReview(Long jobId,
+                                  String reviewerEmail,
+                                  int rating,
+                                  String comment) {
+        User reviewer = userService.findByEmail(reviewerEmail)
+            .orElseThrow(() -> new NotFoundException("User not found: " + reviewerEmail));
+        Job job = jobRepo.findById(jobId)
+            .orElseThrow(() -> new NotFoundException("Job not found: " + jobId));
+
+        JobReview review = JobReview.builder()
+            .job(job)
+            .reviewer(reviewer)
+            .rating(rating)
+            .comment(comment)
+            .build();
+        review = reviewRepo.save(review);
+
+        Long ownerId = job.getCreator().getId();
+        notiService.notifyUser(
+        ownerId,
+        "NEW_REVIEW",
+        reviewer.getDisplayName() +
+            " left a review on your job #" + jobId,
+        "/jobs/" + jobId + "/reviews",
+        true
+        );
+
+        return review;
     }
 }

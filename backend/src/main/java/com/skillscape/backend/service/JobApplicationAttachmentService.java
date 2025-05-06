@@ -17,15 +17,18 @@ public class JobApplicationAttachmentService {
     private final JobApplicationAttachmentRepository attachRepo;
     private final JobApplicationRepository appRepo;
     private final CoverService coverService;
+    private final NotificationService notiService;
 
     public JobApplicationAttachmentService(
             JobApplicationAttachmentRepository attachRepo,
             JobApplicationRepository appRepo,
-            CoverService coverService
+            CoverService coverService,
+            NotificationService notiService
     ) {
         this.attachRepo   = attachRepo;
         this.appRepo      = appRepo;
         this.coverService = coverService;
+        this.notiService  = notiService;
     }
 
     public JobApplicationAttachment uploadToApplication(Long appId,
@@ -63,4 +66,33 @@ public class JobApplicationAttachmentService {
             .orElseThrow(() -> new NotFoundException("Application not found: " + appId));
         return attachRepo.findByApplication(app);
     }
+
+    public JobApplicationAttachment upload(Long applicationId,
+                                       MultipartFile file,
+                                       User principal) throws Exception {
+    JobApplication application = appRepo.findById(applicationId)
+        .orElseThrow(() -> new NotFoundException("Application not found: " + applicationId));
+
+    String url    = "/api/chat/applications/" + applicationId + "/attachments";
+    JobApplicationAttachment att = JobApplicationAttachment.builder()
+        .application(application)
+        .filename(file.getOriginalFilename())
+        .url(url)
+        .build();
+    att = attachRepo.save(att);
+
+    Long otherId = application.getApplicant().getId().equals(principal.getId())
+        ? application.getJob().getCreator().getId()
+        : application.getApplicant().getId();
+    notiService.notifyUser(
+      otherId,
+      "NEW_ATTACHMENT",
+      principal.getDisplayName() +
+        " uploaded a new file on application #" + applicationId,
+      "/applications/" + applicationId + "/attachments",
+      false
+    );
+
+    return att;
+}
 }

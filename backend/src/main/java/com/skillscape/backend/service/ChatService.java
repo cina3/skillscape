@@ -14,13 +14,16 @@ public class ChatService {
     private final ChatMessageRepository msgRepo;
     private final GigOrderRepository    orderRepo;
     private final JobApplicationRepository appRepo;
+    private final NotificationService   notiService;
 
     public ChatService(ChatMessageRepository msgRepo,
                        GigOrderRepository orderRepo,
-                       JobApplicationRepository appRepo) {
+                       JobApplicationRepository appRepo,
+                       NotificationService notiService) {
         this.msgRepo   = msgRepo;
         this.orderRepo = orderRepo;
         this.appRepo   = appRepo;
+        this.notiService = notiService;
     }
 
     public List<ChatMessage> listOrderMessages(Long orderId, User user) {
@@ -47,6 +50,17 @@ public class ChatService {
             .sender(user)
             .text(text)
             .build();
+
+            Long otherId = order.getCustomer().getId().equals(user.getId())
+            ? order.getGig().getCreator().getId()
+            : order.getCustomer().getId();
+        notiService.notifyUser(
+          otherId,
+          "NEW_CHAT",
+          user.getDisplayName() + " sent you a message on order #" + orderId,
+          "/orders/" + orderId + "/chat",
+          true   
+        );
         return msgRepo.save(msg);
     }
 
@@ -74,6 +88,16 @@ public class ChatService {
             .sender(user)
             .text(text)
             .build();
+        
+        Long otherId = app.getApplicant().getId().equals(user.getId())
+            ? app.getJob().getCreator().getId()
+            : app.getApplicant().getId();
+        notiService.notifyUser(
+        otherId,"NEW_CHAT",
+        user.getDisplayName() + " sent you a message on application #" + appId,
+          "/applications/" + appId + "/chat",
+          true
+        );
         return msgRepo.save(msg);
     }
 }
