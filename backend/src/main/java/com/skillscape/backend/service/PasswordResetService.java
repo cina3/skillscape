@@ -1,10 +1,12 @@
+// src/main/java/com/skillscape/backend/service/PasswordResetService.java
 package com.skillscape.backend.service;
 
 import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.PasswordResetToken;
-import com.skillscape.backend.model.User;
 import com.skillscape.backend.repository.PasswordResetTokenRepository;
 import com.skillscape.backend.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,46 +14,40 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class PasswordResetService {
+
     private final PasswordResetTokenRepository tokenRepo;
-    private final UserRepository              userRepo;
-    private final UserService                 userService;  
+    private final UserRepository               userRepo;
+    private final PasswordEncoder              passwordEncoder;
 
-    public PasswordResetService(PasswordResetTokenRepository tokenRepo,
-                                UserRepository userRepo,
-                                UserService userService) {
-        this.tokenRepo  = tokenRepo;
-        this.userRepo   = userRepo;
-        this.userService = userService;
-    }
-
+    @Transactional
     public String createToken(String email) {
-        User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException("User not found: " + email));
+        var user = userRepo.findByEmail(email)
+                 .orElseThrow(() -> new NotFoundException("No account for " + email));
 
-            tokenRepo.deleteByUser(user);
+        tokenRepo.deleteByUserId(user.getId());    
 
         String token = UUID.randomUUID().toString();
-        PasswordResetToken prt = PasswordResetToken.builder()
-            .token(token)
-            .user(user)
-            .expiresAt(LocalDateTime.now().plusHours(1))
-            .build();
-        tokenRepo.save(prt);
+        tokenRepo.save(PasswordResetToken.builder()
+                .token(token)
+                .user(user)
+                .expiresAt(LocalDateTime.now().plusHours(2))
+                .build());
         return token;
     }
-    
-    public void resetPassword(String token, String newPassword) {
+
+    @Transactional
+    public void resetPassword(String token, String newRawPwd) {
         PasswordResetToken prt = tokenRepo.findByToken(token)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+            .orElseThrow(() -> new NotFoundException("Invalid token"));
 
         if (prt.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Token expired");
         }
-
-        userService.changePassword(prt.getUser().getId(), newPassword);
-
-        tokenRepo.delete(prt);
+        var user = prt.getUser();
+        user.setPassword(passwordEncoder.encode(newRawPwd));
+        userRepo.save(user);
+        tokenRepo.delete(prt);               
     }
 }

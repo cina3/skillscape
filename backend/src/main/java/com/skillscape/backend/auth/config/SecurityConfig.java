@@ -5,6 +5,8 @@ import com.skillscape.backend.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -23,7 +25,6 @@ public class SecurityConfig {
 
     private final UserService userService;
 
-    // inject BOTH beans lazily
     public SecurityConfig(@Lazy UserService userService) {
         this.userService = userService;
     }
@@ -31,15 +32,47 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            @Lazy JwtAuthFilter jwtAuthFilter     // lazy here
+            @Lazy JwtAuthFilter jwtAuthFilter
     ) throws Exception {
         http
           .csrf(csrf -> csrf.disable())
           .sessionManagement(sess ->
             sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-          .authorizeHttpRequests(auth ->
-            auth.requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
+          .authorizeHttpRequests(auth -> auth
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // For CSS, JS, images etc.
+            .requestMatchers(HttpMethod.GET,
+                "/",
+                "/index.html", 
+                "/register.html",
+                "/test-login.html",
+                "/test-forgot-password.html",
+                "/test-reset-password.html" 
+            ).permitAll()
+            .requestMatchers(HttpMethod.POST,
+                "/api/auth/register",
+                "/api/auth/login",
+                "/api/auth/forgot-password",
+                "/api/auth/reset-password"
+            ).permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/auth/**").permitAll()
+            .requestMatchers(HttpMethod.GET,
+                "/api/gigs",
+                "/api/gigs/*", 
+                "/api/gigs/*/reviews",
+                "/api/gigs/*/attachments", 
+                "/api/attachments/**",
+                "/api/gigs/cover/**",
+                "/api/jobs",
+                "/api/jobs/*", 
+                "/api/jobs/*/reviews",
+                "/api/jobs/*/attachments", 
+                "/api/job-attachments/**", 
+                "/api/jobs/cover/**",
+                "/api/events",
+                "/api/events/*", 
+                "/api/users/me/avatar/**" 
+            ).permitAll()
+            .anyRequest().authenticated()
           )
           .authenticationProvider(daoAuthProvider())
           .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -49,21 +82,21 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider daoAuthProvider() {
-        var provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+        p.setUserDetailsService(userService);
+        p.setPasswordEncoder(passwordEncoder());
+        return p;
     }
 
     @Bean
     public AuthenticationManager authenticationManager(
         org.springframework.security.config.annotation
-             .authentication.configuration.AuthenticationConfiguration ac
+            .authentication.configuration.AuthenticationConfiguration ac
     ) throws Exception {
         return ac.getAuthenticationManager();
     }
 
-    @Bean
+    @Bean 
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
