@@ -1,7 +1,7 @@
 package com.skillscape.backend.model;
 
 import jakarta.persistence.*;
-import lombok.*; // Or individual @Getter, @Setter, @ToString, @NoArgsConstructor, @AllArgsConstructor
+import lombok.*; 
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,25 +11,22 @@ import java.util.List;
 
 @Entity
 @Table(name = "freelancer_profiles")
-@Data // Using @Data for now, but be aware of its implications for JPA entities
+@Data 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class FreelancerProfile {
 
-    // =================== CRITICAL SECTION =====================
-    @Id // THIS @Id ANNOTATION MUST BE ON THE 'user' FIELD
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    // @MapsId // THIS ANNOTATION MUST BE REMOVED OR COMMENTED OUT. IT SHOULD NOT BE ACTIVE.
-    @JoinColumn(name = "user_id") // This column will be the PK of freelancer_profiles
-                                  // and the FK to the users table.
-    private User user;
-    // ================= END CRITICAL SECTION ===================
+    @Id
+    @Column(name = "user_id") 
+    private Long id;        
 
-    // THERE SHOULD BE NO OTHER FIELD IN THIS CLASS ANNOTATED WITH @Id.
-    // For example, a line like:
-    // @Id
-    // private Long id;  // <--- THIS SHOULD NOT EXIST IF YOU HAVE @Id ON 'user'
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId 
+    @JoinColumn(name = "user_id") 
+                                  
+                              
+    private User user;
 
     @Column(length = 5000)
     private String bio;

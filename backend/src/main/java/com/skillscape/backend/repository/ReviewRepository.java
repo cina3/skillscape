@@ -11,12 +11,12 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<GigReview, Long> {
     List<GigReview> findByGig(Gig gig);
 
-    @Query("SELECT COALESCE(AVG(r.rating),0) FROM Review r WHERE r.gig.id = :gigId")
+    @Query("SELECT COALESCE(AVG(r.rating),0) FROM GigReview r WHERE r.gig.id = :gigId")
     Double findAverageRatingByGigId(@Param("gigId") Long gigId);
 
     @Query("""
     SELECT COALESCE(AVG(r.rating),0)
-      FROM Review r
+      FROM GigReview r
      WHERE r.gig.creator.id = :userId
         """)
     Double findAverageRatingForGigsByUser(@Param("userId") Long userId);

@@ -80,39 +80,6 @@ public class GigService {
             .orElseThrow(() -> new NotFoundException("Gig not found: " + gigId));
     }
 
-    @Transactional(readOnly = true)
-    public List<Gig> listGigs(
-        String titleKeyword,
-        BigDecimal minPrice,
-        BigDecimal maxPrice,
-        GigStatus status,
-        Long categoryId,
-        Integer minOrders,
-        Integer maxOrders,
-        Integer minReviews,
-        Integer maxReviews,
-        Double  minFreelancerRating,
-        Double  maxFreelancerRating,
-        Double  minGigRating,       
-        Double  maxGigRating,      
-        Boolean biddable 
-    ) {
-        Specification<Gig> spec = Specification.where(GigSpecification.hasTitleLike(titleKeyword))
-        .and(GigSpecification.priceBetween(minPrice, maxPrice))
-        .and(GigSpecification.hasStatus(status))
-        .and(GigSpecification.hasCategory(categoryId))
-        .and(GigSpecification.minOrderCount(minOrders))
-        .and(GigSpecification.maxOrderCount(maxOrders))
-        .and(GigSpecification.minReviewCount(minReviews))
-        .and(GigSpecification.maxReviewCount(maxReviews))
-        .and(GigSpecification.minFreelancerRating(minFreelancerRating))
-        .and(GigSpecification.maxFreelancerRating(maxFreelancerRating))
-        .and(GigSpecification.minGigRating(minGigRating))
-        .and(GigSpecification.maxGigRating(maxGigRating))
-        .and(GigSpecification.isBiddable(biddable));  
-        return gigRepository.findAll(spec);
-    }
-
     public Gig updateGig(Long gigId,
                          String newTitle,
                          String newDescription,
