@@ -25,9 +25,6 @@ public class JobReviewService {
         this.appRepo    = appRepo;
     }
 
-    /**
-     * List all reviews for a job.
-     */
     @Transactional(readOnly = true)
     public List<JobReview> listReviews(Long jobId) {
         Job job = jobRepo.findById(jobId)
@@ -35,9 +32,6 @@ public class JobReviewService {
         return reviewRepo.findByJob(job);
     }
 
-    /**
-     * Add a review: only freelancers with a COMPLETED application on this job may review.
-     */
     public JobReview addReview(Long jobId,
                                User reviewer,
                                int rating,

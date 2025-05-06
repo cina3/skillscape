@@ -18,6 +18,6 @@ public interface ReviewRepository extends JpaRepository<GigReview, Long> {
     SELECT COALESCE(AVG(r.rating),0)
       FROM Review r
      WHERE r.gig.creator.id = :userId
-""")
-Double findAverageRatingForGigsByUser(@Param("userId") Long userId);
+        """)
+    Double findAverageRatingForGigsByUser(@Param("userId") Long userId);
 }

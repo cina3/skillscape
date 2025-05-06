@@ -43,4 +43,8 @@ public class User {
 
     @Column(length=500)
     private String avatarUrl;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isPremium = false; 
 }

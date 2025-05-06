@@ -2,7 +2,7 @@ package com.skillscape.backend.specification;
 
 import com.skillscape.backend.model.Gig;
 import com.skillscape.backend.model.GigStatus;
-import com.skillscape.backend.model.Review;
+import com.skillscape.backend.model.GigReview;
 
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -80,7 +80,7 @@ public class GigSpecification {
             if (minRating == null) return null;
             Subquery<Double> sub = query.subquery(Double.class);
             Root<Gig> subRoot = sub.from(Gig.class);
-            Join<Gig,Review> revJoin = subRoot.join("reviews", JoinType.LEFT);
+            Join<Gig,GigReview> revJoin = subRoot.join("reviews", JoinType.LEFT);
 
             sub.select(cb.avg(revJoin.get("rating")))
                .where(cb.equal(subRoot.get("creator"), root.get("creator")));
@@ -94,7 +94,7 @@ public class GigSpecification {
             if (maxRating == null) return null;
             Subquery<Double> sub = query.subquery(Double.class);
             Root<Gig> subRoot = sub.from(Gig.class);
-            Join<Gig,Review> revJoin = subRoot.join("reviews", JoinType.LEFT);
+            Join<Gig,GigReview> revJoin = subRoot.join("reviews", JoinType.LEFT);
 
             sub.select(cb.avg(revJoin.get("rating")))
                .where(cb.equal(subRoot.get("creator"), root.get("creator")));
@@ -107,7 +107,7 @@ public class GigSpecification {
         return (root, query, cb) -> {
             if (minRating == null) return null;
             Subquery<Double> sub = query.subquery(Double.class);
-            Root<Review> rev = sub.from(Review.class);
+            Root<GigReview> rev = sub.from(GigReview.class);
             sub.select(cb.avg(rev.get("rating")))
                .where(cb.equal(rev.get("gig"), root));
             return cb.greaterThanOrEqualTo(sub, minRating);
@@ -118,7 +118,7 @@ public class GigSpecification {
         return (root, query, cb) -> {
             if (maxRating == null) return null;
             Subquery<Double> sub = query.subquery(Double.class);
-            Root<Review> rev = sub.from(Review.class);
+            Root<GigReview> rev = sub.from(GigReview.class);
             sub.select(cb.avg(rev.get("rating")))
                .where(cb.equal(rev.get("gig"), root));
             return cb.lessThanOrEqualTo(sub, maxRating);

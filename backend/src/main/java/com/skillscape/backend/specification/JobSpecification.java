@@ -70,7 +70,7 @@ public class JobSpecification {
             if (minRating == null) return null;
             Subquery<Double> sub = query.subquery(Double.class);
             Root<Job> subRoot = sub.from(Job.class);
-            Join<Job, Review> rj = subRoot.join("reviews", JoinType.LEFT);
+            Join<Job, GigReview> rj = subRoot.join("reviews", JoinType.LEFT);
             sub.select(cb.avg(rj.get("rating")))
                .where(cb.equal(subRoot.get("creator"), root.get("creator")));
             return cb.greaterThanOrEqualTo(sub, minRating);
@@ -81,7 +81,7 @@ public class JobSpecification {
             if (maxRating == null) return null;
             Subquery<Double> sub = query.subquery(Double.class);
             Root<Job> subRoot = sub.from(Job.class);
-            Join<Job, Review> rj = subRoot.join("reviews", JoinType.LEFT);
+            Join<Job, GigReview> rj = subRoot.join("reviews", JoinType.LEFT);
             sub.select(cb.avg(rj.get("rating")))
                .where(cb.equal(subRoot.get("creator"), root.get("creator")));
             return cb.lessThanOrEqualTo(sub, maxRating);
@@ -92,7 +92,7 @@ public class JobSpecification {
         return (root, query, cb) -> {
             if (minRating == null) return null;
             Subquery<Double> sub = query.subquery(Double.class);
-            Root<Review> rv = sub.from(Review.class);
+            Root<GigReview> rv = sub.from(GigReview.class);
             sub.select(cb.avg(rv.get("rating")))
                .where(cb.equal(rv.get("job"), root));
             return cb.greaterThanOrEqualTo(sub, minRating);
@@ -102,7 +102,7 @@ public class JobSpecification {
         return (root, query, cb) -> {
             if (maxRating == null) return null;
             Subquery<Double> sub = query.subquery(Double.class);
-            Root<Review> rv = sub.from(Review.class);
+            Root<GigReview> rv = sub.from(GigReview.class);
             sub.select(cb.avg(rv.get("rating")))
                .where(cb.equal(rv.get("job"), root));
             return cb.lessThanOrEqualTo(sub, maxRating);

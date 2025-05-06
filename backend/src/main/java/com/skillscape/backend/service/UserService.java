@@ -105,4 +105,20 @@ public class UserService implements UserDetailsService {
         user.setAvatarUrl(url);
         userRepository.save(user);
     }
+
+    @Transactional
+    public User upgradeToPremium(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("User not found: " + email));
+        user.setPremium(true);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User setPremium(Long userId, boolean value) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+        user.setPremium(value);
+        return userRepository.save(user);
+    }
 }

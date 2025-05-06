@@ -1,4 +1,3 @@
-// src/main/java/com/skillscape/backend/controller/FreelancerSearchController.java
 package com.skillscape.backend.controller;
 
 import com.skillscape.backend.model.FreelancerProfile;
@@ -17,7 +16,6 @@ public class FreelancerSearchController {
         this.service = service;
     }
 
-    /** Search freelancers by name, headline, rating */
     @GetMapping
     public Page<FreelancerProfile> search(
         @RequestParam(value="name",       required=false) String name,
