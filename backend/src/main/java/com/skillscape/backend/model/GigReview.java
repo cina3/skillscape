@@ -3,10 +3,11 @@ package com.skillscape.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reviews")
+@Table(name = "gig_reviews")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,11 +17,11 @@ public class GigReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "gig_id", nullable = false)
     private Gig gig;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
 

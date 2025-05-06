@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,11 +31,11 @@ public class Job {
     @Column(nullable = false)
     private BigDecimal budget;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
@@ -48,7 +49,7 @@ public class Job {
 
     @Builder.Default
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GigReview> reviews = new ArrayList<>();
+    private List<JobReview> reviews = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -4,7 +4,7 @@ import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.*;
 import com.skillscape.backend.repository.GigOrderRepository;
 import com.skillscape.backend.repository.GigRepository;
-import com.skillscape.backend.repository.ReviewRepository;
+import com.skillscape.backend.repository.GigReviewRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,13 +13,13 @@ import java.util.List;
 @Service
 @Transactional
 public class GigReviewService {
-    private final ReviewRepository reviewRepo;
+    private final GigReviewRepository reviewRepo;
     private final GigRepository gigRepo;
     private final GigOrderRepository orderRepo;
     private final UserService userService;
     private final NotificationService notiService;
 
-    public GigReviewService(ReviewRepository reviewRepo,
+    public GigReviewService(GigReviewRepository reviewRepo,
                             GigRepository gigRepo,
                             GigOrderRepository orderRepo,
                             UserService userService,

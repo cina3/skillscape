@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class Gig {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
@@ -42,7 +43,7 @@ public class Gig {
     @OneToMany(mappedBy = "gig", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GigReview> reviews = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
@@ -64,12 +65,12 @@ public class Gig {
     @Column(nullable = false)
     private boolean hourly = false;
 
-    @Formula("(select coalesce(avg(r.rating),0) from reviews r where r.gig_id = id)")
+    @Formula("(select coalesce(avg(r.rating),0) from gig_reviews r where r.gig_id = id)")
     private double averageRating;
- 
-    @Formula("(select count(*) from reviews r where r.gig_id = id)")
+
+    @Formula("(select count(*) from gig_reviews r where r.gig_id = id)")
     private int reviewCount;
- 
+
     @Formula("(select count(*) from gig_orders o where o.gig_id = id)")
     private int orderCount;
 

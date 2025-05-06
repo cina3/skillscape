@@ -1,4 +1,3 @@
-// backend/src/main/java/com/skillscape/backend/model/JobReview.java
 package com.skillscape.backend.model;
 
 import jakarta.persistence.*;
@@ -18,11 +17,11 @@ public class JobReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
 

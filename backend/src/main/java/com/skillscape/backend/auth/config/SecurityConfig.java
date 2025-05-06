@@ -4,11 +4,12 @@ import com.skillscape.backend.auth.filter.JwtAuthFilter;
 import com.skillscape.backend.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,24 +21,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
-    private final UserService    userService;
+    private final UserService userService;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
-                          UserService userService) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.userService   = userService;
+    // inject BOTH beans lazily
+    public SecurityConfig(@Lazy UserService userService) {
+        this.userService = userService;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Lazy JwtAuthFilter jwtAuthFilter     // lazy here
+    ) throws Exception {
         http
           .csrf(csrf -> csrf.disable())
-          .sessionManagement(sess -> 
+          .sessionManagement(sess ->
             sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-          .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated()
+          .authorizeHttpRequests(auth ->
+            auth.requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
           )
           .authenticationProvider(daoAuthProvider())
           .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -47,7 +49,7 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider daoAuthProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        var provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
@@ -55,8 +57,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            org.springframework.security.config.annotation
-                .authentication.configuration.AuthenticationConfiguration ac
+        org.springframework.security.config.annotation
+             .authentication.configuration.AuthenticationConfiguration ac
     ) throws Exception {
         return ac.getAuthenticationManager();
     }
