@@ -28,8 +28,8 @@ public class JobApplicationController {
     private final JobApplicationService appService;
     private final JobApplicationRepository appRepo;
     private final UserService userService;
-    private final UserRepository           userRepo;
-    private final BadgeService             badgeService;
+    private final UserRepository userRepo;
+    private final BadgeService badgeService;
 
     public JobApplicationController(JobApplicationService appService,
                                     JobApplicationRepository appRepo,
