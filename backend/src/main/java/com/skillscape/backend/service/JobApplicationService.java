@@ -3,6 +3,7 @@ package com.skillscape.backend.service;
 import com.skillscape.backend.exception.NotFoundException;
 import com.skillscape.backend.model.*;
 import com.skillscape.backend.repository.JobApplicationRepository;
+import com.skillscape.backend.repository.UserRepository;
 import com.skillscape.backend.repository.JobRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +15,17 @@ import java.util.List;
 public class JobApplicationService {
     private final JobApplicationRepository appRepo;
     private final JobRepository jobRepo;
+    private final UserRepository userRepo;
+    private final BadgeService badgeService;
 
     public JobApplicationService(JobApplicationRepository appRepo,
-                                 JobRepository jobRepo) {
+                                 JobRepository jobRepo,
+                                 UserRepository userRepo,
+                                 BadgeService badgeService) {
         this.appRepo = appRepo;
         this.jobRepo = jobRepo;
+        this.userRepo = userRepo;
+        this.badgeService = badgeService;
     }
 
     public JobApplication placeApplication(Long jobId,
@@ -85,5 +92,30 @@ public class JobApplicationService {
             throw new IllegalArgumentException("Not authorized to view proposals");
         }
         return appRepo.findByJob(job);
+    }
+
+    public JobApplication completeApplication(Long applicationId, User principal) {
+        JobApplication app = appRepo.findById(applicationId)
+            .orElseThrow(() -> new NotFoundException("Application not found: " + applicationId));
+
+        if (!(app.getApplicant().getId().equals(principal.getId())
+           || app.getJob().getCreator().getId().equals(principal.getId()))) {
+            throw new IllegalArgumentException("Not authorized to complete this application");
+        }
+
+        app.setStatus(ApplicationStatus.COMPLETED);
+        appRepo.save(app);
+
+        User freelancer = app.getApplicant();
+        freelancer.setXp(freelancer.getXp() + 15);
+        userRepo.save(freelancer);
+        badgeService.awardBadgesForUser(freelancer);
+
+        User customer = app.getJob().getCreator();
+        customer.setXp(customer.getXp() + 8);
+        userRepo.save(customer);
+        badgeService.awardBadgesForUser(customer);
+
+        return app;
     }
 }

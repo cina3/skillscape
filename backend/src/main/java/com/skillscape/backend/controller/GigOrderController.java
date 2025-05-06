@@ -10,6 +10,8 @@ import com.skillscape.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -81,5 +83,17 @@ public class GigOrderController {
                 .orElseThrow(() -> new NotFoundException("User not found: " + email));
 
         return orderService.listOrdersByGig(gigId, freelancer);
+    }
+
+    @PostMapping("/{orderId}/complete")
+    public ResponseEntity<GigOrder> completeOrder(
+        @PathVariable Long orderId,
+        @AuthenticationPrincipal UserDetails ud
+    ) {
+        // load the authenticated User entity
+        User u = userService.findByEmail(ud.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        GigOrder completed = orderService.completeOrder(orderId, u);
+        return ResponseEntity.ok(completed);
     }
 }

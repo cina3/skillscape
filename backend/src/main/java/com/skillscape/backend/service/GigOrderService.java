@@ -8,6 +8,8 @@ import com.skillscape.backend.model.GigStatus;
 import com.skillscape.backend.model.User;
 import com.skillscape.backend.repository.GigOrderRepository;
 import com.skillscape.backend.repository.GigRepository;
+import com.skillscape.backend.repository.UserRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +21,18 @@ import java.util.List;
 public class GigOrderService {
     private final GigOrderRepository orderRepo;
     private final GigRepository gigRepo;
+    private final UserRepository     userRepo;
+    private final BadgeService       badgeService;
 
     public GigOrderService(GigOrderRepository orderRepo,
-                           GigRepository gigRepo
+                           GigRepository gigRepo,
+                            UserRepository userRepo,
+                            BadgeService badgeService
     ) {
         this.orderRepo = orderRepo;
         this.gigRepo   = gigRepo;
+        this.userRepo  = userRepo;
+        this.badgeService = badgeService;
     }
 
     public GigOrder placeOrder(Long gigId,
@@ -90,5 +98,30 @@ public class GigOrderService {
             throw new IllegalArgumentException("Not authorized to view orders for this gig");
         }
         return orderRepo.findByGig(gig);
+    }
+
+    public GigOrder completeOrder(Long orderId, User principal) {
+        GigOrder order = orderRepo.findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+
+        if (!(order.getCustomer().getId().equals(principal.getId())
+           || order.getGig().getCreator().getId().equals(principal.getId()))) {
+            throw new IllegalArgumentException("Not authorized to complete this order");
+        }
+
+        order.setStatus(GigOrderStatus.COMPLETED);
+        orderRepo.save(order);
+
+        User freelancer = order.getGig().getCreator();
+        freelancer.setXp(freelancer.getXp() + 20);
+        userRepo.save(freelancer);
+        badgeService.awardBadgesForUser(freelancer);
+
+        User customer = order.getCustomer();
+        customer.setXp(customer.getXp() + 10);
+        userRepo.save(customer);
+        badgeService.awardBadgesForUser(customer);
+
+        return order;
     }
 }

@@ -47,4 +47,8 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private boolean isPremium = false; 
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int xp = 0;
 }
