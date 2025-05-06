@@ -14,11 +14,14 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     private final UserRepository   userRepository;
     private final PasswordEncoder  passwordEncoder;
+    private final CoinService      coinService;
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       CoinService coinService) {
         this.userRepository  = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.coinService     = coinService;
     }
 
     @Override
@@ -49,8 +52,11 @@ public class UserService implements UserDetailsService {
                         .email(email)
                         .password(hashed)
                         .roles(Set.of("CUSTOMER"))  
+                        .coinBalance(0) 
                         .build();
-        return userRepository.save(user);
+        user = userRepository.save(user);
+        coinService.adjustBalance(user.getId(), 200, "Registration bonus");
+        return user;
     }
 
     public Optional<User> findByEmail(String email) {

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*; 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set; 
@@ -51,4 +52,15 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private int xp = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int coinBalance = 0;  
+
+    @Column
+    private LocalDate lastDailyClaimDate;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int dailyClaimStreak = 0;
 }
