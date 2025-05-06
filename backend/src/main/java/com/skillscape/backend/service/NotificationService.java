@@ -7,7 +7,6 @@ import com.skillscape.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -16,7 +15,6 @@ import java.util.List;
 public class NotificationService {
     private final NotificationRepository notiRepo;
     private final UserRepository         userRepo;
-    private final EmailService           emailService;
 
     public void notifyUser(Long userId,
                            String type,
@@ -33,10 +31,6 @@ public class NotificationService {
             .link(link)
             .build();
         notiRepo.save(n);
-
-        if (emailAlert) {
-            emailService.sendNotificationEmail(user.getEmail(), message, link);
-        }
     }
 
     @Transactional(readOnly=true)

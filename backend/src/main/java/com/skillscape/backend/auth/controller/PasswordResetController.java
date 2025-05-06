@@ -1,39 +1,45 @@
 package com.skillscape.backend.auth.controller;
 
 import com.skillscape.backend.service.PasswordResetService;
+import com.skillscape.backend.service.EmailService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
 public class PasswordResetController {
 
     private final PasswordResetService resetService;
+    private final EmailService         emailService;
 
-    public PasswordResetController(PasswordResetService resetService) {
+    public PasswordResetController(PasswordResetService resetService,
+                                   EmailService emailService) {
         this.resetService = resetService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(
+    public ResponseEntity<String> forgotPassword(
         @Valid @RequestBody ForgotRequest req
     ) {
         String token = resetService.createToken(req.getEmail());
-        // TODO: send the token via email to the user
-        System.out.println("Password reset token for " + req.getEmail() + ": " + token);
-        return ResponseEntity.ok("Password reset token generated");
+        String url   = "https://frontend.example.com/reset-password?token=" + token;
+
+        emailService.sendResetLink(req.getEmail(), url);
+
+        return ResponseEntity.ok("Password‑reset instructions have been emailed.");
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(
+    public ResponseEntity<String> resetPassword(
         @Valid @RequestBody ResetRequest req
     ) {
         resetService.resetPassword(req.getToken(), req.getNewPassword());
-        return ResponseEntity.ok("Password has been reset");
+        return ResponseEntity.ok("Password has been reset.");
     }
 
     @Data
