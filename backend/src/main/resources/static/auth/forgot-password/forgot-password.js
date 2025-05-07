@@ -2,6 +2,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const forgotPasswordForm = document.getElementById('forgot-password-form');
     const messageArea = document.getElementById('message-area');
 
+    if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+        console.log("forgot-password.js: User is already logged in. Redirecting.");
+        if (typeof getRole === 'function' && typeof redirectToDashboard === 'function') {
+            const userRole = getRole();
+            if (userRole) {
+                redirectToDashboard(userRole);
+            } else {
+                window.location.href = '/role-choice/choose-role.html';
+            }
+            return;
+        } else { 
+            window.location.href = '/landing/index.html';
+            return;
+        }
+    }
 
     if (forgotPasswordForm) {
         forgotPasswordForm.addEventListener('submit', async (event) => {

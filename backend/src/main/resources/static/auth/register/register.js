@@ -2,6 +2,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');
     const messageArea = document.getElementById('message-area');
 
+    if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+        console.log("register.js: User is already logged in. Redirecting.");
+        if (typeof getRole === 'function' && typeof redirectToDashboard === 'function') {
+            const userRole = getRole();
+            if (userRole) {
+                redirectToDashboard(userRole);
+            } else {
+                window.location.href = '/role-choice/choose-role.html';
+            }
+            return;
+        } else { 
+            window.location.href = '/landing/index.html';
+            return;
+        }
+    }
+
     if (registerForm) {
         registerForm.addEventListener('submit', async (event) => {
             event.preventDefault();

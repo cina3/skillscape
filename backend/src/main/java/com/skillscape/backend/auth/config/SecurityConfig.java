@@ -41,9 +41,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
             .requestMatchers(HttpMethod.GET,
-                "/",                      // For a potential root mapping if you have one
-                "/index.html",            // If you have an index.html directly in static
-                "/404.html",              // Your custom 404 page
+                "/",                      
+                "/index.html",            
+                "/404.html",              
                 "/landing/**",            // All files under /landing/
                 "/auth/**",               // All files under /auth/
                 "/role-choice/**",        // All files under /role-choice/

@@ -16,8 +16,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/users/me")
+@RequestMapping("/api/users")
 public class UserController {
 
   private final UserService userService;
@@ -29,7 +32,23 @@ public class UserController {
     this.coverService = coverService;
   }
 
-  @PutMapping("/password")
+  @GetMapping("/me")
+  public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+    if (userDetails == null) {
+        return ResponseEntity.status(401).body("User not authenticated");
+    }
+    User user = userService.findByEmail(userDetails.getUsername())
+            .orElseThrow(() -> new NotFoundException("User not found from token details: " + userDetails.getUsername()));
+
+    Map<String, Object> userInfo = new HashMap<>();
+    userInfo.put("id", user.getId());
+    userInfo.put("email", user.getEmail());
+    userInfo.put("displayName", user.getDisplayName());
+
+    return ResponseEntity.ok(userInfo);
+  }
+
+  @PutMapping("/me/password")
   public ResponseEntity<?> changePassword(
       @AuthenticationPrincipal UserDetails ud,
       @Valid @RequestBody ChangePasswordRequest req
@@ -40,7 +59,7 @@ public class UserController {
     return ResponseEntity.ok("Password changed");
   }
 
-  @DeleteMapping
+  @DeleteMapping("/me")
   public ResponseEntity<?> deleteAccount(
       @AuthenticationPrincipal UserDetails ud
   ) {
@@ -48,7 +67,7 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/avatar")
+  @PostMapping("/me/avatar")
   public UpdateAvatarResponse uploadAvatar(
       @AuthenticationPrincipal UserDetails ud,
       @RequestParam("file") MultipartFile file
@@ -61,7 +80,7 @@ public class UserController {
     return new UpdateAvatarResponse(url);
   }
 
-  @GetMapping(value="/avatar/{filename:.+}")
+  @GetMapping(value="/me/avatar/{filename:.+}")
   public ResponseEntity<Resource> serveAvatar(
       @PathVariable String filename,
       HttpServletRequest request
