@@ -35,18 +35,21 @@ public class SecurityConfig {
             @Lazy JwtAuthFilter jwtAuthFilter
     ) throws Exception {
         http
-          .csrf(csrf -> csrf.disable())
-          .sessionManagement(sess ->
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(sess ->
             sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-          .authorizeHttpRequests(auth -> auth
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // For CSS, JS, images etc.
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
             .requestMatchers(HttpMethod.GET,
-                "/",
-                "/index.html", 
-                "/register.html",
-                "/test-login.html",
-                "/test-forgot-password.html",
-                "/test-reset-password.html" 
+                "/",                      // For a potential root mapping if you have one
+                "/index.html",            // If you have an index.html directly in static
+                "/404.html",              // Your custom 404 page
+                "/landing/**",            // All files under /landing/
+                "/auth/**",               // All files under /auth/
+                "/role-choice/**",        // All files under /role-choice/
+                "/freelancer/**",         // All files under /freelancer/
+                "/customer/**",           // All files under /customer/
+                "/shared/**"              // All files under /shared/ (CSS, JS, images)
             ).permitAll()
             .requestMatchers(HttpMethod.POST,
                 "/api/auth/register",
@@ -54,31 +57,32 @@ public class SecurityConfig {
                 "/api/auth/forgot-password",
                 "/api/auth/reset-password"
             ).permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/auth/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/auth/**").permitAll() 
             .requestMatchers(HttpMethod.GET,
                 "/api/gigs",
-                "/api/gigs/*", 
+                "/api/gigs/*",
                 "/api/gigs/*/reviews",
-                "/api/gigs/*/attachments", 
+                "/api/gigs/*/attachments",
                 "/api/attachments/**",
                 "/api/gigs/cover/**",
                 "/api/jobs",
-                "/api/jobs/*", 
+                "/api/jobs/*",
                 "/api/jobs/*/reviews",
-                "/api/jobs/*/attachments", 
-                "/api/job-attachments/**", 
+                "/api/jobs/*/attachments",
+                "/api/job-attachments/**",
                 "/api/jobs/cover/**",
                 "/api/events",
-                "/api/events/*", 
-                "/api/users/me/avatar/**" 
+                "/api/events/*",
+                "/api/users/me/avatar/**"
             ).permitAll()
             .anyRequest().authenticated()
-          )
-          .authenticationProvider(daoAuthProvider())
-          .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        )
+        .authenticationProvider(daoAuthProvider())
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     public DaoAuthenticationProvider daoAuthProvider() {

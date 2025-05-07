@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Role - SkillScape</title>
+    <link rel="stylesheet" href="../shared/css/global.css">
+    <link rel="stylesheet" href="../shared/css/layout.css">
+    <link rel="stylesheet" href="choose-role.css">
+</head>
+<body>
+    <header id="main-header">
+        <div class="container">
+             <h1><a href="/landing/index.html" style="color:white; text-decoration:none;">SkillScape</a></h1>
+            <nav id="main-nav">
+                 <a href="/landing/index.html" class="nav-item public-link">Home</a>
+                <a href="#" id="logout-button" class="nav-item user-link hidden">Logout</a> <!-- Show if logged in -->
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <div class="container">
+            <h2>Choose Your Role</h2>
+            <p>How would you like to use SkillScape?</p>
+            <div class="role-options">
+                <button id="freelancer-role-button" data-role="FREELANCER">I'm a Freelancer (Looking for work)</button>
+                <button id="customer-role-button" data-role="CUSTOMER">I'm a Customer (Looking to hire)</button>
+            </div>
+            <div id="message-area" class="message hidden"></div>
+        </div>
+    </main>
+
+    <footer id="main-footer">
+        <p>© 2025 Freelancers. All rights reserved.</p>
+    </footer>
+
+    <script src="../shared/js/config.js"></script>
+    <script src="../shared/js/utils.js"></script>
+    <script src="../shared/js/apiService.js"></script>
+    <script src="../shared/js/authService.js"></script>
+    <script src="../shared/js/main.js"></script>
+    <script src="choose-role.js"></script>
+</body>
+</html>
