@@ -21,6 +21,9 @@ function storeRole(role) {
         console.log("Removing role from localStorage");
         localStorage.removeItem(ROLE_KEY);
     }
+    if (typeof initializeNavbar === 'function') {
+        initializeNavbar();
+    }
 }
 
 function getRole() {
