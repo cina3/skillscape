@@ -151,35 +151,23 @@ async function validateCurrentToken() {
     console.log("authService.js: validateCurrentToken called");
     if (!isLoggedIn()) {
         console.log("authService.js: No token to validate.");
-        return false; // Or true, depending on desired behavior if no token
+        return false; 
     }
 
     try {
-        // Assuming you have a '/api/users/me' or similar endpoint
-        // that requires authentication and returns user info or just a 200 OK.
-        // fetchWithAuth (from apiService.js) should handle 401s by logging out.
-        const response = await fetchWithAuth('/users/me'); // Or your validation endpoint
+        const response = await fetchWithAuth('/users/me');
 
         if (response.ok) {
             console.log("authService.js: Token is valid.");
-            // Optionally, you could update user details here if the endpoint returns them
-            // const userData = await response.json();
-            // storeUserDetails(userData); // Example
             return true;
         } else {
-            // fetchWithAuth should ideally handle 401 by calling logoutUser.
-            // If it doesn't, or for other non-OK statuses that mean invalid token:
             console.warn(`authService.js: Token validation failed with status ${response.status}. Logging out.`);
-            logoutUser(); // Ensure logout if not already handled
+            logoutUser();
             return false;
         }
     } catch (error) {
-        // Errors during fetch (network error, or if fetchWithAuth throws after logout)
         console.error("authService.js: Error during token validation:", error.message);
-        // It's possible logoutUser() was already called by fetchWithAuth if it was a 401
-        // If not, and we are sure this error means invalid session, call it.
-        // However, repeated calls to logoutUser are generally safe.
-        if (isLoggedIn()) { // Check if still logged in, to avoid redundant redirects if fetchWithAuth already logged out
+        if (isLoggedIn()) { 
             logoutUser();
         }
         return false;
