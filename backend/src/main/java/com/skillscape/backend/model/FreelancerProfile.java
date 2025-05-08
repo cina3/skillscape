@@ -24,8 +24,7 @@ public class FreelancerProfile {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId 
     @JoinColumn(name = "user_id") 
-                                  
-                              
+                                                   
     private User user;
 
     @Column(length = 5000)

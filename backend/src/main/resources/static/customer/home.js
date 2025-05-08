@@ -13,12 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const userRole = getRole();
     if (userRole !== 'CUSTOMER') {
-        console.warn(`customer/home.js: User role is "${userRole}", not CUSTOMER. Redirecting.`);
-        if (userRole === 'FREELANCER') {
-            redirectToDashboard('FREELANCER');
-        } else {
-            window.location.href = '/role-choice/choose-role.html';
-        }
+        console.warn(`customer/home.js: User role is "${userRole}", not CUSTOMER. Redirecting to role choice page.`);
+        window.location.href = '/role-choice/choose-role.html'; // Redirect to choose role page
         return; 
     }
 

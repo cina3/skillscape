@@ -44,12 +44,12 @@ public class SecurityConfig {
                 "/",                      
                 "/index.html",            
                 "/404.html",              
-                "/landing/**",            // All files under /landing/
-                "/auth/**",               // All files under /auth/
-                "/role-choice/**",        // All files under /role-choice/
-                "/freelancer/**",         // All files under /freelancer/
-                "/customer/**",           // All files under /customer/
-                "/shared/**"              // All files under /shared/ (CSS, JS, images)
+                "/landing/**",          
+                "/auth/**",            
+                "/role-choice/**",        
+                "/freelancer/**",         
+                "/customer/**",          
+                "/shared/**"             
             ).permitAll()
             .requestMatchers(HttpMethod.POST,
                 "/api/auth/register",
