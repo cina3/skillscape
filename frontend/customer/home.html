@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Skillscape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/home-style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo">SkillScape</div>
+            <div class="search-bar">
+                <input type="search" placeholder="Search SkillScape for categories, users, projects...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="menu-icon">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <button class="hero-arrow prev-arrow hidden" aria-label="Previous slide">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="hero-slide active-slide">
+                <div class="hero-content">
+                    <h1>Web Design Redefined.<br>Shape the Web. Sharpen the Idea.</h1>
+                    <a href="#" class="hero-button">
+                        Browse Web Design Proposals
+                        <i class="fas fa-arrow-right arrow-icon"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-slide">
+                <div class="hero-content">
+                    <h1>Discover Top Talent.<br>Build Your Dream Team.</h1>
+                    <a href="#" class="hero-button">
+                        Explore Freelancers
+                        <i class="fas fa-arrow-right arrow-icon"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-slide">
+                <div class="hero-content">
+                    <h1>Launch Your Next Project.<br>Innovation Starts Here.</h1>
+                    <a href="#" class="hero-button">
+                        Post a Listing
+                        <i class="fas fa-arrow-right arrow-icon"></i>
+                    </a>
+                </div>
+            </div>
+
+            <button class="hero-arrow next-arrow" aria-label="Next slide">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <div class="hero-dots">
+                <span class="dot active" data-slide="0"></span>
+                <span class="dot" data-slide="1"></span>
+                <span class="dot" data-slide="2"></span>
+            </div>
+        </section>
+
+        <div class="main-content-area">
+            <section class="content-section browse-section">
+                <h2 class="section-title">Browse</h2>
+                <div class="browse-categories">
+                    <div class="category-item">
+                        <div class="category-name">Web Design</div>
+                    </div>
+                    <div class="category-item">
+                        <div class="category-name">Logo Design</div>
+                    </div>
+                    <div class="category-item">
+                        <div class="category-name">Software</div>
+                    </div>
+                    <div class="category-item"> 
+                        <div class="category-name">Marketing</div>
+                    </div>
+                    <div class="category-item"> 
+                        <div class="category-name">Writing</div>
+                    </div>
+                    <div class="category-item"> 
+                        <div class="category-name">Translation</div>
+                    </div>
+                </div>
+                <a href="#" class="see-all-button">
+                    See All <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+            </section>
+
+            <section class="content-section recommended-section">
+                <h2 class="section-title">Recommended For You</h2>
+                <div class="recommended-list">
+                    <div class="recommended-item">
+                        <div class="item-image">
+                            <img src="../assets/temp.png" alt="Modern Web Design">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-title">Modern Web Design</h3>
+                            <p class="item-seller">by webdesigner</p>
+                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 4.1</p>
+                        </div>
+                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
+                    </div>
+                    <div class="recommended-item">
+                        <div class="item-image">
+                            <img src="../assets/temp.png" alt="JavaFX GUI Design">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-title">JavaFX GUI Design</h3>
+                            <p class="item-seller">by javafxguru</p>
+                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 3.7</p>
+                        </div>
+                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
+                    </div>
+                    <div class="recommended-item">
+                        <div class="item-image">
+                            <img src="../assets/temp.png" alt="Chinese Translation">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-title">Chinese Translation</h3>
+                            <p class="item-seller">by xiaomei</p>
+                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 3.5</p>
+                        </div>
+                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
+                    </div>
+                    <div class="recommended-item">
+                        <div class="item-image">
+                            <img src="../assets/temp.png" alt="Web Advertising">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-title">Web Advertising</h3>
+                            <p class="item-seller">by marketing3</p>
+                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 4.9</p>
+                        </div>
+                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
+                    </div>
+                    <div class="recommended-item">
+                        <div class="item-image">
+                            <img src="../assets/temp.png" alt="SEO Optimization">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-title">SEO Optimization</h3>
+                            <p class="item-seller">by seospecialist</p>
+                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 4.7</p>
+                        </div>
+                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
+                    </div>
+                    <div class="recommended-item">
+                        <div class="item-image">
+                            <img src="../assets/temp.png" alt="Content Creation">
+                        </div>
+                        <div class="item-details">
+                            <h3 class="item-title">Content Creation</h3>
+                            <p class="item-seller">by writerpro</p>
+                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 4.3</p>
+                        </div>
+                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
+                    </div>
+                </div>
+                <a href="#" class="see-all-button">
+                    See All <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 SkillScape. All rights reserved.</p>
+    </footer>
+
+    <script src="../design-js/home-script.js"></script>
+</body>
+</html>
