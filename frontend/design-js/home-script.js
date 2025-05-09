@@ -5,22 +5,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextArrow = document.querySelector('.hero-section .next-arrow');
 
     if (slides.length === 0) {
-        // console.warn('Hero slider elements not found.');
         if(prevArrow) prevArrow.classList.add('hidden');
         if(nextArrow) nextArrow.classList.add('hidden');
         return;
     }
     
-    // Ensure arrows exist before trying to use them
     if (!prevArrow || !nextArrow) {
-        // console.warn('Hero navigation arrows not found.');
-        // Depending on design, you might want to proceed without arrows or stop.
     }
 
     let currentSlideIndex = 0;
 
     function updateArrowsVisibility() {
-        if (!prevArrow || !nextArrow) return; // Guard clause if arrows don't exist
+        if (!prevArrow || !nextArrow) return;
 
         if (currentSlideIndex === 0) {
             prevArrow.classList.add('hidden');
@@ -37,20 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showSlide(index) {
         if (index >= slides.length) {
-            index = 0; // Loop to first slide
+            index = 0;
         } else if (index < 0) {
-            index = slides.length - 1; // Loop to last slide
+            index = slides.length - 1;
         }
-        // If no looping is desired, add boundary checks like before:
-        // if (index >= slides.length || index < 0) {
-        //     console.warn(`Slide index ${index} is out of bounds.`);
-        //     return;
-        // }
 
         slides.forEach((slide) => {
             slide.classList.remove('active-slide');
         });
-        // Only manipulate dots if they exist and match slide count
         if (dots.length === slides.length) {
             dots.forEach((dot) => {
                 dot.classList.remove('active');
@@ -65,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateArrowsVisibility();
     }
 
-    if (dots.length === slides.length) { // Only setup dot listeners if they match
+    if (dots.length === slides.length) {
         dots.forEach((dot, index) => {
             dot.addEventListener('click', () => {
                 showSlide(index);
@@ -90,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showSlide(initialActiveSlideIndex);
     } else if (slides.length > 0) {
         showSlide(0); 
-    } else { // No slides, hide arrows if they exist
+    } else {
         if(prevArrow) prevArrow.classList.add('hidden');
         if(nextArrow) nextArrow.classList.add('hidden');
     }
