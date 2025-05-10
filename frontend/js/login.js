@@ -39,6 +39,9 @@ async function handleLogin(event) {
             }));
 
             showMessage('Login successful!', 'success'); 
+            setTimeout(() => {
+                window.location.href = '../customer/home.html'; 
+            }, 1500); 
 
         } else {
             console.error('Login failed:', responseData);
