@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.skillscape</groupId>
-	<artifactId>backend-new</artifactId>
+	<artifactId>backend_new</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>backend-new</name>
 	<description>Backend for SkillScape</description>
@@ -66,6 +66,23 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.5</version> 
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.5</version> 
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId> 
+			<version>0.12.5</version> 
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
