@@ -1,7 +1,7 @@
 let messageBox;
 let messageTextElement;
-let messageCloseButton; 
-let messageTimeout;  
+let messageCloseButton;
+let messageTimeout;
 
 const boxHTML = `
     <div id="globalMessageBox" class="message-box hidden">
@@ -16,9 +16,9 @@ function initializeMessageBox() {
     if (!messageBox) {
         document.body.insertAdjacentHTML('beforeend', boxHTML);
         messageBox = document.getElementById('globalMessageBox');
-        if (!messageBox) { 
+        if (!messageBox) {
             console.error('Failed to create and mbox');
-            return; 
+            return;
         }
         console.info('mbox created');
     }
@@ -34,17 +34,17 @@ function initializeMessageBox() {
 function showMessage(message, type = 'success', duration = 5000) {
     if (!messageBox || !messageTextElement) {
         console.error('mbox failed');
-        initializeMessageBox(); 
+        initializeMessageBox();
         if (!messageBox || !messageTextElement) {
             console.error('mbox failed');
             return;
         }
     }
 
-    clearTimeout(messageTimeout); 
+    clearTimeout(messageTimeout);
 
     messageTextElement.textContent = message;
-    messageBox.className = 'message-box'; 
+    messageBox.className = 'message-box';
 
     if (type === 'error') {
         messageBox.classList.add('message-box-error');

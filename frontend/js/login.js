@@ -26,11 +26,11 @@ async function handleLogin(event) {
         if (contentType && contentType.indexOf("application/json") !== -1) {
             responseData = await response.json();
         } else {
-            responseData = await response.text(); 
+            responseData = await response.text();
         }
 
         if (response.ok) {
-            console.log('Login successful:', responseData); 
+            console.log('Login successful:', responseData);
             localStorage.setItem('authToken', responseData.token);
             localStorage.setItem('currentUser', JSON.stringify({
                 id: responseData.id,
@@ -38,10 +38,10 @@ async function handleLogin(event) {
                 displayName: responseData.displayName
             }));
 
-            showMessage('Login successful!', 'success'); 
+            showMessage('Login successful!', 'success');
             setTimeout(() => {
-                window.location.href = '../customer/home.html'; 
-            }, 1500); 
+                window.location.href = '../customer/home.html';
+            }, 1500);
 
         } else {
             console.error('Login failed:', responseData);
@@ -50,8 +50,8 @@ async function handleLogin(event) {
             if (typeof responseData === 'object' && responseData !== null) {
                 if (responseData.message) {
                     errorMessageText = responseData.message;
-                } else if (responseData.error && responseData.message) { 
-                     errorMessageText = `${responseData.error}: ${responseData.message}`;
+                } else if (responseData.error && responseData.message) {
+                    errorMessageText = `${responseData.error}: ${responseData.message}`;
                 } else if (responseData.error) {
                     errorMessageText = responseData.error;
                 }
@@ -61,7 +61,7 @@ async function handleLogin(event) {
             
             showMessage(errorMessageText, 'error');
         }
-    } catch (error) { 
+    } catch (error) {
         console.error('error', error);
         
         showMessage('An error occurred during login. Please try again.', 'error');

@@ -8,9 +8,9 @@
     --input-border-color: #707070;
     --button-primary-bg: #000000;
     --button-primary-text: #FFFFFF;
-    --button-secondary-bg: #3E607E; 
+    --button-secondary-bg: #3E607E;
     --button-secondary-text: #FFFFFF;
-    --link-color: #333333; 
+    --link-color: #333333;
     --font-family: 'Inter', sans-serif;
     --shape-color: rgba(0, 0, 0, 0.08);
 }
@@ -33,7 +33,7 @@ html, body {
     height: 100vh;
 }
 
-.auth-branding { 
+.auth-branding {
     flex-basis: 45%;
     background-color: var(--brand-blue);
     color: var(--text-on-blue);
@@ -101,7 +101,7 @@ html, body {
     margin-top: auto;
 }
 
-.auth-form-area { 
+.auth-form-area {
     flex-basis: 55%;
     background-color: var(--form-bg);
     display: flex;
@@ -120,12 +120,14 @@ html, body {
     font-size: 14px;
     color: var(--link-color);
     text-decoration: none;
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
     font-weight: 500;
 }
+
 .form-wrapper .back-to-login-link:hover {
     text-decoration: underline;
 }
+
 .form-wrapper .back-to-login-link .arrow {
     margin-right: 5px;
     font-weight: bold;
@@ -145,7 +147,7 @@ html, body {
 
 .form-group input[type="email"],
 .form-group input[type="password"],
-.form-group input[type="text"] { 
+.form-group input[type="text"] {
     width: 100%;
     padding: 10px 5px;
     border: none;
@@ -158,7 +160,7 @@ html, body {
 
 .form-group input[type="email"]:focus,
 .form-group input[type="password"]:focus,
-.form-group input[type="text"]:focus { 
+.form-group input[type="text"]:focus {
     border-bottom-color: var(--brand-blue);
 }
 
@@ -167,7 +169,7 @@ html, body {
     opacity: 1;
 }
 
-.form-link { 
+.form-link {
     display: block;
     text-align: left;
     font-size: 14px;
@@ -194,7 +196,7 @@ html, body {
     text-decoration: none;
 }
 
-.btn-primary { 
+.btn-primary {
     background-color: var(--button-primary-bg);
     color: var(--button-primary-text);
     margin-bottom: 15px;
@@ -241,7 +243,7 @@ html, body {
     }
 
     .auth-form-area {
-        min-height: 65vh; 
+        min-height: 65vh;
         padding: 30px;
     }
 
@@ -260,10 +262,10 @@ html, body {
 .auth-branding.auth-branding-variant::before {
     content: '';
     position: absolute;
-    top: -100px;     
-    left: -180px;     
-    width: 480px;    
-    height: 480px;    
+    top: -100px;
+    left: -180px;
+    width: 480px;
+    height: 480px;
     background-color: var(--shape-color);
     border-radius: 50%;
     z-index: 0;
@@ -272,9 +274,9 @@ html, body {
 .auth-branding.auth-branding-variant::after {
     content: '';
     position: absolute;
-    bottom: -220px;   
-    right: -150px;    
-    width: 520px;     
+    bottom: -220px;
+    right: -150px;
+    width: 520px;
     height: 520px;
     background-color: var(--shape-color);
     border-radius: 50%;
@@ -286,9 +288,9 @@ html, body {
 }
 
 .form-wrapper .choose-account-title {
-    font-size: 28px; 
+    font-size: 28px;
     font-weight: 700;
     color: var(--text-on-form-heading);
-    margin-bottom: 35px; 
+    margin-bottom: 35px;
     text-align: left;
 }

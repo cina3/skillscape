@@ -22,15 +22,15 @@
 .message-box.hidden {
     opacity: 0;
     transform: translateY(-20px);
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .message-box-error {
-    background-color: #5E2727; 
+    background-color: #5E2727;
 }
 
 .message-box-success {
-    background-color: #275E2A; 
+    background-color: #275E2A;
 }
 
 .message-box-close {

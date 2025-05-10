@@ -5,6 +5,7 @@ import com.skillscape.backend_new.model.UserEntity;
 import com.skillscape.backend_new.repository.PasswordResetTokenRepository;
 import com.skillscape.backend_new.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,8 +26,16 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserRepository userRepository, 
+                       PasswordResetTokenRepository passwordResetTokenRepository, 
+                       @Lazy PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -71,7 +80,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void changeUserPassword(UserEntity user, String newPassword) {
-        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPassword(this.passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
         passwordResetTokenRepository.findByUser(user).ifPresent(passwordResetTokenRepository::delete);

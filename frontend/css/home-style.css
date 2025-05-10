@@ -128,6 +128,7 @@ img {
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     transition: box-shadow 0.3s ease;
 }
+
 .hero-section::before {
     content: '';
     position: absolute;
@@ -224,12 +225,14 @@ img {
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+
 .hero-button:hover {
     background-color: var(--brand-blue);
     text-decoration: none;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
+
 .hero-button .arrow-icon {
     margin-left: 10px;
 }
@@ -242,6 +245,7 @@ img {
     z-index: 3;
     display: flex;
 }
+
 .hero-dots .dot {
     width: 10px;
     height: 10px;
@@ -250,6 +254,7 @@ img {
     margin: 0 5px;
     cursor: pointer;
 }
+
 .hero-dots .dot.active {
     background-color: var(--text-light);
 }
@@ -273,6 +278,7 @@ img {
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     transition: box-shadow 0.3s ease;
 }
+
 .content-section .section-title {
     font-size: 1.8em;
     font-weight: 700;
@@ -396,6 +402,7 @@ img {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
+
 .see-all-button .arrow-icon {
     margin-left: 8px;
 }
@@ -427,10 +434,12 @@ img {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid rgba(0,0,0,0.05);
 }
+
 .recommended-item:hover {
     transform: translateX(5px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
+
 .recommended-item .item-image img {
     width: 100px;
     height: 75px;
@@ -439,28 +448,34 @@ img {
     transition: transform 0.3s ease;
     border: 1px solid rgba(0,0,0,0.05);
 }
+
 .recommended-item:hover .item-image img {
     transform: scale(1.05);
 }
+
 .recommended-item .item-details {
     flex-grow: 1;
 }
+
 .recommended-item .item-title {
     font-size: 1.1em;
     font-weight: 600;
     color: var(--text-dark);
     margin-bottom: 3px;
 }
+
 .recommended-item .item-seller,
 .recommended-item .item-rating {
     font-size: 0.85em;
     color: var(--text-muted);
     margin-bottom: 3px;
 }
+
 .recommended-item .item-rating .star-icon {
     color: #ffc107;
     margin-right: 3px;
 }
+
 .recommended-item .view-button {
     background-color: var(--button-blue);
     color: var(--text-light);
@@ -471,11 +486,13 @@ img {
     white-space: nowrap;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
 .recommended-item .view-button:hover {
     background-color: var(--brand-blue);
     text-decoration: none;
     transform: translateX(3px);
 }
+
 .recommended-item .view-button .arrow-icon {
     margin-left: 5px;
 }

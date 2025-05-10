@@ -1,7 +1,7 @@
 async function handleSignup(event) {
     event.preventDefault();
     const form = event.target;
-    const displayNameValue = form.name.value; 
+    const displayNameValue = form.name.value;
     const emailValue = form.email.value;
     const passwordValue = form.password.value;
     const confirmPasswordValue = form['confirm-password'].value;
@@ -60,21 +60,21 @@ async function handleSignup(event) {
                 window.location.href = '../auth/choose-account.html';
             }, 1500);
         } else {
-            let errorMessageText = 'Signup failed. Please try again.'; 
-            
+            let errorMessageText = 'Signup failed. Please try again.';
+
             if (typeof responseData === 'object' && responseData !== null) {
                 if (responseData.message) {
                     errorMessageText = responseData.message;
                 } else if (responseData.errors && responseData.errors.length > 0) {
                     errorMessageText = responseData.errors.map(err => err.defaultMessage || err.field).join(', ');
-                } else if (responseData.error) { 
+                } else if (responseData.error) {
                     errorMessageText = responseData.error;
                 }
             } else if (typeof responseData === 'string' && responseData.trim() !== '') {
                 errorMessageText = responseData;
             }
 
-            const genericErrorPattern = /bad request/i; 
+            const genericErrorPattern = /bad request/i;
             if (
                 genericErrorPattern.test(errorMessageText) &&
                 !(typeof responseData === 'object' && responseData !== null && responseData.message) && // No specific responseData.message
