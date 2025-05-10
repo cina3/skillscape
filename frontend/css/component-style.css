@@ -1,0 +1,50 @@
+.message-box {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 250px;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.message-box.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none; 
+}
+
+.message-box-error {
+    background-color: #5E2727; 
+}
+
+.message-box-success {
+    background-color: #275E2A; 
+}
+
+.message-box-close {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 15px;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.message-box-close:hover {
+    opacity: 0.8;
+}

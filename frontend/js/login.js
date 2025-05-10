@@ -1,7 +1,7 @@
 async function handleLogin(event) {
-    event.preventDefault(); 
+    event.preventDefault();
 
-    const form = event.target; 
+    const form = event.target;
     const email = form.email.value;
     const password = form.password.value;
 
@@ -10,7 +10,7 @@ async function handleLogin(event) {
         password: password
     };
 
-    const backendUrl = 'http://localhost:8080/api/auth/signin'; 
+    const backendUrl = 'http://localhost:8080/api/auth/signin';
 
     try {
         const response = await fetch(backendUrl, {
@@ -21,35 +21,52 @@ async function handleLogin(event) {
             body: JSON.stringify(loginData)
         });
 
-        const responseData = await response.json();
+        let responseData;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            responseData = await response.json();
+        } else {
+            responseData = await response.text(); 
+        }
 
-        if (response.ok) { 
-            console.log('Login successful:', responseData);
+        if (response.ok) {
+            console.log('Login successful:', responseData); 
             localStorage.setItem('authToken', responseData.token);
             localStorage.setItem('currentUser', JSON.stringify({
                 id: responseData.id,
                 email: responseData.email,
                 displayName: responseData.displayName
             }));
-            alert('Login successful!');
+
+            showMessage('Login successful!', 'success'); 
+
         } else {
             console.error('Login failed:', responseData);
-            let errorMessage = 'Login failed. Please check your credentials.';
-            if (responseData.message) {
-                errorMessage = responseData.message;
-            } else if (responseData.error) {
-                errorMessage = responseData.error;
+            let errorMessageText = 'Login failed. Please check your credentials.';
+
+            if (typeof responseData === 'object' && responseData !== null) {
+                if (responseData.message) {
+                    errorMessageText = responseData.message;
+                } else if (responseData.error && responseData.message) { 
+                     errorMessageText = `${responseData.error}: ${responseData.message}`;
+                } else if (responseData.error) {
+                    errorMessageText = responseData.error;
+                }
+            } else if (typeof responseData === 'string' && responseData.trim() !== '') {
+                errorMessageText = responseData;
             }
-            alert(errorMessage);
+            
+            showMessage(errorMessageText, 'error');
         }
-    } catch (error) {
+    } catch (error) { 
         console.error('Network or other error during login:', error);
-        alert('An error occurred during login. Please try again.');
+        
+        showMessage('An error occurred during login. Please try again.', 'error');
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm'); 
+    const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
