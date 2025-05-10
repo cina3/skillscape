@@ -59,7 +59,7 @@ async function handleLogin(event) {
             showMessage(errorMessageText, 'error');
         }
     } catch (error) { 
-        console.error('Network or other error during login:', error);
+        console.error('error', error);
         
         showMessage('An error occurred during login. Please try again.', 'error');
     }

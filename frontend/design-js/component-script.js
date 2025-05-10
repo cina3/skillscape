@@ -1,7 +1,7 @@
 let messageBox;
 let messageTextElement;
-let messageCloseButton;
-let messageTimeout;
+let messageCloseButton; 
+let messageTimeout;  
 
 const boxHTML = `
     <div id="globalMessageBox" class="message-box hidden">
@@ -17,10 +17,10 @@ function initializeMessageBox() {
         document.body.insertAdjacentHTML('beforeend', boxHTML);
         messageBox = document.getElementById('globalMessageBox');
         if (!messageBox) { 
-            console.error('Failed to create and find Global Message Box HTML structure.');
+            console.error('Failed to create and mbox');
             return; 
         }
-        console.info('Global Message Box HTML structure was dynamically added.');
+        console.info('mbox created');
     }
 
     messageTextElement = document.getElementById('globalMessageText');
@@ -33,10 +33,10 @@ function initializeMessageBox() {
 
 function showMessage(message, type = 'success', duration = 5000) {
     if (!messageBox || !messageTextElement) {
-        console.error('Message box elements not initialized. Attempting to initialize now.');
+        console.error('mbox failed');
         initializeMessageBox(); 
         if (!messageBox || !messageTextElement) {
-            console.error('Message box elements still not found after re-initialization. Cannot show message.');
+            console.error('mbox failed');
             return;
         }
     }
