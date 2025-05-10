@@ -1,0 +1,239 @@
+/* Site Header Styles (moved from home-style.css) */
+.site-header {
+    background-color: var(--bg-light-grey);
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Ensure header is above other content but below menu */
+    max-width: 1400px;
+    margin: 0 auto;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.site-header .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Changed from fixed width to be more flexible */
+    padding: 0 20px; /* Standard padding */
+    max-width: 1300px; /* Increased from 1200px */
+    margin: 0 auto; /* Center content */
+}
+
+.site-header .logo {
+    font-size: 1.8em;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.site-header .search-bar {
+    flex-grow: 1;
+    margin: 0 30px;
+    display: flex;
+    align-items: center;
+    background-color: var(--card-item-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    padding: 0px 15px;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.site-header .search-bar:focus-within {
+    border-color: var(--button-blue);
+    box-shadow: 0 0 0 3px rgba(58, 80, 107, 0.15);
+}
+
+.site-header .search-bar input[type="search"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 0.95em;
+    background-color: transparent;
+}
+
+.site-header .search-bar .search-icon {
+    font-size: 1.2em;
+    color: var(--text-muted);
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.site-header .menu-icon {
+    font-size: 1.8em;
+    color: var(--text-dark);
+    cursor: pointer;
+    padding: 5px; /* Add some padding for easier clicking */
+}
+
+/* Hamburger Menu Styles */
+@keyframes spinCloseButton {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(450deg); /* 1.25 turns. Adjust as needed (e.g., 360deg for 1 turn, 540deg for 1.5 turns) */
+    }
+}
+
+.hamburger-menu {
+    position: fixed;
+    top: 0;
+    right: -340px; /* Start off-screen, adjusted for new width */
+    width: 320px; /* Increased from 300px */
+    height: 100%;
+    background-color: var(--bg-light-grey, #F0F0F0);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1002; /* Higher than header */
+    /* Changed transition for a swifter, more direct animation */
+    transition: right 0.3s ease-out; 
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-family, 'Inter', sans-serif);
+    color: var(--text-dark, #212529);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.hamburger-menu.open {
+    right: 0;
+}
+
+.hamburger-menu .menu-header {
+    display: flex;
+    justify-content: space-between; /* Changed from flex-end to space items */
+    align-items: center;
+    margin-bottom: 25px; /* Reduced from 30px */
+}
+
+/* .hamburger-menu .menu-logo-icon styling can be removed or commented out if element is removed from HTML */
+/*
+.hamburger-menu .menu-logo-icon {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--text-dark, #212529);
+}
+*/
+
+.hamburger-menu .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    color: var(--text-dark, #212529);
+    cursor: pointer;
+    padding: 5px; /* Ensure it has some clickable area */
+    transition: transform 0.25s ease-out; /* Smooth transition for hover rotation */
+}
+
+.hamburger-menu .close-btn:hover {
+    transform: rotate(90deg); /* Rotate on hover */
+}
+
+.hamburger-menu .close-btn.spinning {
+    animation: spinCloseButton 0.45s ease-out forwards; /* Animation duration slightly less than menu slide */
+    /* When spinning, hover transform might be overridden by animation, which is fine */
+}
+
+.hamburger-menu .menu-nav ul,
+.hamburger-menu .menu-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0; /* Reduced from 30px */
+}
+
+.hamburger-menu .menu-nav ul li a,
+.hamburger-menu .menu-section ul li a {
+    display: block;
+    padding: 10px 0; /* Base padding */
+    font-size: 1.15em; 
+    font-weight: 700; 
+    color: var(--text-dark, #212529);
+    text-decoration: none;
+    transition: color 0.2s ease, padding-left 0.2s ease-out; /* Added padding-left to transition */
+    position: relative; /* For potential future use with pseudo-elements if needed */
+}
+
+/* Specific styling for menu-nav items for hover indent */
+
+.hamburger-menu .menu-nav ul li a:not(.active-menu-item):hover {
+    /* Indent text to align with where "Home" text starts (after its icon) */
+    /* Assuming icon + margin is approx 20px. Adjust if icon size/margin changes. */
+    /* The icon in .active-menu-item has font-size 0.5em and margin-right 8px. */
+    /* (0.5em * 1.15em parent font-size) for icon width + 8px margin. */
+    /* Let's use a fixed value that visually aligns. */
+    padding-left: 22px; /* Adjust this value to perfect alignment with "Home" text */
+}
+
+.hamburger-menu .menu-nav ul li a:hover,
+.hamburger-menu .menu-section ul li a:hover, /* General hover color for section links */
+.hamburger-menu .menu-nav ul li a.active-menu-item {
+    color: var(--brand-blue, #27435E);
+}
+
+.hamburger-menu .menu-nav ul li a.active-menu-item .fa-circle {
+    color: var(--brand-blue, #27435E);
+}
+
+.hamburger-menu .menu-footer {
+    margin-top: auto; /* Pushes footer to the bottom */
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color, #DEE2E6);
+}
+
+.hamburger-menu .user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.hamburger-menu .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--brand-blue, #27435E); /* Placeholder color */
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.hamburger-menu .user-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.hamburger-menu .user-name {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: var(--text-dark, #212529);
+}
+
+.hamburger-menu .user-skillcoins {
+    font-size: 0.9em;
+    color: var(--text-muted, #6c757d);
+}
+
+.hamburger-menu .sign-out-link {
+    font-size: 0.9em;
+    color: var(--button-blue, #3A506B);
+    text-decoration: underline;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.hamburger-menu .sign-out-link:hover {
+    color: var(--brand-blue, #27435E);
+}
+
+
+/* Responsive adjustments for header elements if needed */
+@media (max-width: 768px) {
+    .site-header .search-bar {
+        display: none; /* Hide search bar on smaller screens for the reusable header */
+    }
+    .site-header .header-content {
+        justify-content: space-between; /* Ensure logo and menu icon are spaced out */
+    }
+    .site-header .logo {
+        margin-right: auto; /* Push logo to the left */
+    }
+}
