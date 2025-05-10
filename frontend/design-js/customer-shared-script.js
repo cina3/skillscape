@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (menuIcon && hamburgerMenu) {
             menuIcon.addEventListener('click', () => {
                 hamburgerMenu.classList.toggle('open');
+                menuIcon.classList.toggle('menu-open'); // Toggle the menu-open class for animation
             });
         } else {
             // Poll for elements if they are not immediately available after loadHTML callback
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (menuIconRetry && hamburgerMenuRetry) {
                     menuIconRetry.addEventListener('click', () => {
                         hamburgerMenuRetry.classList.toggle('open');
+                        menuIconRetry.classList.toggle('menu-open'); // Toggle the menu-open class for animation
                     });
                     clearInterval(intervalId);
                 } else if (attempts++ > 10) { // Stop after ~1 second
@@ -63,6 +65,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Close the menu
                 hamburgerMenu.classList.remove('open');
+                
+                // Remove menu-open class from menu icon when closing menu
+                const menuIcon = document.querySelector('.site-header .menu-icon');
+                if (menuIcon) {
+                    menuIcon.classList.remove('menu-open');
+                }
 
                 // Remove spinning class after animation finishes
                 closeMenuBtn.addEventListener('animationend', () => {
@@ -82,6 +90,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Close the menu
                         hamburgerMenuRetry.classList.remove('open');
+                        
+                        // Remove menu-open class from menu icon when closing menu
+                        const menuIcon = document.querySelector('.site-header .menu-icon');
+                        if (menuIcon) {
+                            menuIcon.classList.remove('menu-open');
+                        }
 
                         // Remove spinning class after animation finishes
                         closeMenuBtnRetry.addEventListener('animationend', () => {
@@ -108,6 +122,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (!isClickInsideMenu && !isClickOnMenuIcon) {
                     hamburgerMenuElem.classList.remove('open');
+                    
+                    // Remove menu-open class from menu icon when closing menu
+                    const menuIcon = document.querySelector('.site-header .menu-icon');
+                    if (menuIcon) {
+                        menuIcon.classList.remove('menu-open');
+                    }
                 }
             }
         });

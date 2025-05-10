@@ -52,14 +52,14 @@ img {
 
 .hero-section {
     margin: 30px auto;
-    max-width: 1200px;
+    max-width: 1400px; /* increased from 1200px */
     background-image: url('../assets/temp.png');
     background-size: cover;
     background-position: center;
     border-radius: var(--default-border-radius);
     color: var(--text-light);
     position: relative;
-    min-height: 460px;
+    min-height: 600px;  /* increased from 460px */
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     transition: box-shadow 0.3s ease;
 }
@@ -83,7 +83,7 @@ img {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding: 60px 40px;
+    padding: 60px 40px 60px 120px; /* increased left padding for text/button shift */
     box-sizing: border-box;
     opacity: 0;
     visibility: hidden;
@@ -123,11 +123,11 @@ img {
 }
 
 .hero-arrow.prev-arrow {
-    left: 20px;
+    left: 40px; /* move arrow further from left edge */
 }
 
 .hero-arrow.next-arrow {
-    right: 20px;
+    right: 40px; /* move arrow further from right edge */
 }
 
 .hero-arrow.hidden {
@@ -138,6 +138,7 @@ img {
 
 .hero-content {
     max-width: 60%;
+    margin-left: 40px; /* move content further right */
 }
 
 .hero-content h1 {
@@ -451,8 +452,22 @@ img {
     .browse-section, .recommended-section {
         flex-basis: 100%;
     }
+    .hero-section {
+        max-width: 100%;
+        min-height: 400px; /* adjust for smaller screens */
+    }
+    .hero-slide {
+        padding: 40px 20px 40px 40px; /* less left padding on smaller screens */
+    }
     .hero-content {
+        margin-left: 0;
         max-width: 80%;
+    }
+    .hero-arrow.prev-arrow {
+        left: 20px;
+    }
+    .hero-arrow.next-arrow {
+        right: 20px;
     }
     .hero-content h1 {
         font-size: 2.2em;
@@ -463,7 +478,14 @@ img {
 }
 
 @media (max-width: 768px) {
+    .hero-section {
+        min-height: 260px; /* further adjust for mobile */
+    }
+    .hero-slide {
+        padding: 20px 10px 20px 10px;
+    }
     .hero-content {
+        margin-left: 0;
         max-width: 100%;
         text-align: center;
     }
