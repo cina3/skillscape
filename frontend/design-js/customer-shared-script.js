@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('[CustomerSharedScript] DOM fully loaded and parsed. Starting component loading.');
 
-    // Function to load HTML content into a placeholder
     function loadHTMLFragment(url, placeholderId) {
         console.log(`[CustomerSharedScript] Attempting to load HTML from ${url} into #${placeholderId}`);
         return fetch(url)
@@ -28,11 +27,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (placeholder) {
                     placeholder.innerHTML = `<p style="color:red; border:1px solid red; padding:10px;">Failed to load component from ${url}. Check console for details.</p>`;
                 }
-                throw error; // Re-throw to be caught by Promise.all
+                throw error; 
             });
     }
 
-    // Paths are relative to the HTML file including this script (e.g., browse.html)
+    function setActiveMenuItem() {
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        if (!hamburgerMenu) return;
+
+        const navLinks = hamburgerMenu.querySelectorAll('.menu-nav > ul > li > a');
+        const currentPagePath = window.location.pathname;
+        const currentPageFilename = currentPagePath.substring(currentPagePath.lastIndexOf('/') + 1) || 'home.html'; // Default to home.html if path ends in /
+
+        navLinks.forEach(link => {
+            link.classList.remove('active-menu-item');
+            const existingDot = link.querySelector('i.fa-circle');
+            if (existingDot) {
+                existingDot.remove();
+            }
+
+            const linkHref = link.getAttribute('href');
+            if (linkHref) {
+                const linkFilename = linkHref.substring(linkHref.lastIndexOf('/') + 1);
+                const linkPageName = linkFilename.split('?')[0];
+
+                if (linkPageName === currentPageFilename) {
+                    link.classList.add('active-menu-item');
+                    const dotIcon = document.createElement('i');
+                    dotIcon.className = 'fas fa-circle';
+                    dotIcon.style.fontSize = '0.5em';
+                    dotIcon.style.verticalAlign = 'middle';
+                    dotIcon.style.marginRight = '8px';
+                    link.prepend(dotIcon);
+                }
+            }
+        });
+    }
+
     const headerPath = '../customer/header.html'; 
     const menuPath = '../customer/hamburger-menu.html';
 
@@ -43,10 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(() => {
         console.log('[CustomerSharedScript] Both header and hamburger menu HTML successfully loaded. Proceeding to setup event listeners.');
         setupEventListeners();
+        setActiveMenuItem(); 
     })
     .catch(error => {
         console.error('[CustomerSharedScript] Critical error: Failed to load one or more HTML components. Event listeners will not be set up.', error);
-        // Optionally, display a more prominent error message on the page
         const body = document.querySelector('body');
         if (body && !document.getElementById('critical-load-error')) {
             const errorDiv = document.createElement('div');
@@ -83,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (menuIcon) {
                     menuIcon.classList.remove('menu-open');
                 }
-                // Ensure the animationend listener is only added once or managed properly
                 const onAnimationEnd = () => {
                     closeMenuBtn.classList.remove('spinning');
                     closeMenuBtn.removeEventListener('animationend', onAnimationEnd);
@@ -92,10 +122,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } else {
             if (!closeMenuBtn) console.error('[CustomerSharedScript] Close button (#closeMenuBtn) not found after HTML load. Cannot attach close listener.');
-            // hamburgerMenu might be null if menuIcon was also null, already logged.
         }
 
-        // Optional: Close menu if clicking outside of it
         document.addEventListener('click', function(event) {
             const currentHamburgerMenu = document.getElementById('hamburgerMenu'); 
             if (currentHamburgerMenu && currentHamburgerMenu.classList.contains('open')) {
