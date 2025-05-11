@@ -1,12 +1,38 @@
-/* Site Header Styles (moved from home-style.css) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-light-grey);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+:root {
+    --brand-blue: #27435E;
+    --button-blue: #3A506B;
+    --text-dark: #212529;
+    --text-light: #FFFFFF;
+    --text-muted: #6c757d;
+    --bg-light-grey: #F0F0F0;
+    --card-bg: #E9ECEF;
+    --card-item-bg: #FFFFFF;
+    --border-color: #DEE2E6;
+    --font-family: 'Inter', sans-serif;
+    --default-border-radius: 12px;
+}
+
 .site-header {
     background-color: var(--bg-light-grey);
     padding: 15px 0;
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    z-index: 1000; /* Ensure header is above other content but below menu */
-    max-width: 1600px; /* Increased from 1400px */
+    z-index: 1000; 
+    max-width: 1600px; 
     margin: 0 auto;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
@@ -15,10 +41,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; /* Changed from fixed width to be more flexible */
-    padding: 0 20px; /* Standard padding */
-    max-width: 1500px; /* Increased from 1300px */
-    margin: 0 auto; /* Center content */
+    width: 100%; 
+    padding: 0 20px; 
+    max-width: 1500px; 
+    margin: 0 auto; 
 }
 
 .site-header .logo {
@@ -64,29 +90,28 @@
     font-size: 1.8em;
     color: var(--text-dark);
     cursor: pointer;
-    padding: 5px; /* Add some padding for easier clicking */
+    padding: 5px; 
 }
 
-/* Hamburger Menu Styles */
 @keyframes spinCloseButton {
     0% {
         transform: rotate(0deg);
     }
     100% {
-        transform: rotate(450deg); /* 1.25 turns. Adjust as needed (e.g., 360deg for 1 turn, 540deg for 1.5 turns) */
+        transform: rotate(450deg);
     }
 }
 
 .hamburger-menu {
     position: fixed;
     top: 0;
-    right: -340px; /* Start off-screen, adjusted for new width */
-    width: 320px; /* Increased from 300px */
+    right: -340px; 
+    width: 320px; 
     height: 100%;
     background-color: var(--bg-light-grey, #F0F0F0);
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 1002; /* Higher than header */
-    transition: right 0.18s cubic-bezier(0.4, 0, 0.2, 1); /* Faster and snappier */
+    z-index: 1002; 
+    transition: right 0.18s cubic-bezier(0.4, 0, 0.2, 1); 
     display: flex;
     flex-direction: column;
     font-family: var(--font-family, 'Inter', sans-serif);
@@ -101,24 +126,15 @@
 
 .hamburger-menu .menu-header {
     display: flex;
-    justify-content: space-between; /* Changed from flex-end to space items */
+    justify-content: space-between; 
     align-items: center;
-    margin-bottom: 25px; /* Reduced from 30px */
+    margin-bottom: 25px; 
 }
-
-/* .hamburger-menu .menu-logo-icon styling can be removed or commented out if element is removed from HTML */
-/*
-.hamburger-menu .menu-logo-icon {
-    font-size: 2em;
-    font-weight: bold;
-    color: var(--text-dark, #212529);
-}
-*/
 
 .hamburger-menu .close-btn {
     background: none;
     border: none;
-    font-size: 2.1em; /* Slightly larger for new icon */
+    font-size: 2.1em; 
     color: var(--text-dark, #212529);
     cursor: pointer;
     padding: 5px;
@@ -137,21 +153,20 @@
 }
 
 .hamburger-menu .close-btn.spinning {
-    animation: spinCloseButton 0.45s ease-out forwards; /* Animation duration slightly less than menu slide */
-    /* When spinning, hover transform might be overridden by animation, which is fine */
+    animation: spinCloseButton 0.45s ease-out forwards; 
 }
 
 .hamburger-menu .menu-nav ul,
 .hamburger-menu .menu-section ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 25px 0; /* Reduced from 30px */
+    margin: 0 0 25px 0; 
 }
 
 .hamburger-menu .menu-nav ul li a,
 .hamburger-menu .menu-section ul li a {
     display: block;
-    padding: 10px 0; /* Default padding for all menu links */
+    padding: 10px 0; 
     font-size: 1.15em; 
     font-weight: 700; 
     color: var(--text-dark, #212529);
@@ -160,23 +175,20 @@
     position: relative;
 }
 
-/* Apply hover padding and color specifically to direct <a> children of <li> in menu-nav */
 .hamburger-menu .menu-nav ul li > a:not(.active-menu-item):hover {
-    padding-left: 15px; /* Reduced from 22px */
+    padding-left: 15px; 
     color: var(--brand-blue, #27435E);
 }
 
-/* Remove underline on hover/active for menu-nav items */
-.hamburger-menu .menu-nav ul li > a:hover, /* Target direct children */
-.hamburger-menu .menu-nav ul li > a.active-menu-item { /* Target direct children */
+.hamburger-menu .menu-nav ul li > a:hover, 
+.hamburger-menu .menu-nav ul li > a.active-menu-item {
     color: var(--brand-blue, #27435E);
     text-decoration: none;
 }
 
-/* Change dot indicator to chevron for hovered/active direct <a> children of <li> */
 .hamburger-menu .menu-nav ul li > a:not(.active-menu-item):hover::before,
 .hamburger-menu .menu-nav ul li > a.active-menu-item::before {
-    content: '\f054'; /* FontAwesome chevron-right */
+    content: '\f054'; 
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
     display: inline-block;
@@ -190,13 +202,12 @@
     transition: color 0.18s;
 }
 
-/* Ensure "Browse" link shows chevron and hover styles when its submenu is open */
 .hamburger-menu .menu-nav ul li.has-submenu:hover > a {
-    padding-left: 15px; /* Apply indent */
-    color: var(--brand-blue, #27435E); /* Apply hover/active color */
+    padding-left: 15px; 
+    color: var(--brand-blue, #27435E); 
 }
 .hamburger-menu .menu-nav ul li.has-submenu:hover > a::before {
-    content: '\f054'; /* FontAwesome chevron-right */
+    content: '\f054';
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
     display: inline-block;
@@ -206,88 +217,81 @@
     vertical-align: middle;
     position: relative;
     top: -1px;
-    left: -3px; /* Adjust if needed based on padding */
+    left: -3px; 
     transition: color 0.18s;
 }
 
-/* Hide chevron for Home since it already has an icon */
-/* This targets the Home link specifically, assuming it's the first child */
 .hamburger-menu .menu-nav ul li:first-child > a::before {
     display: none !important;
 }
-/* If Home is active, ensure its ::before (if any by other rules) is also hidden */
 .hamburger-menu .menu-nav ul li:first-child > a.active-menu-item::before {
     display: none !important;
 }
 
-/* Styles for Browse submenu */
 .hamburger-menu .menu-nav ul li.has-submenu .browse-submenu {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out, margin-top 0.35s ease-in-out;
-    padding: 0 10px; /* Initial padding (vertical 0) */
+    padding: 0 10px;
     margin-top: 0;
-    background-color: rgba(0,0,0,0.02); /* Subtle background for the submenu area */
+    background-color: rgba(0,0,0,0.02); 
     border-radius: 4px;
 }
 
 .hamburger-menu .menu-nav ul li.has-submenu:hover .browse-submenu {
-    max-height: 500px; /* Adjust as needed to fit content */
-    padding: 10px 10px; /* Full padding when open */
-    margin-top: 5px; /* Space between Browse link and submenu */
+    max-height: 500px; 
+    padding: 10px 10px; 
+    margin-top: 5px; 
 }
 
 .browse-submenu {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two columns for category items */
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
 }
 
 .submenu-category-item {
-    display: flex; /* Changed from flex-direction: column */
-    align-items: flex-end; /* Align text to the bottom */
-    justify-content: center; /* Center text horizontally */
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: center; 
     text-align: center;
-    padding: 10px; /* Adjusted padding */
+    padding: 10px;
     background-color: var(--card-item-bg, #FFFFFF);
     border-radius: var(--default-border-radius, 12px);
     text-decoration: none;
-    color: var(--text-light, #FFFFFF); /* Text color to white for better contrast on image */
+    color: var(--text-light, #FFFFFF); 
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid var(--border-color, #DEE2E6);
-    position: relative; /* For positioning the text overlay */
-    overflow: hidden; /* To ensure pseudo-elements don't overflow */
-    min-height: 100px; /* Ensure items have some height */
+    position: relative; 
+    overflow: hidden; 
+    min-height: 100px;
     background-size: cover;
     background-position: center;
 }
 
 .submenu-category-item:hover {
-    transform: translateY(-3px) scale(1.02); /* Slightly adjusted hover effect */
+    transform: translateY(-3px) scale(1.02);
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    /* Submenu items should not get the padding-left or chevron of main menu items */
 }
 
-/* Explicitly ensure submenu items do not show a ::before pseudo-element (chevron) */
 .submenu-category-item::before {
     display: none !important;
 }
 
 .submenu-category-item span {
-    font-size: 0.85em; /* Slightly larger text */
-    font-weight: 700; /* Bolder text */
+    font-size: 0.85em; 
+    font-weight: 700;
     line-height: 1.3;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background for text */
-    padding: 5px 8px; /* Padding for the text background */
-    border-radius: 4px; /* Rounded corners for text background */
-    width: calc(100% - 16px); /* Make text background almost full width with some padding */
+    background-color: rgba(0, 0, 0, 0.6); 
+    padding: 5px 8px; 
+    border-radius: 4px; 
+    width: calc(100% - 16px); 
     box-sizing: border-box;
-    position: relative; /* Ensure text is above the ::before pseudo-element if used for overlay */
+    position: relative; 
     z-index: 2;
-    color: var(--text-light, #FFFFFF); /* Ensure text is white */
+    color: var(--text-light, #FFFFFF); 
 }
 
-/* Optional: Add a dark overlay to the image for better text contrast if needed */
 .submenu-category-item::before {
     content: '';
     position: absolute;
@@ -295,27 +299,19 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.15); /* Light overlay */
+    background-color: rgba(0, 0, 0, 0.15);
     z-index: 1;
     border-radius: var(--default-border-radius, 12px);
     transition: background-color 0.2s ease;
-    /* This ::before is for overlay, not chevron. Ensure it doesn't conflict. */
-    /* The previous .submenu-category-item::before { display: none !important; } would hide this.
-       We need to be specific if we want an overlay but no chevron.
-       The child combinator `li > a` for main menu chevrons should prevent inheritance.
-       So, the explicit `.submenu-category-item::before { display: none !important; }` for chevrons might not be needed
-       if the main chevron rule is `li > a::before`.
-       The current `.submenu-category-item::before` is for the overlay.
-    */
 }
 
-.submenu-category-item:hover::before { /* This refers to the overlay */
-    background-color: rgba(0, 0, 0, 0.05); /* Lighter overlay on hover */
+.submenu-category-item:hover::before { 
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .hamburger-menu .menu-section {
     margin-bottom: 0;
-    margin-top: auto; /* Pushes to bottom */
+    margin-top: auto; 
     padding-top: 10px;
     border-top: 1px solid var(--border-color, #DEE2E6);
     display: flex;
@@ -372,7 +368,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: var(--brand-blue, #27435E); /* Placeholder color */
+    background-color: var(--brand-blue, #27435E);
     margin-right: 15px;
     object-fit: cover;
 }
@@ -406,16 +402,14 @@
     color: var(--brand-blue, #27435E);
 }
 
-
-/* Responsive adjustments for header elements if needed */
 @media (max-width: 768px) {
     .site-header .search-bar {
-        display: none; /* Hide search bar on smaller screens for the reusable header */
+        display: none; 
     }
     .site-header .header-content {
-        justify-content: space-between; /* Ensure logo and menu icon are spaced out */
+        justify-content: space-between;
     }
     .site-header .logo {
-        margin-right: auto; /* Push logo to the left */
+        margin-right: auto; 
     }
 }

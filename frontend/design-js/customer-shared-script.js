@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[CustomerSharedScript] DOM fully loaded and parsed. Starting component loading.');
+
     // Function to load HTML content into a placeholder
-    function loadHTML(url, placeholderId, callback) {
-        fetch(url)
+    function loadHTMLFragment(url, placeholderId) {
+        console.log(`[CustomerSharedScript] Attempting to load HTML from ${url} into #${placeholderId}`);
+        return fetch(url)
             .then(response => {
+                console.log(`[CustomerSharedScript] Fetch response for ${url}: Status ${response.status}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status} for ${url}`);
                 }
@@ -12,124 +16,102 @@ document.addEventListener('DOMContentLoaded', function() {
                 const placeholder = document.getElementById(placeholderId);
                 if (placeholder) {
                     placeholder.innerHTML = data;
-                    if (callback) callback(); // Execute callback after loading
+                    console.log(`[CustomerSharedScript] Successfully loaded HTML from ${url} into #${placeholderId}`);
                 } else {
-                    console.warn(`Placeholder with ID '${placeholderId}' not found.`);
+                    console.error(`[CustomerSharedScript] Placeholder with ID '${placeholderId}' not found in the document.`);
+                    throw new Error(`[CustomerSharedScript] Placeholder with ID '${placeholderId}' not found.`);
                 }
             })
-            .catch(error => console.error('Error loading HTML:', error));
+            .catch(error => {
+                console.error(`[CustomerSharedScript] Error loading HTML from ${url}:`, error);
+                const placeholder = document.getElementById(placeholderId);
+                if (placeholder) {
+                    placeholder.innerHTML = `<p style="color:red; border:1px solid red; padding:10px;">Failed to load component from ${url}. Check console for details.</p>`;
+                }
+                throw error; // Re-throw to be caught by Promise.all
+            });
     }
 
-    // Load header
-    loadHTML('../customer/header.html', 'header-placeholder', () => {
-        // Callback to attach event listeners after header is loaded
-        const menuIcon = document.querySelector('.site-header .menu-icon');
-        const hamburgerMenu = document.getElementById('hamburgerMenu'); // Get menu after it's loaded
+    // Paths are relative to the HTML file including this script (e.g., browse.html)
+    const headerPath = '../customer/header.html'; 
+    const menuPath = '../customer/hamburger-menu.html';
 
-        if (menuIcon && hamburgerMenu) {
-            menuIcon.addEventListener('click', () => {
-                hamburgerMenu.classList.toggle('open');
-                menuIcon.classList.toggle('menu-open'); // Toggle the menu-open class for animation
-            });
-        } else {
-            // Poll for elements if they are not immediately available after loadHTML callback
-            // This is a fallback, ideally elements are found right after innerHTML is set.
-            let attempts = 0;
-            const intervalId = setInterval(() => {
-                const menuIconRetry = document.querySelector('.site-header .menu-icon');
-                const hamburgerMenuRetry = document.getElementById('hamburgerMenu');
-                if (menuIconRetry && hamburgerMenuRetry) {
-                    menuIconRetry.addEventListener('click', () => {
-                        hamburgerMenuRetry.classList.toggle('open');
-                        menuIconRetry.classList.toggle('menu-open'); // Toggle the menu-open class for animation
-                    });
-                    clearInterval(intervalId);
-                } else if (attempts++ > 10) { // Stop after ~1 second
-                    console.warn('Could not find menu icon or hamburger menu after multiple attempts.');
-                    clearInterval(intervalId);
-                }
-            }, 100);
+    Promise.all([
+        loadHTMLFragment(headerPath, 'header-placeholder'),
+        loadHTMLFragment(menuPath, 'hamburger-menu-placeholder')
+    ])
+    .then(() => {
+        console.log('[CustomerSharedScript] Both header and hamburger menu HTML successfully loaded. Proceeding to setup event listeners.');
+        setupEventListeners();
+    })
+    .catch(error => {
+        console.error('[CustomerSharedScript] Critical error: Failed to load one or more HTML components. Event listeners will not be set up.', error);
+        // Optionally, display a more prominent error message on the page
+        const body = document.querySelector('body');
+        if (body && !document.getElementById('critical-load-error')) {
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'critical-load-error';
+            errorDiv.innerHTML = '<p style="color:red; background-color:pink; text-align:center; padding:20px; font-weight:bold;">Critical error: Could not load page components. Please open the browser console (F12) for details.</p>';
+            body.prepend(errorDiv);
         }
     });
 
-    // Load hamburger menu
-    loadHTML('../customer/hamburger-menu.html', 'hamburger-menu-placeholder', () => {
-        // Callback to attach event listeners after menu is loaded
+    function setupEventListeners() {
+        console.log('[CustomerSharedScript] Attempting to set up event listeners...');
+        const menuIcon = document.querySelector('.site-header .menu-icon');
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
         const closeMenuBtn = document.getElementById('closeMenuBtn');
-        const hamburgerMenu = document.getElementById('hamburgerMenu'); // Re-select in case it wasn't available globally
+
+        if (menuIcon && hamburgerMenu) {
+            console.log('[CustomerSharedScript] Found menuIcon and hamburgerMenu. Attaching open listener.');
+            menuIcon.addEventListener('click', () => {
+                console.log('[CustomerSharedScript] Menu icon clicked.');
+                hamburgerMenu.classList.toggle('open');
+                menuIcon.classList.toggle('menu-open');
+            });
+        } else {
+            if (!menuIcon) console.error('[CustomerSharedScript] Menu icon (.site-header .menu-icon) not found after HTML load. Cannot attach open listener.');
+            if (!hamburgerMenu) console.error('[CustomerSharedScript] Hamburger menu (#hamburgerMenu) not found after HTML load. Cannot attach open listener.');
+        }
 
         if (closeMenuBtn && hamburgerMenu) {
+            console.log('[CustomerSharedScript] Found closeMenuBtn. Attaching close listener.');
             closeMenuBtn.addEventListener('click', () => {
-                // Add spinning class
+                console.log('[CustomerSharedScript] Close button clicked.');
                 closeMenuBtn.classList.add('spinning');
-                
-                // Close the menu
                 hamburgerMenu.classList.remove('open');
-                
-                // Remove menu-open class from menu icon when closing menu
-                const menuIcon = document.querySelector('.site-header .menu-icon');
                 if (menuIcon) {
                     menuIcon.classList.remove('menu-open');
                 }
-
-                // Remove spinning class after animation finishes
-                closeMenuBtn.addEventListener('animationend', () => {
+                // Ensure the animationend listener is only added once or managed properly
+                const onAnimationEnd = () => {
                     closeMenuBtn.classList.remove('spinning');
-                }, { once: true }); // { once: true } ensures the listener is removed after firing
+                    closeMenuBtn.removeEventListener('animationend', onAnimationEnd);
+                };
+                closeMenuBtn.addEventListener('animationend', onAnimationEnd);
             });
         } else {
-             // Poll for elements if they are not immediately available
-            let attempts = 0;
-            const intervalId = setInterval(() => {
-                const closeMenuBtnRetry = document.getElementById('closeMenuBtn');
-                const hamburgerMenuRetry = document.getElementById('hamburgerMenu');
-                if (closeMenuBtnRetry && hamburgerMenuRetry) {
-                     closeMenuBtnRetry.addEventListener('click', () => {
-                        // Add spinning class
-                        closeMenuBtnRetry.classList.add('spinning');
-                        
-                        // Close the menu
-                        hamburgerMenuRetry.classList.remove('open');
-                        
-                        // Remove menu-open class from menu icon when closing menu
-                        const menuIcon = document.querySelector('.site-header .menu-icon');
-                        if (menuIcon) {
-                            menuIcon.classList.remove('menu-open');
-                        }
-
-                        // Remove spinning class after animation finishes
-                        closeMenuBtnRetry.addEventListener('animationend', () => {
-                            closeMenuBtnRetry.classList.remove('spinning');
-                        }, { once: true });
-                    });
-                    clearInterval(intervalId);
-                } else if (attempts++ > 10) {
-                    console.warn('Could not find close button or hamburger menu after multiple attempts.');
-                    clearInterval(intervalId);
-                }
-            }, 100);
+            if (!closeMenuBtn) console.error('[CustomerSharedScript] Close button (#closeMenuBtn) not found after HTML load. Cannot attach close listener.');
+            // hamburgerMenu might be null if menuIcon was also null, already logged.
         }
 
         // Optional: Close menu if clicking outside of it
         document.addEventListener('click', function(event) {
-            const hamburgerMenuElem = document.getElementById('hamburgerMenu');
-            const menuIconElem = document.querySelector('.site-header .menu-icon');
-
-            if (hamburgerMenuElem && hamburgerMenuElem.classList.contains('open')) {
-                // Check if the click is outside the menu and not on the menu icon
-                const isClickInsideMenu = hamburgerMenuElem.contains(event.target);
-                const isClickOnMenuIcon = menuIconElem ? menuIconElem.contains(event.target) : false;
+            const currentHamburgerMenu = document.getElementById('hamburgerMenu'); 
+            if (currentHamburgerMenu && currentHamburgerMenu.classList.contains('open')) {
+                const currentMenuIcon = document.querySelector('.site-header .menu-icon');
+                const isClickInsideMenu = currentHamburgerMenu.contains(event.target);
+                const isClickOnMenuIcon = currentMenuIcon ? currentMenuIcon.contains(event.target) : false;
 
                 if (!isClickInsideMenu && !isClickOnMenuIcon) {
-                    hamburgerMenuElem.classList.remove('open');
-                    
-                    // Remove menu-open class from menu icon when closing menu
-                    const menuIcon = document.querySelector('.site-header .menu-icon');
-                    if (menuIcon) {
-                        menuIcon.classList.remove('menu-open');
+                    console.log('[CustomerSharedScript] Clicked outside menu. Closing menu.');
+                    currentHamburgerMenu.classList.remove('open');
+                    if (currentMenuIcon) {
+                        currentMenuIcon.classList.remove('menu-open');
                     }
                 }
             }
         });
-    });
+        console.log('[CustomerSharedScript] Event listeners setup process complete.');
+    }
 });
