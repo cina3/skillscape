@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.getElementById('gigTitle').textContent = gigData.title || 'Gig Title';
         document.getElementById('gigDescription').textContent = gigData.description || 'No description available';
-        document.getElementById('providerName').textContent = `by ${gigData.userDisplayName || 'Unknown Seller'}`;
+        document.getElementById('providerName').textContent = gigData.userDisplayName || 'Unknown Seller';
         document.getElementById('ratingValue').textContent = gigData.rating || '0.0';
         document.getElementById('reviewCount').textContent = `(${gigData.reviewCount || 0} reviews)`;
         document.getElementById('totalReviewCount').textContent = gigData.reviewCount || 0;
