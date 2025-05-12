@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../css/customer-shared-style.css"> 
     <link rel="stylesheet" href="../css/browse-style.css">
+    <link rel="stylesheet" href="../css/browse-gig-style.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
@@ -83,6 +84,154 @@
                 
             </div>
         </div>
+        
+        <div class="gig-modal-overlay" id="gigModal">
+            <div class="gig-modal">
+                <button class="gig-modal-close" id="closeGigModal">
+                    <i class="fas fa-times"></i>
+                </button>
+                
+                <div class="gig-layout-container">
+                    <div class="gig-image-column">
+                        <div class="gig-image-container">
+                            <img src="../assets/temp.png" alt="Gig Cover Image" id="gigCoverImage">
+                        </div>
+                    </div>
+                    
+                    <div class="gig-details-column">
+                        <div class="gig-main">
+                            <div class="gig-header-section">
+                                <h1 class="gig-title" id="gigTitle">Modern Web Design</h1>
+                                <div class="gig-provider">
+                                    <img src="../assets/temp.png" alt="Provider Avatar" class="provider-avatar" id="providerAvatar">
+                                    <span class="provider-name" id="providerName">by webdesigner</span>
+                                </div>
+                            </div>
+                            <div class="gig-description">
+                                <h3>About This Gig</h3>
+                                <p id="gigDescription">Need a website that not only looks great but works flawlessly? I design clean, modern, and responsive websites that reflect your brand and engage your audience. Whether you're launching a startup, refreshing your portfolio, or building an online store I'm here to help bring your ideas to life with clarity and style.</p>
+                                
+                                <h3 class="placeholder-section">What You'll Get</h3>
+                                <ul class="feature-list">
+                                    <li><i class="fas fa-check-circle"></i> Custom and modern web design</li>
+                                    <li><i class="fas fa-check-circle"></i> Mobile-responsive layouts</li>
+                                    <li><i class="fas fa-check-circle"></i> Backend functionality included</li>
+                                    <li><i class="fas fa-check-circle"></i> SEO-friendly structure</li>
+                                    <li><i class="fas fa-check-circle"></i> Integration with popular apps</li>
+                                </ul>
+                                
+                                <h3 class="placeholder-section">Tools & Technology</h3>
+                                <p>Figma / Adobe XD / Webflow / WordPress / HTML / CSS</p>
+                            </div>
+                            
+                            <div class="gig-sidebar">
+                                <div class="price-section">
+                                    <div class="price-title">Service Price</div>
+                                    <div class="price-value" id="gigPrice">$12</div>
+                                    <div class="price-unit" id="priceUnit">/ hour</div>
+                                    
+                                    <div class="price-includes placeholder-section">
+                                        <div>Price includes:</div>
+                                        <ul>
+                                            <li><i class="fas fa-check-circle"></i> Design consultation</li>
+                                            <li><i class="fas fa-check-circle"></i> Unlimited revisions</li>
+                                            <li><i class="fas fa-check-circle"></i> Source files</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <a href="#" class="order-button">Order Now</a>
+                                    <a href="#" class="contact-button">Contact Freelancer</a>
+                                </div>
+                                
+                                <div class="seller-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label placeholder-section">Response Time</span>
+                                        <span class="stat-value">Within 2 hours</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label placeholder-section">Last Delivery</span>
+                                        <span class="stat-value">About 3 days</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label placeholder-section">Languages</span>
+                                        <span class="stat-value">English, Spanish</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="reviews-section placeholder-section">
+                                <div class="reviews-header">
+                                    <div class="reviews-summary">
+                                        <h3 class="reviews-title">Reviews</h3>
+                                        <div class="gig-rating">
+                                            <div class="rating-stars">
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star-half-alt star-icon"></i>
+                                            </div>
+                                            <span class="rating-value" id="ratingValue">4.8</span>
+                                            <span class="rating-count" id="reviewCount">(26 reviews)</span>
+                                        </div>
+                                        <span class="reviews-count" id="totalReviewCount">26</span>
+                                    </div>
+                                    
+                                    <a href="#" class="view-all-reviews">
+                                        View All Reviews
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                                
+                                <div class="reviews-list">
+                                    <div class="review-item">
+                                        <div class="review-header">
+                                            <img src="../assets/temp.png" alt="Reviewer Avatar" class="reviewer-avatar">
+                                            <div class="reviewer-info">
+                                                <div class="reviewer-name">Sarah Johnson</div>
+                                                <div class="review-date">2 weeks ago</div>
+                                            </div>
+                                            <div class="review-rating">
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                            </div>
+                                        </div>
+                                        <div class="review-content">
+                                            Absolutely amazing work! The designer understood exactly what I wanted and delivered beyond my expectations. My website looks professional and modern, and the responsiveness works perfectly on all devices.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="review-item">
+                                        <div class="review-header">
+                                            <img src="../assets/temp.png" alt="Reviewer Avatar" class="reviewer-avatar">
+                                            <div class="reviewer-info">
+                                                <div class="reviewer-name">Mike Thompson</div>
+                                                <div class="review-date">1 month ago</div>
+                                            </div>
+                                            <div class="review-rating">
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="far fa-star star-icon"></i>
+                                            </div>
+                                        </div>
+                                        <div class="review-content">
+                                            Great work and very responsive to feedback. The only reason I'm giving 4 stars instead of 5 is because the project took a bit longer than expected, but the quality was worth the wait!
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer class="site-footer">
@@ -91,6 +240,7 @@
 
     <script src="../design-js/customer-shared-script.js"></script> 
     <script src="../design-js/browse-script.js"></script> 
+    <script src="../js/customer-browse-gig.js"></script>
     <script src="../js/customer-browse.js"></script>
 </body>
 </html>
