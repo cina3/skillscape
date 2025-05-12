@@ -16,7 +16,6 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GigEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -62,6 +61,13 @@ public class GigEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @OneToMany(
+      mappedBy = "gig",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true
+    )
+    private List<ReviewEntity> reviews = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -74,5 +80,14 @@ public class GigEntity {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public void addReview(ReviewEntity r) {
+        reviews.add(r);
+        r.setGig(this);
+    }
+    public void removeReview(ReviewEntity r) {
+        reviews.remove(r);
+        r.setGig(null);
     }
 }
