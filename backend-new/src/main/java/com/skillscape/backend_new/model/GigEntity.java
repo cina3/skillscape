@@ -31,6 +31,12 @@ public class GigEntity {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(name = "is_price_fixed", nullable = false)
+    private boolean isPriceFixed = true; 
+
+    @Column(name = "is_per_hour_pricing", nullable = false)
+    private boolean isPerHourPricing = false; 
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;

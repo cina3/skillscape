@@ -1,8 +1,8 @@
-package com.skillscape.backend_new.config; 
+package com.skillscape.backend_new.config;
 
 import com.skillscape.backend_new.security.AuthEntryPointJwt;
 import com.skillscape.backend_new.security.AuthTokenFilter;
-import com.skillscape.backend_new.service.UserService; 
+import com.skillscape.backend_new.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,14 +26,21 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserService userService; 
+    private UserService userService;
 
     @Autowired
     private AuthTokenFilter authTokenFilter;
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
+    @Autowired
+    public SecurityConfig(UserService userService, AuthTokenFilter authTokenFilter, AuthEntryPointJwt unauthorizedHandler) {
+        this.userService = userService; 
+        this.authTokenFilter = authTokenFilter;
+        this.unauthorizedHandler = unauthorizedHandler;
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,7 +55,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -56,6 +63,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/", "/favicon.ico", "/error").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/gigs", "/api/gigs/*").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/gigs").authenticated()          
+                .requestMatchers("/api/gigs/my-gigs").authenticated()                  
                 .anyRequest().authenticated()
             );
 
@@ -68,12 +78,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:8000", "http://127.0.0.1:8000"));
-
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "X-Requested-With")); 
-        configuration.setExposedHeaders(Arrays.asList("Authorization")); 
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "X-Requested-With"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L); 
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

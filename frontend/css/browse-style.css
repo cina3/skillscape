@@ -180,20 +180,20 @@
 .card-features {
     margin-bottom: 15px;
     flex-grow: 1;
+    min-height: 50px; 
 }
 
-.feature {
-    margin-bottom: 5px;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    display: flex;
-    align-items: flex-start;
-}
-
-.check-icon {
-    color: #4CAF50;
-    margin-right: 8px;
-    font-size: 1rem;
+.feature-text {
+    font-size: 0.90rem;
+    line-height: 1.5; 
+    color: var(--text-dark);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; 
+    line-clamp: 3; 
+    -webkit-box-orient: vertical;
 }
 
 .card-provider {
@@ -223,52 +223,6 @@
 .card-price {
     font-weight: 600;
     font-size: 1.1rem;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.pagination-item {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.pagination-item.active {
-    background-color: var(--button-blue);
-    color: white;
-}
-
-.next-page {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 1px solid var(--border-color);
-    background: white;
-    color: var(--text-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.next-page:hover {
-    background-color: var(--bg-light-grey);
 }
 
 @media (max-width: 1024px) {

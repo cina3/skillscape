@@ -20,17 +20,15 @@ import java.util.UUID;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, 
-                       PasswordResetTokenRepository passwordResetTokenRepository, 
+    public UserService(UserRepository userRepository,
+                       PasswordResetTokenRepository passwordResetTokenRepository,
                        @Lazy PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
@@ -46,12 +44,19 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 userEntity.getEmail(),
                 userEntity.getPassword(),
-                new ArrayList<>() 
+                new ArrayList<>()
         );
     }
 
+    @Transactional(readOnly = true)
+    public UserEntity getUserByEmail(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + email));
+    }
+
+
     @Transactional
-    public Optional<UserEntity> findUserByEmail(String email) {
+    public Optional<UserEntity> findUserByEmail(String email) { 
         return userRepository.findByEmail(email);
     }
 
@@ -71,11 +76,11 @@ public class UserService implements UserDetailsService {
         if (tokenOpt.isPresent()) {
             PasswordResetToken passToken = tokenOpt.get();
             if (passToken.isExpired()) {
-                return Optional.empty(); 
+                return Optional.empty();
             }
             return Optional.of(passToken.getUser());
         }
-        return Optional.empty(); 
+        return Optional.empty();
     }
 
     @Transactional
