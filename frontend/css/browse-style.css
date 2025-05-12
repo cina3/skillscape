@@ -253,28 +253,29 @@
 .card-rating {
     display: flex;
     align-items: center;
-    background-color: rgba(255, 193, 7, 0.08);
-    padding: 4px 8px;
-    border-radius: 16px;
+    background-color: rgba(39, 67, 94, 0.06);
+    padding: 3px 8px;
+    border-radius: 12px;
     transition: transform 0.2s ease;
 }
 
 .listing-card:hover .card-rating {
     transform: scale(1.05);
+    background-color: rgba(39, 67, 94, 0.09);
 }
 
 .card-rating .star-icon {
-    color: #ffc107;
+    color: #3A506B;
     margin-right: 4px;
-    font-size: 0.9rem;
-    line-height: 1;
-    text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    font-size: 0.85rem;
+    position: relative;
+    top: -1px;
 }
 
 .card-rating span {
     font-weight: 600;
-    font-size: 0.9rem;
-    line-height: 1;
+    font-size: 0.85rem;
+    color: var(--text-dark);
 }
 
 .card-price {
