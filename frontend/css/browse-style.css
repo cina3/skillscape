@@ -117,26 +117,45 @@
 
 .listing-card {
     background-color: var(--card-item-bg);
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border-color);
+    height: 100%;
 }
 
 .listing-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
 }
 
 .listing-image {
     width: 100%;
     height: 200px;
     overflow: hidden;
-    background-color: #eee; 
+    background-color: #eee;
+    position: relative;
+}
+
+.listing-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.2) 100%);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.listing-card:hover .listing-image::after {
+    opacity: 1;
 }
 
 .listing-card img {
@@ -144,55 +163,74 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.5s ease;
+}
+
+.listing-card:hover img {
+    transform: scale(1.05);
 }
 
 .featured-badge {
     position: absolute;
-    top: 0;
+    top: 15px;
     left: 0;
-    right: 0;
-    background-color: #5e2a94;
+    background: linear-gradient(90deg, #5e2a94 30%, #7e4dc0 100%);
     color: white;
-    padding: 5px 0;
+    padding: 7px 15px 7px 12px;
     text-align: center;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 0 20px 20px 0;
+    box-shadow: 0 4px 10px rgba(94, 42, 148, 0.3);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+}
+
+.featured-badge::before {
+    content: '★';
+    margin-right: 6px;
+    font-size: 0.9rem;
 }
 
 .card-content {
-    padding: 20px;
+    padding: 22px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    position: relative;
 }
 
 .card-title {
     font-size: 1.4rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 15px;
     line-height: 1.3;
+    color: var(--text-dark);
+    transition: color 0.3s ease;
 }
 
-.featured-badge + .card-content {
-    padding-top: 40px;
+.listing-card:hover .card-title {
+    color: var(--brand-blue);
 }
 
 .card-features {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     flex-grow: 1;
-    min-height: 50px; 
+    min-height: 50px;
 }
 
 .feature-text {
-    font-size: 0.90rem;
-    line-height: 1.5; 
+    font-size: 0.95rem;
+    line-height: 1.5;
     color: var(--text-dark);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3; 
-    line-clamp: 3; 
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
 }
 
@@ -200,29 +238,66 @@
     font-size: 0.9rem;
     color: var(--text-muted);
     margin-bottom: 15px;
+    font-weight: 500;
 }
 
 .card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(222, 226, 230, 0.7);
     padding-top: 15px;
+    margin-top: auto;
 }
 
 .card-rating {
     display: flex;
     align-items: center;
+    background-color: rgba(255, 193, 7, 0.08);
+    padding: 4px 8px;
+    border-radius: 16px;
+    transition: transform 0.2s ease;
 }
 
-.star-icon {
+.listing-card:hover .card-rating {
+    transform: scale(1.05);
+}
+
+.card-rating .star-icon {
     color: #ffc107;
-    margin-right: 5px;
+    margin-right: 4px;
+    font-size: 0.9rem;
+    line-height: 1;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+
+.card-rating span {
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1;
 }
 
 .card-price {
-    font-weight: 600;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--brand-blue);
+    display: flex;
+    align-items: center;
+}
+
+.card-price-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.price-type-badge {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+    background-color: rgba(0,0,0,0.05);
+    padding: 2px 8px;
+    border-radius: 10px;
 }
 
 @media (max-width: 1024px) {
