@@ -1,4 +1,4 @@
-package com.skillscape.backend_new.model; 
+package com.skillscape.backend_new.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,9 +7,14 @@ import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "orders")
+@Table(
+  name = "orders",
+  uniqueConstraints = @UniqueConstraint(columnNames = {"buyer_id","gig_id"})
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,32 +26,46 @@ public class OrderEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gig_id", nullable = false)
-    private GigEntity gig; 
+    private GigEntity gig;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id", nullable = false)
-    private UserEntity buyer; 
+    private UserEntity buyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
-    private UserEntity seller; 
+    private UserEntity seller;
 
     @Column(name = "order_price", nullable = false)
-    private BigDecimal orderPrice; 
+    private BigDecimal orderPrice;
+
+    @Column(name = "is_price_fixed", nullable = false)
+    private boolean isPriceFixed;
+
+    @Column(name = "is_per_hour_pricing", nullable = false)
+    private boolean isPerHourPricing;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status; 
+    private Status status;
 
     @Lob
-    @Column(name = "requirements", columnDefinition = "TEXT")
-    private String requirements; 
+    @Column(name = "requirements", columnDefinition = "TEXT", nullable = false)
+    private String requirements;
 
     @Column(name = "expected_delivery_date")
-    private LocalDateTime expectedDeliveryDate; 
+    private LocalDateTime expectedDeliveryDate;
 
     @Column(name = "delivered_at")
-    private LocalDateTime deliveredAt; 
+    private LocalDateTime deliveredAt;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+      name = "order_upload_urls",
+      joinColumns = @JoinColumn(name = "order_id")
+    )
+    @Column(name = "upload_url")
+    private List<String> uploadUrls = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -58,9 +77,7 @@ public class OrderEntity {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (status == null) {
-            status = Status.PENDING; 
-        }
+        if (status == null) status = Status.PENDING;
     }
 
     @PreUpdate

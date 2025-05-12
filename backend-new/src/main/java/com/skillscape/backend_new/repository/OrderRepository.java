@@ -23,4 +23,6 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     List<OrderEntity> findBySellerAndStatus(UserEntity seller, Status status);
 
     List<OrderEntity> findByGigAndStatus(GigEntity gig, Status status);
+
+    boolean existsByBuyerIdAndGigId(Long buyerId, Long gigId);
 }
