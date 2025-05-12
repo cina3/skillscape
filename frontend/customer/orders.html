@@ -4,7 +4,413 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders - SkillScape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/customer-shared-style.css">
+    <link rel="stylesheet" href="../css/orders-style.css">
 </head>
 <body>
+    <div id="header-placeholder"></div>
+    <div id="hamburger-menu-placeholder"></div>
+    
+    <main class="orders-container">
+        <div class="orders-header">
+            <h1>My Orders</h1>
+        </div>
+
+        <div class="orders-grid">
+            <div class="order-card">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">by cppguru</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status in-progress">
+                        <i class="fas fa-spinner"></i>
+                        Work in progress
+                    </div>
+                    <h3 class="order-title">C++ Programming</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Total Cost:</span>
+                            <span class="detail-value">$48</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Progress:</span>
+                            <span class="detail-value">4 days passed</span>
+                        </div>
+                        <div class="order-progress">
+                            <div class="progress-bar" style="--progress: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        View
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">by photoshopper</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status completed">
+                        <i class="fas fa-check-circle"></i>
+                        Work Done!
+                    </div>
+                    <h3 class="order-title">Logo Design</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Total Cost:</span>
+                            <span class="detail-value">$90</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Completed:</span>
+                            <span class="detail-value">Done in 12 days</span>
+                        </div>
+                        <div class="order-rating">
+                            <button class="leave-rating-btn">
+                                <i class="far fa-star"></i>
+                                Leave Rating
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        View
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">by editors</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status delivered">
+                        <i class="fas fa-check-double"></i>
+                        Delivered
+                    </div>
+                    <h3 class="order-title">Video Editing</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Total Cost:</span>
+                            <span class="detail-value">$155</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Completed:</span>
+                            <span class="detail-value">Received in 7 days</span>
+                        </div>
+                        <div class="order-rating">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span>4.5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        View
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">by webmaster</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status pending">
+                        <i class="fas fa-clock"></i>
+                        Waiting for Acceptance
+                    </div>
+                    <h3 class="order-title">Website Optimization</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Total Cost:</span>
+                            <span class="detail-value">$75</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">Pending provider response</span>
+                        </div>
+                        <div class="order-actions">
+                            <button class="cancel-order-btn">
+                                <i class="fas fa-times"></i>
+                                Cancel Request
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        View
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="order-card cancelled">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">by contentwriter</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status cancelled">
+                        <i class="fas fa-ban"></i>
+                        Cancelled
+                    </div>
+                    <h3 class="order-title">Content Writing</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Total Cost:</span>
+                            <span class="detail-value">$60</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Cancelled:</span>
+                            <span class="detail-value">2 days ago</span>
+                        </div>
+                        <div class="order-actions">
+                            <button class="reorder-btn">
+                                <i class="fas fa-redo"></i>
+                                Re-order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        View
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="orderDetailsModal" class="order-details-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>C++ Programming</h2>
+                    <button class="close-modal-btn"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="order-info-section">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Status</span>
+                                <span class="info-value status-indicator in-progress">
+                                    <i class="fas fa-spinner"></i>
+                                    In Progress
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Order Date</span>
+                                <span class="info-value">May 15, 2025</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Provider</span>
+                                <span class="info-value">cppguru</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Expected Delivery</span>
+                                <span class="info-value">May 25, 2025</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Total Cost</span>
+                                <span class="info-value price">$48</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-request-section">
+                        <h3>Your Request</h3>
+                        <div class="request-content">
+                            <p>Build a simple command-line file management tool for organizing files in a directory based on their extensions (e.g., move all .jpg files to an "Images" folder, .pdf to "Documents", etc.). It should be lightweight, fast, and work on both Windows and Linux.</p>
+                        </div>
+                    </div>
+
+                    <div class="order-files-section">
+                        <h3>Attached Files</h3>
+                        <div class="files-list">
+                            <div class="file-item">
+                                <i class="fas fa-file-image"></i>
+                                <span class="file-name">image.png</span>
+                                <a href="#" class="file-download-btn">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            <div class="file-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span class="file-name">request.txt</span>
+                                <a href="#" class="file-download-btn">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            <div class="file-item">
+                                <i class="fas fa-file-image"></i>
+                                <span class="file-name">image4.png</span>
+                                <a href="#" class="file-download-btn">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            <div class="file-item">
+                                <i class="fas fa-file-image"></i>
+                                <span class="file-name">image5.png</span>
+                                <a href="#" class="file-download-btn">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-messages-section">
+                        <h3>Messages</h3>
+                        <div class="message-item">
+                            <div class="message-avatar" style="background-image: url('../assets/temp.png');"></div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <span class="message-sender">cppguru</span>
+                                    <span class="message-time">Yesterday at 3:45 PM</span>
+                                </div>
+                                <div class="message-text">
+                                    I've started working on your file management tool. I'll be using C++ with standard libraries to ensure cross-platform compatibility. Do you have any specific preferences for the command syntax?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-item user-message">
+                            <div class="message-avatar" style="background-image: url('../assets/temp.png');"></div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <span class="message-sender">You</span>
+                                    <span class="message-time">Yesterday at 4:20 PM</span>
+                                </div>
+                                <div class="message-text">
+                                    Thanks for getting started! I'd prefer a simple command syntax like "fileorg [directory] [options]". Please make sure error handling is robust.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-actions-section">
+                        <button class="primary-action-btn">
+                            <i class="fas fa-comment"></i>
+                            Send Message
+                        </button>
+                        <button class="secondary-action-btn" id="reportIssueBtn">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Report Issue
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ratingModal" class="action-modal">
+            <div class="action-modal-content">
+                <div class="action-modal-header">
+                    <h3>Rate this Service</h3>
+                    <button class="close-action-modal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="action-modal-body">
+                    <div class="service-details">
+                        <div class="service-image" style="background-image: url('../assets/temp.png');"></div>
+                        <div class="service-info">
+                            <h4>Logo Design</h4>
+                            <p>by photoshopper</p>
+                        </div>
+                    </div>
+                    
+                    <div class="rating-stars-input">
+                        <div class="stars-label">Your Rating:</div>
+                        <div class="stars-container">
+                            <i class="far fa-star star-item" data-rating="1"></i>
+                            <i class="far fa-star star-item" data-rating="2"></i>
+                            <i class="far fa-star star-item" data-rating="3"></i>
+                            <i class="far fa-star star-item" data-rating="4"></i>
+                            <i class="far fa-star star-item" data-rating="5"></i>
+                        </div>
+                        <div class="rating-text">Select your rating</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ratingComment">Review Comments</label>
+                        <textarea id="ratingComment" placeholder="Share your experience with this service..." rows="4"></textarea>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="cancel-button">Cancel</button>
+                        <button class="submit-button" id="submitRating" disabled>Submit Rating</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="reportIssueModal" class="action-modal">
+            <div class="action-modal-content">
+                <div class="action-modal-header">
+                    <h3>Report an Issue</h3>
+                    <button class="close-action-modal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="action-modal-body">
+                    <div class="service-details">
+                        <div class="service-image" style="background-image: url('../assets/temp.png');"></div>
+                        <div class="service-info">
+                            <h4>C++ Programming</h4>
+                            <p>by cppguru</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issueType">Issue Type</label>
+                        <select id="issueType">
+                            <option value="" disabled selected>Select the type of issue</option>
+                            <option value="quality">Quality Issue</option>
+                            <option value="communication">Communication Problem</option>
+                            <option value="delivery">Late Delivery</option>
+                            <option value="technical">Technical Problem</option>
+                            <option value="other">Other Issue</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issueDescription">Describe the Issue</label>
+                        <textarea id="issueDescription" placeholder="Please provide details about the issue..." rows="4"></textarea>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="cancel-button">Cancel</button>
+                        <button class="submit-button" id="submitIssue">Submit Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 Freelancers. All rights reserved.</p>
+    </footer>
+
+    <script src="../design-js/customer-shared-script.js"></script>
+    <script src="../design-js/orders-script.js"></script>
 </body>
 </html>

@@ -23,6 +23,7 @@ body {
     --border-color: #DEE2E6;
     --font-family: 'Inter', sans-serif;
     --default-border-radius: 12px;
+    --brand-blue-rgb: 39, 67, 94;
 }
 
 .site-header {
@@ -31,8 +32,8 @@ body {
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    z-index: 1000; 
-    max-width: 1600px; 
+    z-index: 1000;
+    max-width: 1600px;
     margin: 0 auto;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
@@ -41,10 +42,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; 
-    padding: 0 20px; 
-    max-width: 1500px; 
-    margin: 0 auto; 
+    width: 100%;
+    padding: 0 20px;
+    max-width: 1500px;
+    margin: 0 auto;
 }
 
 .site-header .logo {
@@ -90,7 +91,7 @@ body {
     font-size: 1.8em;
     color: var(--text-dark);
     cursor: pointer;
-    padding: 5px; 
+    padding: 5px;
 }
 
 @keyframes spinCloseButton {
@@ -105,13 +106,13 @@ body {
 .hamburger-menu {
     position: fixed;
     top: 0;
-    right: -340px; 
-    width: 320px; 
+    right: -340px;
+    width: 320px;
     height: 100%;
     background-color: var(--bg-light-grey, #F0F0F0);
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 1002; 
-    transition: right 0.18s cubic-bezier(0.4, 0, 0.2, 1); 
+    z-index: 1002;
+    transition: right 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     font-family: var(--font-family, 'Inter', sans-serif);
@@ -126,15 +127,15 @@ body {
 
 .hamburger-menu .menu-header {
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px; 
+    margin-bottom: 25px;
 }
 
 .hamburger-menu .close-btn {
     background: none;
     border: none;
-    font-size: 2.1em; 
+    font-size: 2.1em;
     color: var(--text-dark, #212529);
     cursor: pointer;
     padding: 5px;
@@ -153,22 +154,22 @@ body {
 }
 
 .hamburger-menu .close-btn.spinning {
-    animation: spinCloseButton 0.45s ease-out forwards; 
+    animation: spinCloseButton 0.45s ease-out forwards;
 }
 
 .hamburger-menu .menu-nav ul,
 .hamburger-menu .menu-section ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 25px 0; 
+    margin: 0 0 25px 0;
 }
 
 .hamburger-menu .menu-nav ul li a,
 .hamburger-menu .menu-section ul li a {
     display: block;
-    padding: 10px 0; 
-    font-size: 1.15em; 
-    font-weight: 700; 
+    padding: 10px 0;
+    font-size: 1.15em;
+    font-weight: 700;
     color: var(--text-dark, #212529);
     text-decoration: none;
     transition: color 0.2s, padding-left 0.2s, background 0.18s;
@@ -176,18 +177,18 @@ body {
 }
 
 .hamburger-menu .menu-nav ul li > a:not(.active-menu-item):hover {
-    padding-left: 15px; 
+    padding-left: 15px;
     color: var(--brand-blue, #27435E);
 }
 
-.hamburger-menu .menu-nav ul li > a:hover, 
+.hamburger-menu .menu-nav ul li > a:hover,
 .hamburger-menu .menu-nav ul li > a.active-menu-item {
     color: var(--brand-blue, #27435E);
     text-decoration: none;
 }
 
 .hamburger-menu .menu-nav ul li > a:not(.active-menu-item):hover::before {
-    content: '\f054'; 
+    content: '\f054';
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
     display: inline-block;
@@ -202,8 +203,8 @@ body {
 }
 
 .hamburger-menu .menu-nav ul li.has-submenu > a:not(.active-menu-item):hover {
-    padding-left: 15px; 
-    color: var(--brand-blue, #27435E); 
+    padding-left: 15px;
+    color: var(--brand-blue, #27435E);
 }
 
 .hamburger-menu .menu-nav ul li.has-submenu > a:not(.active-menu-item):hover::before {
@@ -217,24 +218,33 @@ body {
     vertical-align: middle;
     position: relative;
     top: -1px;
-    left: -3px; 
+    left: -3px;
     transition: color 0.18s;
 }
 
 .hamburger-menu .menu-nav ul li.has-submenu .browse-submenu {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out, margin-top 0.35s ease-in-out;
-    padding: 0 10px;
+    transition: max-height 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                padding 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                margin-top 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.3s ease-in-out;
+    padding: 0 15px;
     margin-top: 0;
-    background-color: rgba(0,0,0,0.02); 
-    border-radius: 4px;
+    background-color: rgba(0,0,0,0.025);
+    border-radius: 10px;
+    opacity: 0;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
+    transform-origin: top center;
 }
 
-.hamburger-menu .menu-nav ul li.has-submenu:hover .browse-submenu {
-    max-height: 500px; 
-    padding: 10px 10px; 
-    margin-top: 5px; 
+.hamburger-menu .menu-nav ul li.has-submenu:hover .browse-submenu,
+.hamburger-menu .menu-nav ul li.has-submenu:focus-within .browse-submenu {
+    max-height: 500px;
+    padding: 15px 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    opacity: 1;
 }
 
 .browse-submenu {
@@ -244,27 +254,31 @@ body {
 }
 
 .submenu-category-item {
-    display: flex; 
-    align-items: flex-end; 
-    justify-content: center; 
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
     text-align: center;
-    padding: 10px;
+    padding: 12px 8px;
     background-color: var(--card-item-bg, #FFFFFF);
-    border-radius: var(--default-border-radius, 12px);
+    border-radius: 10px;
     text-decoration: none;
-    color: var(--text-light, #FFFFFF); 
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid var(--border-color, #DEE2E6);
-    position: relative; 
-    overflow: hidden; 
-    min-height: 100px;
+    color: var(--text-light, #FFFFFF);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+    min-height: 90px;
     background-size: cover;
     background-position: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.04);
 }
 
 .submenu-category-item:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    border-color: rgba(var(--brand-blue-rgb), 0.3);
+    z-index: 2;
+    text-decoration: none;
 }
 
 .submenu-category-item::before {
@@ -272,39 +286,28 @@ body {
 }
 
 .submenu-category-item span {
-    font-size: 0.85em; 
-    font-weight: 700;
+    font-size: 0.85em;
+    font-weight: 600;
     line-height: 1.3;
-    background-color: rgba(0, 0, 0, 0.6); 
-    padding: 5px 8px; 
-    border-radius: 4px; 
-    width: calc(100% - 16px); 
+    background-color: rgba(0, 0, 0, 0.65);
+    padding: 5px 8px;
+    border-radius: 5px;
+    width: calc(100% - 12px);
     box-sizing: border-box;
-    position: relative; 
+    position: relative;
     z-index: 2;
-    color: var(--text-light, #FFFFFF); 
+    color: var(--text-light, #FFFFFF);
+    transition: background-color 0.25s ease, transform 0.25s ease;
 }
 
-.submenu-category-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.15);
-    z-index: 1;
-    border-radius: var(--default-border-radius, 12px);
-    transition: background-color 0.2s ease;
-}
-
-.submenu-category-item:hover::before { 
-    background-color: rgba(0, 0, 0, 0.05);
+.submenu-category-item:hover span {
+    background-color: var(--brand-blue);
+    transform: scale(1.03);
 }
 
 .hamburger-menu .menu-section {
     margin-bottom: 0;
-    margin-top: auto; 
+    margin-top: auto;
     padding-top: 10px;
     border-top: 1px solid var(--border-color, #DEE2E6);
     display: flex;
@@ -409,12 +412,12 @@ body {
 
 @media (max-width: 768px) {
     .site-header .search-bar {
-        display: none; 
+        display: none;
     }
     .site-header .header-content {
         justify-content: space-between;
     }
     .site-header .logo {
-        margin-right: auto; 
+        margin-right: auto;
     }
 }

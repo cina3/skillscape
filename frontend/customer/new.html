@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Listing - SkillScape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/customer-shared-style.css">
+    <link rel="stylesheet" href="../css/customer-new-style.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div id="hamburger-menu-placeholder"></div>
+
+    <main class="new-listing-container">
+        <div class="page-header">
+            <h1>Create a New Listing</h1>
+            <p class="subtitle">Describe your project in detail to find the perfect freelancer.</p>
+        </div>
+
+        <form id="newListingForm" class="listing-form">
+            <div class="form-section">
+                <h2 class="section-title">Basic Information</h2>
+                
+                <div class="form-group">
+                    <label for="listingTitle">Listing Title <span class="required">*</span></label>
+                    <input type="text" id="listingTitle" name="listingTitle" placeholder="E.g., 'Website Redesign for E-commerce Store'" required>
+                    <small class="form-hint">Be clear and specific about what you need.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category <span class="required">*</span></label>
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="webdesign">Web Design</option>
+                        <option value="logodesign">Logo Design</option>
+                        <option value="software">Software Development</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="writing">Writing & Translation</option>
+                        <option value="videoediting">Video & Animation</option>
+                        <option value="music">Music & Audio</option>
+                        <option value="business">Business</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="skills">Required Skills <span class="required">*</span></label>
+                    <input type="text" id="skills" name="skills" placeholder="E.g., 'HTML, CSS, JavaScript, React'" required>
+                    <small class="form-hint">List skills required for this project, separated by commas.</small>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Project Details</h2>
+                
+                <div class="form-group">
+                    <label for="description">Project Description <span class="required">*</span></label>
+                    <textarea id="description" name="description" rows="6" placeholder="Provide a detailed description of your project requirements..." required></textarea>
+                    <small class="form-hint">Be detailed about what you need, your goals, and any specific requirements.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Project Attachments</label>
+                    <div class="file-upload-container" id="fileUploadContainer">
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag and drop files here</p>
+                            <p>or <span class="browse-files">browse files</span></p>
+                            <p class="file-hint">You can upload images, PDFs, or documents (max 5MB each)</p>
+                            <input type="file" id="fileInput" multiple style="display:none">
+                        </div>
+                        <div class="uploaded-files" id="uploadedFiles">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Budget & Timeline</h2>
+                
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="budgetType">Budget Type <span class="required">*</span></label>
+                        <select id="budgetType" name="budgetType" required>
+                            <option value="" disabled selected>Select budget type</option>
+                            <option value="fixed">Fixed Price</option>
+                            <option value="hourly">Hourly Rate</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group half-width">
+                        <label for="budget">Budget <span class="required">*</span></label>
+                        <div class="price-input-wrapper">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" id="budget" name="budget" placeholder="Amount" min="5" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="duration">Estimated Duration <span class="required">*</span></label>
+                        <select id="duration" name="duration" required>
+                            <option value="" disabled selected>Select duration</option>
+                            <option value="less_than_1_week">Less than 1 week</option>
+                            <option value="1_2_weeks">1 to 2 weeks</option>
+                            <option value="2_4_weeks">2 to 4 weeks</option>
+                            <option value="1_3_months">1 to 3 months</option>
+                            <option value="3_6_months">3 to 6 months</option>
+                            <option value="more_than_6_months">More than 6 months</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group half-width">
+                        <label for="experienceLevel">Required Experience Level</label>
+                        <select id="experienceLevel" name="experienceLevel">
+                            <option value="" disabled selected>Select experience level</option>
+                            <option value="entry">Entry Level</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="expert">Expert</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary full-width">Post Listing</button>
+            </div>
+        </form>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 SkillScape. All rights reserved.</p>
+    </footer>
+
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Listing Posted Successfully!</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p>Your listing has been successfully posted. Freelancers can now view it and send proposals.</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="viewListingBtn">View Listing</button>
+                    <button class="btn btn-primary" id="closeModalBtn">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../design-js/customer-new-script.js"></script>
+    <script src="../design-js/customer-shared-script.js"></script>
+</body>
+</html>
