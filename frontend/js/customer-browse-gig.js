@@ -46,6 +46,30 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, '&#39;');
   }
 
+  function formatRelativeTime(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    
+    const minutes = Math.floor(diffInSeconds / 60);
+    if (minutes < 60) return `About ${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `About ${hours} hour${hours > 1 ? 's' : ''} ago`;
+    
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `About ${days} day${days > 1 ? 's' : ''} ago`;
+
+    const months = Math.floor(days / 30);
+    if (months < 12) return `About ${months} month${months > 1 ? 's' : ''} ago`;
+
+    const years = Math.floor(months / 12);
+    return `About ${years} year${years > 1 ? 's' : ''} ago`;
+  }
+
   async function loadReviews(gigId) {
     const listEl   = modal.querySelector('.reviews-list');
     const ratingEl = document.getElementById('ratingValue');
@@ -146,15 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <input type="number" id="requestedPrice" min="1" step="0.01" value="${priceNum}" placeholder="Enter your price" style="width:100%;padding:12px 15px 12px 30px;border-radius:8px;border:1px solid var(--border-color);background-color:white;font-size:1.1rem;box-shadow:0 2px 6px rgba(0,0,0,0.05);transition:all 0.3s;">
             </div>
             <p class="price-hint" style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;">Original price: ${priceStr}</p>
-            <div class="price-slider-container" style="margin-top:20px;padding:0 5px;">
-              <input type="range" id="priceSlider" min="${Math.floor(priceNum * 0.7)}" max="${Math.ceil(priceNum * 1.3)}" value="${priceNum}" step="0.5" 
-                style="width:100%;height:5px;border-radius:5px;outline:none;-webkit-appearance:none;background:linear-gradient(to right, #ddd, var(--brand-blue));transition:all 0.3s;">
-              <div class="slider-labels" style="display:flex;justify-content:space-between;margin-top:8px;font-size:0.75rem;color:var(--text-muted);">
-                <span>-30%</span>
-                <span>Original</span>
-                <span>+30%</span>
-              </div>
-            </div>
           </div>
           ` : ''}
           
@@ -265,37 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .gig-title-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: translateY(-2px); }
             .order-summary:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.12); }
             
-            .animated-price.slide-up { transform: translateY(-100%); opacity: 0; }
-            .animated-price.slide-down { transform: translateY(100%); opacity: 0; }
-            .price-changed#summaryPrice, .price-changed#totalPrice { color: #2e7d32; font-weight: 600; }
-            .price-changed.price-proposal-section { border-left-color: #2e7d32; background: linear-gradient(to right, rgba(46,125,50,0.05), rgba(46,125,50,0.01)); }
-            
-            input[type=range] {
-              -webkit-appearance: none;
-              height: 5px;
-              border-radius: 5px;
-              background: #ddd;
-              outline: none;
-            }
-            
-            input[type=range]::-webkit-slider-thumb {
-              -webkit-appearance: none;
-              appearance: none;
-              width: 18px;
-              height: 18px;
-              border-radius: 50%;
-              background: var(--brand-blue);
-              cursor: pointer;
-              transition: all 0.2s;
-              box-shadow: 0 0 3px rgba(0,0,0,0.2);
-              border: 2px solid white;
-            }
-            
-            input[type=range]::-webkit-slider-thumb:hover {
-              transform: scale(1.2);
-              box-shadow: 0 0 6px rgba(26,95,158,0.4);
-            }
-            
             .order-confirm-button.processing, .order-confirm-button.success { position: relative; }
             .order-confirm-button.processing { background: linear-gradient(135deg, #5c8eb9, #3c6e97); }
             .order-confirm-button.success { background: linear-gradient(135deg, #4caf50, #2e7d32); }
@@ -370,22 +354,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const requestedInput = document.getElementById('requestedPrice');
     const priceSection = modal.querySelector('.price-proposal-section');
     const priceHint = modal.querySelector('.price-hint');
-    const priceSlider = document.getElementById('priceSlider');
-
-    if (priceSlider && requestedInput) {
-      priceSlider.addEventListener('input', () => {
-        const value = priceSlider.value;
-        requestedInput.value = value;
-        updatePriceDisplay(value);
-      });
-    }
 
     if (requestedInput) {
       requestedInput.addEventListener('input', () => {
         const value = requestedInput.value;
-        if (priceSlider && value >= priceSlider.min && value <= priceSlider.max) {
-          priceSlider.value = value;
-        }
         updatePriceDisplay(value);
       });
     }
@@ -627,40 +599,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const ratingValueEl = document.getElementById('ratingValue');
     const reviewCountEl = document.getElementById('reviewCount');
     const totalReviewCountEl = document.getElementById('totalReviewCount');
-     // 1) What You'll Get
-  const youGetEl = document.getElementById('whatYouGetList');
-  if (youGetEl && Array.isArray(gig.whatYouGet)) {
-    youGetEl.innerHTML = gig.whatYouGet
-      .map(item => `<li><i class="fas fa-check-circle"></i> ${escapeHTML(item)}</li>`)
-      .join('');
-  }
+    const gigLastDeliveryEl = document.getElementById('gigLastDelivery');
 
-  // 2) Tools & Technology
-  const techEl = document.getElementById('toolsTech');
-  if (techEl && Array.isArray(gig.technology)) {
-    techEl.textContent = gig.technology.join(' / ');
-  }
+    const youGetEl = document.getElementById('whatYouGetList');
+    if (youGetEl && Array.isArray(gig.whatYouGet)) {
+      youGetEl.innerHTML = gig.whatYouGet
+        .map(item => `<li><i class="fas fa-check-circle"></i><span class="feature-item-text">${escapeHTML(item)}</span></li>`)
+        .join('');
+    }
 
-  // 3) Languages
-  const langEl = document.getElementById('gigLanguages');
-  if (langEl && Array.isArray(gig.languages)) {
-    langEl.textContent = gig.languages.join(', ');
-  }
+    const techEl = document.getElementById('toolsTech');
+    if (techEl) {
+      techEl.textContent = gig.toolsAndTechnology || 'N/A';
+    }
 
-  // 4) Delivery Time
-  const dtEl = document.getElementById('gigDeliveryTime');
-  if (dtEl && gig.deliveryTime != null) {
-    // if your API returns a number of days:
-    dtEl.textContent = typeof gig.deliveryTime === 'number'
-      ? `About ${gig.deliveryTime} day${gig.deliveryTime !== 1 ? 's' : ''}`
-      : gig.deliveryTime;
-  }
+    const langEl = document.getElementById('gigLanguages');
+    if (langEl && Array.isArray(gig.languages)) {
+      langEl.textContent = gig.languages.join(', ');
+    }
+
+    const dtEl = document.getElementById('gigDeliveryTime');
+    if (dtEl) {
+      if (gig.deliveryTimeDays != null) {
+        dtEl.textContent = `${gig.deliveryTimeDays} day${gig.deliveryTimeDays !== 1 ? 's' : ''}`;
+      } else {
+        dtEl.textContent = 'N/A';
+      }
+    }
+
+    if (gigLastDeliveryEl) {
+      gigLastDeliveryEl.textContent = formatRelativeTime(gig.lastDeliveryAt);
+    }
 
     if (gigTitleEl) gigTitleEl.textContent = gig.title || 'N/A';
     if (gigDescriptionEl) gigDescriptionEl.textContent = gig.description || 'No description available.';
     if (providerNameEl) providerNameEl.textContent = gig.userDisplayName || 'Unknown Seller';
     if (gigPriceEl) gigPriceEl.textContent = `$${Number(gig.price || 0).toFixed(2)}`;
-    if (priceUnitEl) priceUnitEl.textContent = gig.perHourPricing ? '/ hour' : (gig.isPerHourPricing ? '/ hour' : '/ each');
+    if (priceUnitEl) priceUnitEl.textContent = gig.isPerHourPricing ? '/ hour' : '/ each';
     if (gigCoverImageEl) gigCoverImageEl.src = gig.coverImageUrl || '../assets/temp.png';
     if (providerAvatarEl) providerAvatarEl.src = gig.providerAvatarUrl || '../assets/temp.png';
 

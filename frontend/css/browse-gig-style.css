@@ -265,6 +265,7 @@
     margin-bottom: 18px;
     line-height: 1.25;
     color: var(--brand-blue);
+    word-break: break-word; 
 }
 
 .gig-provider {
@@ -292,6 +293,12 @@
 .provider-name-text {
     text-decoration: underline;
     color: var(--brand-blue);
+    display: inline-block;
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
 }
 
 .gig-description {
@@ -308,6 +315,7 @@
     color: var(--brand-blue);
     position: relative;
     padding-left: 20px;
+    word-break: break-word; 
 }
 
 .gig-description h3:before {
@@ -328,6 +336,7 @@
 .gig-description p {
     margin-bottom: 15px;
     color: var(--text-dark);
+    word-break: break-word; 
 }
 
 .feature-list {
@@ -337,17 +346,25 @@
 }
 
 .feature-list li {
-    padding: 10px 0;
+    padding: 8px 0; /* Adjusted padding slightly */
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* Better vertical alignment with icon */
     line-height: 1.4;
 }
 
 .feature-list li i {
     color: var(--brand-blue);
     margin-right: 12px;
-    margin-top: 3px;
     font-size: 1.1rem;
+    flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.feature-list li .feature-item-text {
+    flex-grow: 1; /* Allow text to take available space */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0; /* Crucial for flex items to truncate */
 }
 
 .gig-sidebar {
@@ -484,11 +501,20 @@
 .stat-label {
     color: var(--text-muted);
     font-size: 0.9rem;
+    margin-right: 10px;
+    flex-shrink: 0; 
 }
 
 .stat-value {
     font-weight: 600;
     font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px; 
+    display: inline-block; 
+    text-align: right;
+    vertical-align: middle;
 }
 
 .rating-value {

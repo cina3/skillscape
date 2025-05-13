@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const listingGrid  = document.querySelector('.listing-grid');
     const API_BASE_URL = 'http://localhost:8080/api';
     const TOKEN = localStorage.getItem('authToken') || localStorage.getItem('token');
+    let allGigsCache = []; 
+    let activeFilters = {}; 
 
     console.log('Using token:', TOKEN);
 
@@ -67,24 +69,71 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Listing grid container (.listing-grid) not found!');
             return;
         }
+        listingGrid.innerHTML = '<p>Loading gigs...</p>';
+
+        const params = new URLSearchParams(window.location.search);
+        const selectedCategoryFromURL = params.get('category'); 
+        console.log('Selected category from URL:', selectedCategoryFromURL);
 
         try {
-            const res = await fetch(`${API_BASE_URL}/gigs`);
-            if (!res.ok) throw new Error(`Gigs fetch failed: ${res.status}`);
-            const gigs = await res.json();
+            if (allGigsCache.length === 0) {
+                const res = await fetch(`${API_BASE_URL}/gigs`);
+                if (!res.ok) throw new Error(`Gigs fetch failed: ${res.status}`);
+                allGigsCache = await res.json();
+            }
+            
+            console.log('Applying filters to gigs:', JSON.parse(JSON.stringify(activeFilters)));
+
+            let filteredGigs = allGigsCache;
+            if (selectedCategoryFromURL) {
+                const categoryToMatch = selectedCategoryFromURL.toUpperCase().replace(/-/g, '_');
+                console.log('Filtering by category:', categoryToMatch);
+                
+                filteredGigs = allGigsCache.filter(gig => {
+                    return gig.category && typeof gig.category === 'string' && gig.category.toUpperCase() === categoryToMatch;
+                });
+            }
+
+            if (activeFilters.price) {
+                filteredGigs = filteredGigs.filter(gig => parseFloat(gig.price) >= parseFloat(activeFilters.price));
+            }
+            
+            if (activeFilters.priceType) {
+                if (activeFilters.priceType === 'Fixed Price') {
+                    filteredGigs = filteredGigs.filter(gig => gig.priceFixed);
+                } else if (activeFilters.priceType === 'Bid') {
+                    filteredGigs = filteredGigs.filter(gig => !gig.priceFixed);
+                }
+            }
 
             const gigsWithStats = await Promise.all(
-                gigs.map(async gig => {
+                filteredGigs.map(async gig => {
                     const stats = await fetchGigStats(gig.id);
                     return { gig, stats };
                 })
             );
+            
+            let filteredWithStats = gigsWithStats;
+            
+            if (activeFilters.rating) {
+                const minRating = parseFloat(activeFilters.rating);
+                filteredWithStats = filteredWithStats.filter(item => 
+                    parseFloat(item.stats.average) >= minRating
+                );
+            }
+            
+            if (activeFilters.reviewCount) {
+                const minReviews = parseInt(activeFilters.reviewCount);
+                filteredWithStats = filteredWithStats.filter(item => 
+                    item.stats.count >= minReviews
+                );
+            }
 
-            listingGrid.innerHTML = gigsWithStats.length
-                ? gigsWithStats.map(({ gig, stats }) =>
+            listingGrid.innerHTML = filteredWithStats.length
+                ? filteredWithStats.map(({ gig, stats }) =>
                     createGigCard(gig, stats.average, stats.count)
                   ).join('')
-                : '<p>No gigs available.</p>';
+                : '<p>No gigs found for this category or matching your criteria.</p>';
 
             document.querySelectorAll('.listing-card').forEach(card => {
                 card.addEventListener('click', async () => {
@@ -135,12 +184,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function escapeHTML(str) {
         if (str == null) return '';
         return str.toString()
-            .replace(/&/g, '&')
-            .replace(/</g, '<')
-            .replace(/>/g, '>')
-            .replace(/"/g, '"')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
     }
+    
+    window.applyFilters = function(filters) {
+        activeFilters = filters;
+        loadGigs();
+    };
+    
+    window.applyPriceTypeFilter = function(priceType) {
+        activeFilters.priceType = priceType;
+    };
 
-    loadGigs();
+    window.loadGigs = loadGigs; 
+    loadGigs(); 
 });

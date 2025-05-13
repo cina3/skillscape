@@ -20,43 +20,43 @@
                 <h1 class="browse-title">Browse</h1>
                 
                 <div class="browse-categories-nav">
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="web-design">
                         <i class="fas fa-globe icon"></i>
                         <span>Web Design</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="engineering">
                         <i class="fas fa-cogs icon"></i>
                         <span>Engineering</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="art-design">
                         <i class="fas fa-paint-brush icon"></i>
                         <span>Art & Design</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="music">
                         <i class="fas fa-music icon"></i>
                         <span>Music</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="video-editing">
                         <i class="fas fa-video icon"></i>
                         <span>Video Editing</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="it-software">
                         <i class="fas fa-laptop-code icon"></i>
                         <span>IT & Software</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="ai-services">
                         <i class="fas fa-robot icon"></i>
                         <span>AI Services</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="marketing">
                         <i class="fas fa-bullhorn icon"></i>
                         <span>Marketing</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="finance">
                         <i class="fas fa-chart-line icon"></i>
                         <span>Finance</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="other">
                         <i class="fas fa-ellipsis-h icon"></i>
                         <span>Other</span>
                     </div>
@@ -66,15 +66,159 @@
                     <div class="filter-section">
                         <button class="filter-button">
                             <i class="fas fa-sliders-h"></i>
-                            <span>View Filters</span>
+                            <span>Filter</span>
                             <i class="fas fa-chevron-down"></i>
                         </button>
+                        
+                        <!-- Filter Options Panel -->
+                        <div class="filter-options">
+                            <!-- Price Type -->
+                            <div class="filter-group">
+                                <div class="filter-group-header">
+                                    <div class="filter-group-title">
+                                        Price Type
+                                    </div>
+                                </div>
+                                <div class="filter-group-content">
+                                    <div class="price-type-options">
+                                        <div class="price-type-option selected">Fixed Price</div>
+                                        <div class="price-type-option">Bid</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Price Slider -->
+                            <div class="filter-group">
+                                <div class="filter-group-header">
+                                    <div class="filter-group-title">
+                                        Price
+                                        <span class="filter-group-badge">$78</span>
+                                    </div>
+                                </div>
+                                <div class="filter-group-content">
+                                    <div class="filter-slider-container">
+                                        <input type="range" min="5" max="500" value="78" data-default="5" class="filter-slider" id="priceSlider">
+                                        <div class="slider-value-display">
+                                            <span>Min: $5</span>
+                                            <span class="filter-slider-value">$78</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Order Count Slider -->
+                            <div class="filter-group">
+                                <div class="filter-group-header">
+                                    <div class="filter-group-title">
+                                        Order Count
+                                        <span class="filter-group-badge">234</span>
+                                    </div>
+                                </div>
+                                <div class="filter-group-content">
+                                    <div class="filter-slider-container">
+                                        <input type="range" min="0" max="1000" value="234" data-default="0" class="filter-slider" id="orderCountSlider">
+                                        <div class="slider-value-display">
+                                            <span>Min: 0</span>
+                                            <span class="filter-slider-value">234</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Review Count Slider -->
+                            <div class="filter-group">
+                                <div class="filter-group-header">
+                                    <div class="filter-group-title">
+                                        Review Count
+                                        <span class="filter-group-badge">88</span>
+                                    </div>
+                                </div>
+                                <div class="filter-group-content">
+                                    <div class="filter-slider-container">
+                                        <input type="range" min="0" max="500" value="88" data-default="0" class="filter-slider" id="reviewCountSlider">
+                                        <div class="slider-value-display">
+                                            <span>Min: 0</span>
+                                            <span class="filter-slider-value">88</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Freelancer Rating Slider -->
+                            <div class="filter-group">
+                                <div class="filter-group-header">
+                                    <div class="filter-group-title">
+                                        Freelancer Rating
+                                        <span class="filter-group-badge">4.2★</span>
+                                    </div>
+                                </div>
+                                <div class="filter-group-content">
+                                    <div class="filter-slider-container">
+                                        <input type="range" min="1" max="5" value="4.2" step="0.1" data-default="1" class="filter-slider rating-slider freelancer-rating" id="freelancerRatingSlider">
+                                        <div class="slider-value-display">
+                                            <span>Min: 1★</span>
+                                            <span class="filter-slider-value">4.2★</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Rating Slider -->
+                            <div class="filter-group">
+                                <div class="filter-group-header">
+                                    <div class="filter-group-title">
+                                        Rating
+                                        <span class="filter-group-badge">3.3★</span>
+                                    </div>
+                                </div>
+                                <div class="filter-group-content">
+                                    <div class="filter-slider-container">
+                                        <input type="range" min="1" max="5" value="3.3" step="0.1" data-default="1" class="filter-slider rating-slider rating" id="ratingSlider">
+                                        <div class="slider-value-display">
+                                            <span>Min: 1★</span>
+                                            <span class="filter-slider-value">3.3★</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Filter Buttons -->
+                            <div class="filter-buttons">
+                                <div class="filter-reset">Reset</div>
+                                <div class="filter-apply">Apply Filters</div>
+                            </div>
+                        </div>
                     </div>
+                    
                     <div class="sort-section">
                         <span>Sort by:</span>
                         <div class="sort-dropdown">
                             <span>Recommended</span>
                             <i class="fas fa-chevron-down"></i>
+                            
+                            <div class="sort-options">
+                                <div class="sort-option selected">
+                                    <i class="fas fa-check"></i>Recommended
+                                </div>
+                                <div class="sort-option">
+                                    <i class="fas fa-check"></i>Price (High to Low)
+                                </div>
+                                <div class="sort-option">
+                                    <i class="fas fa-check"></i>Price (Low to High)
+                                </div>
+                                <div class="sort-option">
+                                    <i class="fas fa-check"></i>Most Reviewed
+                                </div>
+                                <div class="sort-option">
+                                    <i class="fas fa-check"></i>Most Orders
+                                </div>
+                                <div class="sort-option">
+                                    <i class="fas fa-check"></i>Rating
+                                </div>
+                                <div class="sort-option">
+                                    <i class="fas fa-check"></i>Freelancer Rating
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -216,18 +360,18 @@
                             </div>
                             
                             <div class="seller-stats">
- <div class="stat-item">
-    <span class="stat-label">Delivery Time</span>
-    <span class="stat-value" id="gigDeliveryTime"></span>
-  </div>
                                 <div class="stat-item">
-                                    <span class="stat-label">Last Delivery</span>
-                                    <span class="stat-value">About 3 days</span>
+                                    <span class="stat-label">Delivery Time</span>
+                                    <span class="stat-value" id="gigDeliveryTime"></span>
                                 </div>
                                 <div class="stat-item">
-    <span class="stat-label">Languages</span>
-    <span class="stat-value" id="gigLanguages"></span>
-  </div>
+                                    <span class="stat-label">Last Delivery</span>
+                                    <span class="stat-value" id="gigLastDelivery"></span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Languages</span>
+                                    <span class="stat-value" id="gigLanguages"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
