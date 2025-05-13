@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Gigs - SkillScape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/customer-shared-style.css"> 
+    <link rel="stylesheet" href="../css/freelancer-my-style.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div id="hamburger-menu-placeholder"></div>
+    
+    <main class="orders-container"> 
+        <div class="orders-header">
+            <h1>My Gigs</h1>
+        </div>
+
+        <div class="orders-grid">
+            <div class="order-card">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">Web Development Gig</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status active">
+                        <i class="fas fa-bolt"></i>
+                        Active
+                    </div>
+                    <h3 class="order-title">WordPress Website Redesign</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$500 - $800</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Listed:</span>
+                            <span class="detail-value">3 days ago</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Impressions:</span>
+                            <span class="detail-value">120</span>
+                        </div>
+                        <div class="bid-section">
+                            <div class="bid-stats">
+                                <div class="bid-stat">
+                                    <i class="fas fa-eye"></i>
+                                    <span>25 Views</span>
+                                </div>
+                                <div class="bid-stat">
+                                    <i class="fas fa-handshake"></i>
+                                    <span>3 Active Orders</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="status-actions">
+                            <button class="change-status-btn" data-status="paused" data-listing="1001">
+                                <i class="fas fa-pause"></i> Pause Gig
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        Edit Gig
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">Graphic Design Gig</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status awarded">
+                        <i class="fas fa-tasks"></i>
+                        In Progress
+                    </div>
+                    <h3 class="order-title">Logo Design for Tech Startup</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Client:</span>
+                            <span class="detail-value">Startup Inc.</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Order Placed:</span>
+                            <span class="detail-value">1 week ago</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Due Date:</span>
+                            <span class="detail-value">In 3 days</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Earnings:</span>
+                            <span class="detail-value">$250</span>
+                        </div>
+                        <div class="status-actions">
+                            <button class="change-status-btn" data-status="delivered" data-listing="1002">
+                                <i class="fas fa-truck"></i> Mark as Delivered
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        View Order
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">Writing Gig</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status completed">
+                        <i class="fas fa-check-circle"></i>
+                        Completed
+                    </div>
+                    <h3 class="order-title">Product Descriptions for E-commerce</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Client:</span>
+                            <span class="detail-value">ShopOnline Ltd.</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Completed:</span>
+                            <span class="detail-value">3 days ago</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Earnings:</span>
+                            <span class="detail-value">$120</span>
+                        </div>
+                        <div class="order-rating">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span>5.0</span>
+                            </div>
+                            <span>Client feedback: "Excellent work, delivered on time"</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        View Details
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="order-card">
+                <div class="order-card-left">
+                    <div class="order-image" style="background-image: url('../assets/temp.png');">
+                        <div class="order-provider">Video Editing Gig</div>
+                    </div>
+                </div>
+                <div class="order-card-center">
+                    <div class="order-status cancelled">
+                        <i class="fas fa-pause-circle"></i>
+                        Paused
+                    </div>
+                    <h3 class="order-title">YouTube Intro Animation</h3>
+                    <div class="order-details">
+                        <div class="order-detail">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$150 - $200</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Listed:</span>
+                            <span class="detail-value">3 weeks ago</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="detail-label">Paused:</span>
+                            <span class="detail-value">1 week ago</span>
+                        </div>
+                        <div class="order-actions">
+                            <button class="reorder-btn">
+                                <i class="fas fa-play"></i>
+                                Activate Gig
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <a href="#" class="view-order-btn">
+                        Edit Gig
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="orderDetailsModal" class="order-details-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalGigTitle">Gig/Order Details</h2>
+                    <button class="close-modal-btn"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="modal-body">
+                    
+                    <div class="order-info-section">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Status</span>
+                                <span class="info-value status-indicator active" id="modalGigStatus">
+                                    <i class="fas fa-bolt"></i>
+                                    Active
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label" id="modalDateLabel">Listed Date</span>
+                                <span class="info-value" id="modalDateValue">June 1, 2025</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Category</span>
+                                <span class="info-value" id="modalCategoryValue">Web Development</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label" id="modalPriceLabel">Price</span>
+                                <span class="info-value price" id="modalPriceValue">$500 - $800</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-request-section">
+                        <h3 id="modalDescriptionTitle">Gig Description</h3>
+                        <div class="request-content" id="modalDescriptionContent">
+                            <p>This is the description of the gig or the requirements for the order from the client.</p>
+                        </div>
+                    </div>
+
+                    <div class="order-files-section">
+                        <h3>Attached Files</h3>
+                        <div class="files-list" id="modalFilesList">
+                        </div>
+                    </div>
+                    
+                    <div class="bid-tab">
+                        <div class="bid-tab-header">
+                            <button class="bid-tab-button active" data-target="messagesTabModal">Messages</button>
+                        </div>
+                        
+                        <div id="messagesTabModal" class="bid-tab-content">
+                            <div class="order-messages-section">
+                                <div class="message-item">
+                                    <div class="message-avatar" style="background-image: url('../assets/temp.png');"></div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="message-sender">Client Name</span>
+                                            <span class="message-time">Yesterday at 3:45 PM</span>
+                                        </div>
+                                        <div class="message-text">
+                                            Hello, I have a question about the delivery.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="message-item user-message">
+                                    <div class="message-avatar" style="background-image: url('../assets/temp.png');"></div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="message-sender">You</span>
+                                            <span class="message-time">Yesterday at 4:20 PM</span>
+                                        </div>
+                                        <div class="message-text">
+                                            Hi Client, sure, what's your question?
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-actions-section">
+                        <button class="primary-action-btn" id="modalPrimaryActionBtn">
+                            <i class="fas fa-pencil-alt"></i>
+                            Edit Gig
+                        </button>
+                        <button class="secondary-action-btn" id="modalSecondaryActionBtn">
+                            <i class="fas fa-pause"></i>
+                            Pause Gig
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 SkillScape. All rights reserved.</p>
+    </footer>
+
+    <script src="../design-js/freelancer-shared-script.js"></script>
+    <script src="../design-js/freelancer-my-script.js"></script>
+</body>
+</html>

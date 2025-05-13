@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Gig - SkillScape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/customer-shared-style.css"> 
+    <link rel="stylesheet" href="../css/freelancer-new-style.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div id="hamburger-menu-placeholder"></div>
+
+    <main class="new-listing-container"> 
+        <div class="page-header">
+            <h1>Create a New Gig</h1>
+            <p class="subtitle">Showcase your skills and services to attract clients.</p>
+        </div>
+
+        <form id="newGigForm" class="listing-form">
+            <div class="form-section">
+                <h2 class="section-title">Basic Information</h2>
+                
+                <div class="form-group">
+                    <label for="title">Gig Title <span class="required">*</span></label>
+                    <input type="text" id="title" name="title" placeholder="E.g., 'I will design a modern minimalist logo'" required>
+                    <small class="form-hint">Be clear and specific about the service you offer.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Service Category <span class="required">*</span></label>
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="webdesign">Web Design</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="artdesign">Art & Design</option>
+                        <option value="music">Music</option>
+                        <option value="videoediting">Video Editing</option>
+                        <option value="itsoftware">IT & Software</option>
+                        <option value="aiservices">AI Services</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="finance">Finance</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Gig Details</h2>
+                
+                <div class="form-group">
+                    <label for="description">Gig Description <span class="required">*</span></label>
+                    <textarea id="description" name="description" rows="6" placeholder="Provide a detailed description of the service you offer, what's included, and your process..." required></textarea>
+                    <small class="form-hint">Be detailed about what you offer, your process, and what clients can expect.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="whatYouGet">What You Get / Key Offerings (Max 5 items) <span class="required">*</span></label>
+                    <textarea id="whatYouGet" name="whatYouGet" rows="5" placeholder="List key deliverables or services included, e.g., 'Source files', '3 revisions', 'High-resolution PNG'" required></textarea>
+                    <small class="form-hint">Enter each item on a new line. Limit to 5 items. This will be displayed as a list.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="toolsAndTechnology">Tools & Technology</label>
+                    <input type="text" id="toolsAndTechnology" name="toolsAndTechnology" placeholder="E.g., 'Adobe Photoshop, Figma, Python, Django'">
+                    <small class="form-hint">Specify main tools or technologies you'll use for this gig.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="languages">Languages Offered</label>
+                    <input type="text" id="languages" name="languages" placeholder="E.g., 'English, Spanish, Java, C++'">
+                    <small class="form-hint">List languages you offer services in (spoken or programming), separated by commas.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="coverImage">Cover Image <span class="required">*</span></label>
+                    <div class="cover-image-upload-area">
+                        <input type="file" id="coverImage" name="coverImage" accept="image/*" required style="display: none;">
+                        <label for="coverImage" class="btn btn-upload">
+                            <i class="fas fa-upload"></i> Choose Cover Image
+                        </label>
+                        <div id="coverImagePreview" class="image-preview-container">
+                            <img src="#" alt="Cover Image Preview" style="display:none;" />
+                            <span class="no-image-text">No image selected</span>
+                        </div>
+                    </div>
+                    <small class="form-hint">Upload a compelling cover image for your gig (e.g., JPG, PNG, max 2MB). This will be the first impression.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Gig Gallery / Portfolio</label>
+                    <div class="file-upload-container" id="fileUploadContainer">
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag and drop images or work samples here</p>
+                            <p>or <span class="browse-files">browse files</span></p>
+                            <p class="file-hint">Upload images or examples of your work (max 5MB each)</p>
+                            <input type="file" id="fileInput" multiple style="display:none">
+                        </div>
+                        <div class="uploaded-files" id="uploadedFiles">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Pricing & Delivery</h2>
+                
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="pricingNature">Pricing Nature <span class="required">*</span></label>
+                        <select id="pricingNature" name="pricingNature" required>
+                            <option value="" disabled selected>Select pricing nature</option>
+                            <option value="biddable">Biddable</option> 
+                            <option value="fixed_direct">Fixed Price (Direct Offer)</option> 
+                        </select>
+                        <small class="form-hint">Choose if the price is for bidding or a direct fixed offer.</small>
+                    </div>
+                    
+                    <div class="form-group half-width">
+                        <label for="billingUnit">Billing Unit <span class="required">*</span></label>
+                        <select id="billingUnit" name="billingUnit" required>
+                            <option value="" disabled selected>Select billing unit</option>
+                            <option value="project_item">Per Project / Item</option> 
+                            <option value="hourly">Per Hour</option> 
+                        </select>
+                        <small class="form-hint">Select if the price is per project/item or per hour.</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="price" id="priceLabel">Price ($) <span class="required">*</span></label>
+                        <input type="number" id="price" name="price" placeholder="Amount" min="1" required>
+                        <small class="form-hint" id="priceHint">Enter the amount based on selected billing unit.</small>
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="deliveryTimeDays">Delivery Time <span class="required">*</span></label>
+                        <select id="deliveryTimeDays" name="deliveryTimeDays" required>
+                            <option value="" disabled selected>Select delivery time</option>
+                            <option value="1">1 Day</option>
+                            <option value="3">3 Days</option>
+                            <option value="7">1 Week</option>
+                            <option value="14">2 Weeks</option>
+                            <option value="28">4 Weeks</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group half-width" id="customDeliveryTimeGroup" style="display: none;">
+                        <label for="customDeliveryTime">Custom Delivery Days <span class="required">*</span></label>
+                        <input type="number" id="customDeliveryTime" name="customDeliveryTime" placeholder="Days" min="1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="saveAsDraftBtn" class="btn btn-secondary">Save as Draft</button>
+                <button type="submit" class="btn btn-primary">Publish Gig</button>
+            </div>
+        </form>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 SkillScape. All rights reserved.</p>
+    </footer>
+
+    <div class="modal" id="successModal" style="display:none">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Gig Published Successfully!</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <p>Your gig has been successfully published. Clients can now find your service.</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="viewGigBtn">View Gig</button> 
+                    <button class="btn btn-primary" id="closeModalBtn">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../design-js/freelancer-new-script.js"></script>
+    <script src="../design-js/freelancer-shared-script.js"></script> 
+    <script src="../js/freelancer-new.js"></script> 
+</body>
+</html>

@@ -23,30 +23,30 @@ public class GigService {
     }
 
     @Transactional
-    public GigResponse createGig(GigCreateRequest gigCreateRequestDTO, UserEntity owner) {
-        GigEntity gigEntity = new GigEntity();
-        gigEntity.setTitle(gigCreateRequestDTO.getTitle());
-        gigEntity.setDescription(gigCreateRequestDTO.getDescription());
-        gigEntity.setPrice(gigCreateRequestDTO.getPrice());
+    public GigResponse createGig(GigCreateRequest dto, UserEntity owner) {
+        GigEntity g = new GigEntity();
+        g.setTitle(dto.getTitle());
+        g.setDescription(dto.getDescription());
+        g.setWhatYouGet(dto.getWhatYouGet());
+        g.setToolsAndTechnology(dto.getToolsAndTechnology());
+        g.setPrice(dto.getPrice());
+        g.setPriceFixed(dto.getIsPriceFixed());
+        g.setPerHourPricing(dto.getIsPerHourPricing());
+        g.setCategory(dto.getCategory());
+        g.setCoverImageUrl(dto.getCoverImageUrl());
+        if (dto.getFileUrls() != null) g.setFileUrls(dto.getFileUrls());
+        g.setDeliveryTimeDays(dto.getDeliveryTimeDays());
+        g.setLastDeliveryAt(dto.getLastDeliveryAt());
+        g.setLanguages(dto.getLanguages());
+        g.setUser(owner);
 
-        gigEntity.setPriceFixed(gigCreateRequestDTO.getIsPriceFixed());
-        gigEntity.setPerHourPricing(gigCreateRequestDTO.getIsPerHourPricing());
-
-        gigEntity.setCategory(gigCreateRequestDTO.getCategory());
-        gigEntity.setCoverImageUrl(gigCreateRequestDTO.getCoverImageUrl());
-        if (gigCreateRequestDTO.getFileUrls() != null) {
-            gigEntity.setFileUrls(gigCreateRequestDTO.getFileUrls());
-        }
-        gigEntity.setDeliveryTimeDays(gigCreateRequestDTO.getDeliveryTimeDays());
-        gigEntity.setUser(owner); 
-
-        GigEntity savedGig = gigRepository.save(gigEntity);
-        return convertToDTO(savedGig);
+        GigEntity saved = gigRepository.save(g);
+        return convertToDTO(saved);
     }
 
     @Transactional(readOnly = true)
-    public GigResponse getGigById(Long gigId) {
-        return gigRepository.findById(gigId)
+    public GigResponse getGigById(Long id) {
+        return gigRepository.findById(id)
                 .map(this::convertToDTO)
                 .orElse(null);
     }
@@ -58,33 +58,33 @@ public class GigService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public List<GigResponse> getGigsByOwner(UserEntity owner) {
-        return gigRepository.findByUser(owner).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    private GigResponse convertToDTO(GigEntity g) {
+        return new GigResponse(
+                g.getId(),
+                g.getTitle(),
+                g.getDescription(),
+                g.getPrice(),
+                g.isPriceFixed(),
+                g.isPerHourPricing(),
+                g.getCategory(),
+                g.getCoverImageUrl(),
+                g.getFileUrls(),
+                g.getDeliveryTimeDays(),
+                g.getCreatedAt(),
+                g.getUpdatedAt(),
+                g.getUser().getId(),
+                g.getUser().getDisplayName(),
+                g.getWhatYouGet(),
+                g.getToolsAndTechnology(),
+                g.getLastDeliveryAt(),
+                g.getLanguages()
+        );
     }
 
-
-    private GigResponse convertToDTO(GigEntity gigEntity) {
-        if (gigEntity == null) {
-            return null;
-        }
-        return new GigResponse(
-                gigEntity.getId(),
-                gigEntity.getTitle(),
-                gigEntity.getDescription(),
-                gigEntity.getPrice(),
-                gigEntity.isPriceFixed(),
-                gigEntity.isPerHourPricing(),
-                gigEntity.getCategory(),
-                gigEntity.getCoverImageUrl(),
-                gigEntity.getFileUrls(),
-                gigEntity.getDeliveryTimeDays(),
-                gigEntity.getCreatedAt(),
-                gigEntity.getUpdatedAt(),
-                gigEntity.getUser() != null ? gigEntity.getUser().getId() : null,
-                gigEntity.getUser() != null ? gigEntity.getUser().getDisplayName() : null
-        );
+    @Transactional(readOnly = true)
+    public List<GigResponse> getGigsByOwner(UserEntity owner) {
+    return gigRepository.findByUser(owner).stream()
+        .map(this::convertToDTO)
+        .collect(Collectors.toList());
     }
 }

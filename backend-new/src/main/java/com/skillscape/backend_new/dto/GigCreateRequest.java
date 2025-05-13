@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -42,4 +43,10 @@ public class GigCreateRequest {
     @NotNull(message = "Delivery time in days is mandatory")
     @Min(value = 1, message = "Delivery time must be at least 1 day")
     private Integer deliveryTimeDays;
+
+    @Size(max = 5)
+    private List<String> whatYouGet;
+    private String toolsAndTechnology;
+    private LocalDateTime lastDeliveryAt;
+    private List<String> languages;
 }

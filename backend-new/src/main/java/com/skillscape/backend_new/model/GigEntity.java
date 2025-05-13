@@ -1,14 +1,15 @@
 package com.skillscape.backend_new.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "gigs")
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GigEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,14 +29,23 @@ public class GigEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "gig_what_you_get", joinColumns = @JoinColumn(name = "gig_id"))
+    @Column(name = "bullet_point")
+    @Size(max = 5)
+    private List<String> whatYouGet = new ArrayList<>();
+
+    @Column(name = "tools_and_technology", columnDefinition = "TEXT")
+    private String toolsAndTechnology;
+
     @Column(nullable = false)
     private BigDecimal price;
 
     @Column(name = "is_price_fixed", nullable = false)
-    private boolean isPriceFixed = true; 
+    private boolean isPriceFixed = true;
 
     @Column(name = "is_per_hour_pricing", nullable = false)
-    private boolean isPerHourPricing = false; 
+    private boolean isPerHourPricing = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -51,6 +62,14 @@ public class GigEntity {
     @Column(name = "delivery_time_days")
     private Integer deliveryTimeDays;
 
+    @Column(name = "last_delivery_at")
+    private LocalDateTime lastDeliveryAt;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "gig_languages", joinColumns = @JoinColumn(name = "gig_id"))
+    @Column(name = "language")
+    private List<String> languages = new ArrayList<>();
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -61,33 +80,14 @@ public class GigEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @OneToMany(
-      mappedBy = "gig",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true
-    )
-    private List<ReviewEntity> reviews = new ArrayList<>();
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (fileUrls == null) {
-            fileUrls = new ArrayList<>();
-        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    public void addReview(ReviewEntity r) {
-        reviews.add(r);
-        r.setGig(this);
-    }
-    public void removeReview(ReviewEntity r) {
-        reviews.remove(r);
-        r.setGig(null);
     }
 }

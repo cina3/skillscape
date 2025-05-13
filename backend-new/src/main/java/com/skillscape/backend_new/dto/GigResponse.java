@@ -29,5 +29,8 @@ public class GigResponse {
     private LocalDateTime updatedAt;
     private Long userId; 
     private String userDisplayName; 
-
+    private List<String> whatYouGet;
+    private String toolsAndTechnology;
+    private LocalDateTime lastDeliveryAt;
+    private List<String> languages;
 }
