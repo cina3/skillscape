@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse - SkillScape</title>
+    <title>Browse Projects - SkillScape</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/customer-shared-style.css">
-    <link rel="stylesheet" href="../css/browse-style.css">
-    <link rel="stylesheet" href="../css/browse-gig-style.css">
+    <link rel="stylesheet" href="../css/customer-shared-style.css"> 
+    <link rel="stylesheet" href="../css/freelancer-browse-style.css">
+    <link rel="stylesheet" href="../css/freelancer-browse-gig-style.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
@@ -17,46 +17,46 @@
     <main>
         <div class="browse-container">
             <div class="browse-section">
-                <h1 class="browse-title">Browse</h1>
+                <h1 class="browse-title">Browse Projects</h1>
                 
                 <div class="browse-categories-nav">
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="web-design">
                         <i class="fas fa-globe icon"></i>
                         <span>Web Design</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="engineering">
                         <i class="fas fa-cogs icon"></i>
                         <span>Engineering</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="art-design">
                         <i class="fas fa-paint-brush icon"></i>
                         <span>Art & Design</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="music">
                         <i class="fas fa-music icon"></i>
                         <span>Music</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="video-editing">
                         <i class="fas fa-video icon"></i>
                         <span>Video Editing</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="it-software">
                         <i class="fas fa-laptop-code icon"></i>
                         <span>IT & Software</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="ai-services">
                         <i class="fas fa-robot icon"></i>
                         <span>AI Services</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="marketing">
                         <i class="fas fa-bullhorn icon"></i>
                         <span>Marketing</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="finance">
                         <i class="fas fa-chart-line icon"></i>
                         <span>Finance</span>
                     </div>
-                    <div class="category-nav-item">
+                    <div class="category-nav-item" data-category="other">
                         <i class="fas fa-ellipsis-h icon"></i>
                         <span>Other</span>
                     </div>
@@ -66,15 +66,67 @@
                     <div class="filter-section">
                         <button class="filter-button">
                             <i class="fas fa-sliders-h"></i>
-                            <span>View Filters</span>
+                            <span>Filter</span>
                             <i class="fas fa-chevron-down"></i>
                         </button>
+                        
+                        <div class="filter-options">
+                            <div class="filter-group">
+                                <div class="filter-group-header">
+                                    <div class="filter-group-title">
+                                        Price Type
+                                    </div>
+                                </div>
+                                <div class="filter-group-content">
+                                    <div class="price-type-options">
+                                        <div class="price-type-option selected">Fixed Price</div>
+                                        <div class="price-type-option">Bid</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <div class="filter-group-header">
+                                    <div class="filter-group-title">
+                                        Price
+                                        <span class="filter-group-badge">$78</span>
+                                    </div>
+                                </div>
+                                <div class="filter-group-content">
+                                    <div class="filter-slider-container">
+                                        <input type="range" min="5" max="500" value="78" data-default="5" class="filter-slider" id="priceSlider">
+                                        <div class="slider-value-display">
+                                            <span>Min: $5</span>
+                                            <span class="filter-slider-value">$78</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-buttons">
+                                <div class="filter-reset">Reset</div>
+                                <div class="filter-apply">Apply Filters</div>
+                            </div>
+                        </div>
                     </div>
+                    
                     <div class="sort-section">
                         <span>Sort by:</span>
                         <div class="sort-dropdown">
                             <span>Recommended</span>
                             <i class="fas fa-chevron-down"></i>
+                            
+                            <div class="sort-options">
+                                <div class="sort-option selected">
+                                    <i class="fas fa-check"></i>Recommended
+                                </div>
+                                <div class="sort-option">
+                                    <i class="fas fa-check"></i>Price (High to Low)
+                                </div>
+                                <div class="sort-option">
+                                    <i class="fas fa-check"></i>Price (Low to High)
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -82,22 +134,16 @@
                 <div class="listing-grid">
                 </div>
                 
-                <div class="pagination">
-                    <button class="pagination-item active">•</button>
-                    <button class="pagination-item">•</button>
-                    <button class="pagination-item">•</button>
-                    <button class="next-page"><i class="fas fa-chevron-right"></i></button>
-                </div>
             </div>
         </div>
-
+        
         <div class="gig-modal-overlay" id="gigModal">
             <div class="gig-modal">
                 <button class="gig-modal-close" id="closeGigModal">
                     <i class="fas fa-times"></i>
                 </button>
                 
-                <div class="gig-layout-container">
+                <div class="gig-layout-container" id="projectDetailView">
                     <div class="gig-image-column">
                         <div class="gig-image-container">
                             <img src="../assets/temp.png" alt="Gig Cover Image" id="gigCoverImage">
@@ -107,22 +153,94 @@
                     <div class="gig-details-column">
                         <div class="gig-main">
                             <div class="gig-header-section">
-                                <h1 class="gig-title" id="gigTitle">Gig Title</h1>
+                                <h1 class="gig-title" id="gigTitle">Modern Web Design</h1>
                                 <div class="gig-provider">
                                     <img src="../assets/temp.png" alt="Provider Avatar" class="provider-avatar" id="providerAvatar">
-                                    <span class="provider-name">by <span class="provider-name-text" id="providerNameText">Provider</span></span>
+                                    <span class="provider-name">by <span class="provider-name-text" id="providerName">webdesigner</span></span>
                                 </div>
                             </div>
                             <div class="gig-description">
                                 <h3>About This Gig</h3>
-                                <p id="gigDescription">Description loading...</p>
+                                <p id="gigDescription">Need a website that not only looks great but works flawlessly? I design clean, modern, and responsive websites that reflect your brand and engage your audience. Whether you're launching a startup, refreshing your portfolio, or building an online store I'm here to help bring your ideas to life with clarity and style.</p>
                                 
                                 <h3>What You'll Get</h3>
                                 <ul class="feature-list" id="whatYouGetList">
+                                    <li><i class="fas fa-check-circle"></i> Custom and modern web design</li>
+                                    <li><i class="fas fa-check-circle"></i> Mobile-responsive layouts</li>
+                                    <li><i class="fas fa-check-circle"></i> Backend functionality included</li>
+                                    <li><i class="fas fa-check-circle"></i> SEO-friendly structure</li>
+                                    <li><i class="fas fa-check-circle"></i> Integration with popular apps</li>
                                 </ul>
                                 
                                 <h3>Tools & Technology</h3>
-                                <p id="toolsTech">Tools & tech loading...</p>
+                                <p id="toolsTech">Figma / Adobe XD / Webflow / WordPress / HTML / CSS</p>
+                            </div>
+                            
+                            <div class="reviews-section">
+                                <div class="reviews-header">
+                                    <div class="reviews-summary">
+                                        <h3 class="reviews-title">Reviews</h3>
+                                        <div class="gig-rating">
+                                            <div class="rating-stars">
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star-half-alt star-icon"></i>
+                                            </div>
+                                            <span class="rating-value" id="ratingValue">4.8</span>
+                                            <span class="rating-count" id="reviewCount">(26 reviews)</span>
+                                        </div>
+                                        <span class="reviews-count" id="totalReviewCount">26</span>
+                                    </div>
+                                    
+                                    <a href="#" class="view-all-reviews">
+                                        View All Reviews
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                                
+                                <div class="reviews-list">
+                                    <div class="review-item">
+                                        <div class="review-header">
+                                            <img src="../assets/temp.png" alt="Reviewer Avatar" class="reviewer-avatar">
+                                            <div class="reviewer-info">
+                                                <div class="reviewer-name">Sarah Johnson</div>
+                                                <div class="review-date">2 weeks ago</div>
+                                            </div>
+                                            <div class="review-rating">
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                            </div>
+                                        </div>
+                                        <div class="review-content">
+                                            Absolutely amazing work! The designer understood exactly what I wanted and delivered beyond my expectations. My website looks professional and modern, and the responsiveness works perfectly on all devices.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="review-item">
+                                        <div class="review-header">
+                                            <img src="../assets/temp.png" alt="Reviewer Avatar" class="reviewer-avatar">
+                                            <div class="reviewer-info">
+                                                <div class="reviewer-name">Mike Thompson</div>
+                                                <div class="review-date">1 month ago</div>
+                                            </div>
+                                            <div class="review-rating">
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="fas fa-star star-icon"></i>
+                                                <i class="far fa-star star-icon"></i>
+                                            </div>
+                                        </div>
+                                        <div class="review-content">
+                                            Great work and very responsive to feedback. The only reason I'm giving 4 stars instead of 5 is because the project took a bit longer than expected, but the quality was worth the wait!
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -131,27 +249,110 @@
                         <div class="gig-sidebar">
                             <div class="price-section">
                                 <div class="price-title">Service Price</div>
-                                <div class="price-value" id="gigPrice">$0.00</div>
-                                <div class="price-unit" id="priceUnit">/ unit</div>
+                                <div class="price-value" id="gigPrice">$12</div>
+                                <div class="price-unit" id="priceUnit">/ hour</div>
                                 
-                                <div class="price-includes" id="gigPriceIncludes">
+                                <div class="price-includes">
+                                    <div>Price includes:</div>
+                                    <ul>
+                                        <li><i class="fas fa-check-circle"></i> Design consultation</li>
+                                        <li><i class="fas fa-check-circle"></i> Unlimited revisions</li>
+                                        <li><i class="fas fa-check-circle"></i> Source files</li>
+                                    </ul>
                                 </div>
                             </div>
                             
                             <div class="action-buttons">
-                                <a href="#" class="order-button" id="gigOrderButton">Bid on This</a>
-                                <a href="#" class="contact-button" id="gigContactButton">Contact Freelancer</a>
+                                <a href="#" class="order-button" id="orderButtonModalEntryPoint">Place Bid</a>
+                                <a href="#" class="contact-button" id="contactButtonModalEntryPoint">Contact Customer</a>
                             </div>
                             
                             <div class="seller-stats">
                                 <div class="stat-item">
                                     <span class="stat-label">Delivery Time</span>
-                                    <span class="stat-value" id="gigDeliveryTime">N/A</span>
+                                    <span class="stat-value" id="gigDeliveryTime"></span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Last Delivery</span>
+                                    <span class="stat-value" id="gigLastDelivery"></span>
                                 </div>
                                 <div class="stat-item">
                                     <span class="stat-label">Languages</span>
-                                    <span class="stat-value" id="gigLanguages">N/A</span>
+                                    <span class="stat-value" id="gigLanguages"></span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-form-container" id="projectBidFormView" style="display: none; padding: 20px; height: 100%; overflow-y: auto;">
+                    <div class="order-form">
+                        <div class="order-header">
+                            <button class="back-to-gig" id="backToDetailsBtn"><i class="fas fa-arrow-left"></i></button>
+                            <h2 class="order-title" style="margin-left: 15px;">Place Your Bid</h2>
+                        </div>
+                        
+                        <h3 id="bidFormProjectTitle" class="project-title"></h3>
+                        
+                        <div class="bid-grid-container">
+                            <div class="bid-main-content">
+                                <div class="form-group price-proposal-section">
+                                    <label for="bidAmount">Your Bid Amount</label>
+                                    <div class="price-input-wrapper">
+                                        <span class="currency-symbol">$</span>
+                                        <input type="number" id="bidAmount" name="bidAmount" placeholder="e.g., 150" min="1" step="any" required class="form-control">
+                                    </div>
+                                    <small class="price-hint">Enter the total amount you want to bid for this project.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="bidDeliveryTime">Estimated Delivery Time (days)</label>
+                                    <input type="number" id="bidDeliveryTime" name="bidDeliveryTime" placeholder="e.g., 7" min="1" step="1" required class="form-control">
+                                    <small class="delivery-hint">How many days will you need to complete this project?</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="bidCoverLetter">Cover Letter / Proposal</label>
+                                    <textarea id="bidCoverLetter" name="bidCoverLetter" rows="8" placeholder="Describe why you're a good fit for this project, your experience, and how you'll approach the work..." required class="form-control"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="bid-side-content">
+                                <div class="bid-summary-card">
+                                    <h3 class="bid-summary-title">Bid Summary</h3>
+                                    
+                                    <div class="bid-project-info">
+                                        <span id="bidSummaryProjectTitle">Project Title</span>
+                                        <div class="client-info">
+                                            <span>Client: </span>
+                                            <span id="bidSummaryClientName">Client Name</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="price-breakdown">
+                                        <div class="price-item">
+                                            <span>Your Bid</span>
+                                            <span id="bidSummaryAmount">$0.00</span>
+                                        </div>
+                                        <div class="price-item service-fee">
+                                            <span>Service Fee (10%)</span>
+                                            <span id="bidSummaryFee">$0.00</span>
+                                        </div>
+                                        <div class="price-item total">
+                                            <span>You'll Receive</span>
+                                            <span id="bidSummaryTotal">$0.00</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="delivery-info">
+                                        <div class="delivery-item">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span>Delivery time: <span id="bidSummaryDelivery">Not specified</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="order-button order-confirm-button" id="submitBidBtn">Submit Bid</button>
                             </div>
                         </div>
                     </div>
@@ -160,7 +361,13 @@
         </div>
     </main>
 
-    <script src="../design-js/freelancer-shared-script.js"></script>
-    <script src="../design-js/freelancer-browse-script.js"></script>
+    <footer class="site-footer">
+        <p>© 2025 Freelancers. All rights reserved.</p>
+    </footer>
+
+    <script src="../design-js/customer-shared-script.js"></script>
+    <script src="../design-js/freelancer-shared-script.js"></script> 
+    <script src="../design-js/freelancer-browse-script.js"></script> 
+    <script src="../js/freelancer-browse.js"></script> 
 </body>
 </html>

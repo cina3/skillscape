@@ -25,7 +25,7 @@ public class OrderEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gig_id", nullable = false)
+    @JoinColumn(name = "gig_id", nullable = true)
     private GigEntity gig;
 
     @ManyToOne(fetch = FetchType.LAZY)

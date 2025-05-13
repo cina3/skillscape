@@ -1,7 +1,6 @@
 package com.skillscape.backend_new.controller;
 
-import com.skillscape.backend_new.dto.CreateListingRequest;
-import com.skillscape.backend_new.dto.ListingResponse;
+import com.skillscape.backend_new.dto.*;
 import com.skillscape.backend_new.service.ListingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,45 +20,65 @@ public class ListingController {
         this.service = service;
     }
 
+
     @PostMapping
-    public ResponseEntity<ListingResponse> create(
+    public ResponseEntity<ListingResponse> createListing(
             @Valid @RequestBody CreateListingRequest dto,
             @AuthenticationPrincipal UserDetails user) {
-        return ResponseEntity
-               .status(201)
-               .body(service.createListing(dto, user.getUsername()));
+        return ResponseEntity.status(201)
+                .body(service.createListing(dto, user.getUsername()));
     }
 
-    @GetMapping("/my")
-    public ResponseEntity<List<ListingResponse>> getMyListings(
-            @AuthenticationPrincipal UserDetails user) {
-        List<ListingResponse> listings = service.getListingsByUserEmail(user.getUsername());
-        return ResponseEntity.ok(listings);
-    }
-
-    @GetMapping("/{id:\\d+}")
-    public ResponseEntity<ListingResponse> getOne(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ListingResponse> getListing(@PathVariable Long id) {
         return ResponseEntity.ok(service.getListingById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<ListingResponse>> getAll() {
+    public ResponseEntity<List<ListingResponse>> allListings() {
         return ResponseEntity.ok(service.getAllListings());
     }
 
-    @PutMapping("/{id:\\d+}")
-    public ResponseEntity<ListingResponse> update(
+    @GetMapping("/my")
+    public ResponseEntity<List<ListingResponse>> myListings(
+            @AuthenticationPrincipal UserDetails user) {
+        return ResponseEntity.ok(service.getListingsByUserEmail(user.getUsername()));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ListingResponse> updateListing(
             @PathVariable Long id,
             @Valid @RequestBody CreateListingRequest dto,
             @AuthenticationPrincipal UserDetails user) {
         return ResponseEntity.ok(service.updateListing(id, dto, user.getUsername()));
     }
 
-    @DeleteMapping("/{id:\\d+}")
-    public ResponseEntity<Void> delete(
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteListing(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails user) {
         service.deleteListing(id, user.getUsername());
         return ResponseEntity.noContent().build();
+    }
+
+
+    @PostMapping("/{listingId}/bids")
+    public ResponseEntity<BidResponse> placeBid(
+            @PathVariable Long listingId,
+            @Valid @RequestBody BidRequest bid,
+            @AuthenticationPrincipal UserDetails user) {
+        bid.setListingId(listingId);                    
+        return ResponseEntity.ok(service.placeBid(bid, user.getUsername()));
+    }
+
+   
+    @PostMapping("/{listingId}/award")
+    public ResponseEntity<OrderResponse> awardBid(
+            @PathVariable Long listingId,
+            @Valid @RequestBody AwardBidRequest req,
+            @AuthenticationPrincipal UserDetails user) {
+        OrderResponse order = service.awardBid(
+                listingId, req.getBidId(), user.getUsername());
+        return ResponseEntity.ok(order);
     }
 }

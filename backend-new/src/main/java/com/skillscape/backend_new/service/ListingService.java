@@ -1,13 +1,9 @@
 package com.skillscape.backend_new.service;
 
-import com.skillscape.backend_new.dto.BidRequest;
-import com.skillscape.backend_new.dto.BidResponse;
-import com.skillscape.backend_new.dto.CreateListingRequest;
-import com.skillscape.backend_new.dto.ListingResponse;
-import com.skillscape.backend_new.model.BidEntity;
-import com.skillscape.backend_new.model.ListingEntity;
-import com.skillscape.backend_new.model.UserEntity;
+import com.skillscape.backend_new.dto.*;
+import com.skillscape.backend_new.model.*;
 import com.skillscape.backend_new.repository.ListingRepository;
+import com.skillscape.backend_new.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,60 +15,133 @@ import java.util.stream.Collectors;
 @Transactional
 public class ListingService {
 
-    private final ListingRepository repo;
-    private final UserService userService;
+    private final ListingRepository listingRepo;
+    private final OrderRepository   orderRepo;
+    private final UserService       userService;
 
-    public ListingService(ListingRepository repo, UserService userService) {
-        this.repo = repo;
-        this.userService = userService;
+    public ListingService(ListingRepository listingRepo,
+                          OrderRepository orderRepo,
+                          UserService userService) {
+        this.listingRepo  = listingRepo;
+        this.orderRepo    = orderRepo;
+        this.userService  = userService;
     }
+
+  
 
     public ListingResponse createListing(CreateListingRequest dto, String userEmail) {
         UserEntity user = userService.getUserByEmail(userEmail);
-        ListingEntity l = mapToEntity(dto);
-        l.setUser(user);
-        ListingEntity saved = repo.save(l);
-        return mapToDto(saved);
+        ListingEntity listing = mapToEntity(dto);
+        listing.setUser(user);
+        return mapToDto(listingRepo.save(listing));
     }
 
     @Transactional(readOnly = true)
     public ListingResponse getListingById(Long id) {
-        return repo.findById(id)
-                   .map(this::mapToDto)
-                   .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id));
+        return listingRepo.findById(id)
+                .map(this::mapToDto)
+                .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id));
     }
 
     @Transactional(readOnly = true)
     public List<ListingResponse> getAllListings() {
-        return repo.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
+        return listingRepo.findAll()
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<ListingResponse> getListingsByUserEmail(String userEmail) {
-        UserEntity user = userService.getUserByEmail(userEmail);
-        return repo.findByUser(user) 
-                   .stream()
-                   .map(this::mapToDto)
-                   .collect(Collectors.toList());
+    public List<ListingResponse> getListingsByUserEmail(String email) {
+        UserEntity user = userService.getUserByEmail(email);
+        return listingRepo.findByUser(user)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
-    public ListingResponse updateListing(Long id, CreateListingRequest dto, String userEmail) {
-        ListingEntity l = repo.findById(id)
-                              .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id));
-        if (!l.getUser().getEmail().equals(userEmail)) {
+    public ListingResponse updateListing(Long id, CreateListingRequest dto, String email) {
+        ListingEntity listing = listingRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id));
+
+        if (!listing.getUser().getEmail().equals(email))
             throw new SecurityException("Not authorized");
-        }
-        copyDtoToEntity(dto, l);
-        return mapToDto(repo.save(l));
+
+        copyDtoToEntity(dto, listing);
+        return mapToDto(listingRepo.save(listing));
     }
 
-    public void deleteListing(Long id, String userEmail) {
-        ListingEntity l = repo.findById(id)
-                              .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id));
-        if (!l.getUser().getEmail().equals(userEmail)) {
+    public void deleteListing(Long id, String email) {
+        ListingEntity listing = listingRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id));
+
+        if (!listing.getUser().getEmail().equals(email))
             throw new SecurityException("Not authorized");
-        }
-        repo.delete(l);
+
+        listingRepo.delete(listing);
+    }
+
+
+    public BidResponse placeBid(BidRequest dto, String bidderEmail) {
+        ListingEntity listing = listingRepo.findById(dto.getListingId())
+                .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
+
+        UserEntity bidder = userService.getUserByEmail(bidderEmail);
+
+        BidEntity bid = new BidEntity();
+        bid.setListing(listing);
+        bid.setBidder(bidder);
+        bid.setDescription(dto.getDescription());
+        bid.setRequestedPrice(dto.getRequestedPrice());
+
+        listing.getBids().add(bid);
+        listingRepo.save(listing);
+
+        BidEntity savedBid = listing.getBids()
+                .stream()
+                .max(Comparator.comparing(BidEntity::getCreatedAt))
+                .orElseThrow();
+
+        return mapBidToDto(savedBid);
+    }
+
+    public OrderResponse awardBid(Long listingId, Long bidId, String ownerEmail) {
+        ListingEntity listing = listingRepo.findById(listingId)
+                .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
+
+        if (!listing.getUser().getEmail().equals(ownerEmail))
+            throw new SecurityException("Not authorized to award this listing");
+
+        BidEntity bid = listing.getBids()
+                .stream()
+                .filter(b -> b.getId().equals(bidId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Bid not found on this listing"));
+
+        listing.setStatus(Status.DELIVERED);           
+        listing.setAwardedToUser(bid.getBidder());
+        listingRepo.save(listing);
+
+        OrderEntity order = new OrderEntity();
+        order.setBuyer(listing.getUser());
+        order.setSeller(bid.getBidder());
+        order.setGig(null);
+        order.setOrderPrice(bid.getRequestedPrice());
+        order.setPriceFixed(listing.isPriceFixed());
+        order.setPerHourPricing(listing.isPerHourPricing());
+        order.setRequirements(listing.getRequirements());
+        order.setExpectedDeliveryDate(listing.getExpectedDeliveryDate());
+        order.setUploadUrls(listing.getUploadUrls());
+        order.setPercentage(0);
+
+        return toOrderDto(orderRepo.save(order));
+    }
+
+   
+    private ListingEntity mapToEntity(CreateListingRequest d) {
+        ListingEntity e = new ListingEntity();
+        copyDtoToEntity(d, e);
+        return e;
     }
 
     private void copyDtoToEntity(CreateListingRequest d, ListingEntity l) {
@@ -95,71 +164,27 @@ public class ListingService {
         l.setExpectedDeliveryDate(d.getExpectedDeliveryDate());
     }
 
-    private ListingEntity mapToEntity(CreateListingRequest dto) {
-        ListingEntity entity = new ListingEntity();
-        entity.setTitle(dto.getTitle());
-        entity.setDescription(dto.getDescription());
-        entity.setWhatYouGet(dto.getWhatYouGet());
-        entity.setToolsAndTechnology(dto.getToolsAndTechnology());
-        entity.setPrice(dto.getPrice());
-        entity.setPriceFixed(dto.getIsPriceFixed());
-        entity.setPerHourPricing(dto.getIsPerHourPricing());
-        entity.setCategory(dto.getCategory());
-        entity.setCoverImageUrl(dto.getCoverImageUrl());
-        entity.setFileUrls(dto.getFileUrls());
-        entity.setDeliveryTimeDays(dto.getDeliveryTimeDays());
-        entity.setLastDeliveryAt(dto.getLastDeliveryAt());
-        entity.setLanguages(dto.getLanguages());
-        entity.setOrderPrice(dto.getOrderPrice());
-        entity.setStatus(dto.getStatus());
-        entity.setRequirements(dto.getRequirements());
-        entity.setExpectedDeliveryDate(dto.getExpectedDeliveryDate());
-        return entity;
-    }
-
-    private ListingResponse mapToDto(ListingEntity entity) {
-        ListingResponse dto = new ListingResponse();
-        dto.setId(entity.getId());
-        dto.setTitle(entity.getTitle());
-        dto.setDescription(entity.getDescription());
-        dto.setWhatYouGet(entity.getWhatYouGet());
-        dto.setToolsAndTechnology(entity.getToolsAndTechnology());
-        dto.setPrice(entity.getPrice());
-        dto.setPriceFixed(entity.isPriceFixed());
-        dto.setPerHourPricing(entity.isPerHourPricing());
-        dto.setCategory(entity.getCategory());
-        dto.setCoverImageUrl(entity.getCoverImageUrl());
-        dto.setFileUrls(entity.getFileUrls());
-        dto.setDeliveryTimeDays(entity.getDeliveryTimeDays());
-        dto.setLastDeliveryAt(entity.getLastDeliveryAt());
-        dto.setLanguages(entity.getLanguages());
-        dto.setOrderPrice(entity.getOrderPrice());
-        dto.setStatus(entity.getStatus());
-        dto.setRequirements(entity.getRequirements());
-        dto.setExpectedDeliveryDate(entity.getExpectedDeliveryDate());
-        return dto;
-    }
-
-    public BidResponse placeBid(BidRequest dto, String userEmail) {
-        ListingEntity listing = repo.findById(dto.getListingId())
-            .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
-        UserEntity bidder = userService.getUserByEmail(userEmail);
-
-        BidEntity bid = new BidEntity();
-        bid.setListing(listing);
-        bid.setBidder(bidder);
-        bid.setDescription(dto.getDescription());
-        bid.setRequestedPrice(dto.getRequestedPrice());
-
-        listing.getBids().add(bid);
-        ListingEntity saved = repo.save(listing);
-
-        BidEntity savedBid = saved.getBids()
-            .stream()
-            .max(Comparator.comparing(BidEntity::getCreatedAt))
-            .get();
-
-        return mapBidToDto(savedBid);
+    private ListingResponse mapToDto(ListingEntity e) {
+        ListingResponse r = new ListingResponse();
+        r.setId(e.getId());
+        r.setTitle(e.getTitle());
+        r.setDescription(e.getDescription());
+        r.setWhatYouGet(e.getWhatYouGet());
+        r.setToolsAndTechnology(e.getToolsAndTechnology());
+        r.setPrice(e.getPrice());
+        r.setPriceFixed(e.isPriceFixed());
+        r.setPerHourPricing(e.isPerHourPricing());
+        r.setCategory(e.getCategory());
+        r.setCoverImageUrl(e.getCoverImageUrl());
+        r.setFileUrls(e.getFileUrls());
+        r.setDeliveryTimeDays(e.getDeliveryTimeDays());
+        r.setLastDeliveryAt(e.getLastDeliveryAt());
+        r.setLanguages(e.getLanguages());
+        r.setOrderPrice(e.getOrderPrice());
+        r.setStatus(e.getStatus());
+        r.setRequirements(e.getRequirements());
+        r.setExpectedDeliveryDate(e.getExpectedDeliveryDate());
+        return r;
     }
 
     private BidResponse mapBidToDto(BidEntity b) {
@@ -170,6 +195,26 @@ public class ListingService {
         r.setDescription(b.getDescription());
         r.setRequestedPrice(b.getRequestedPrice());
         r.setCreatedAt(b.getCreatedAt());
+        return r;
+    }
+
+    private OrderResponse toOrderDto(OrderEntity o) {
+        OrderResponse r = new OrderResponse();
+        r.setId(o.getId());
+        r.setGigId(o.getGig() != null ? o.getGig().getId() : null);
+        r.setBuyerId(o.getBuyer().getId());
+        r.setSellerId(o.getSeller().getId());
+        r.setOrderPrice(o.getOrderPrice());
+        r.setPriceFixed(o.isPriceFixed());
+        r.setPerHourPricing(o.isPerHourPricing());
+        r.setStatus(o.getStatus());
+        r.setRequirements(o.getRequirements());
+        r.setExpectedDeliveryDate(o.getExpectedDeliveryDate());
+        r.setDeliveredAt(o.getDeliveredAt());
+        r.setUploadUrls(o.getUploadUrls());
+        r.setCreatedAt(o.getCreatedAt());
+        r.setUpdatedAt(o.getUpdatedAt());
+        r.setPercentage(o.getPercentage());
         return r;
     }
 }
