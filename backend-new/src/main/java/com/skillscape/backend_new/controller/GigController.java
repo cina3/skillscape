@@ -58,4 +58,12 @@ public class GigController {
         List<GigResponse> myGigs = gigService.getGigsByOwner(currentUser);
         return ResponseEntity.ok(myGigs);
     }
+
+    @DeleteMapping("/{gigId}")
+    public ResponseEntity<Void> deleteGig(@PathVariable Long gigId,
+                                      @AuthenticationPrincipal UserDetails userDetails) {
+    UserEntity current = userService.getUserByEmail(userDetails.getUsername());
+    gigService.deleteGig(gigId, current);          
+    return ResponseEntity.noContent().build();     
+}
 }

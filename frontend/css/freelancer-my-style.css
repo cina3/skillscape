@@ -1204,3 +1204,43 @@
         flex-direction: column;
     }
 }
+
+.badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.badge.fixed    { background:#4caf50; color:#fff; }
+.badge.per-hour { background:#03a9f4; color:#fff; }
+
+.order-detail { display:flex; gap:.25rem; }
+.detail-label { font-weight:600; }
+.detail-value { color:#444; }
+
+.badge{padding:2px 6px;border-radius:4px;font-size:12px;font-weight:600;color:#fff}
+.badge.fixed{background:#4caf50}
+.badge.per-hour{background:#03a9f4}
+.badge.neg{background:#ff9800}
+
+.delete-gig-btn{
+  border:0;background:#f44336;color:#fff;margin-top:8px;
+  padding:6px 8px;border-radius:4px;cursor:pointer
+}
+.delete-gig-btn i{pointer-events:none}
+.badge{padding:2px 6px;border-radius:4px;font-size:12px;font-weight:600;color:#fff}
+.badge.fixed     {background:#4caf50}
+.badge.per-hour  {background:#03a9f4}
+.badge.neg       {background:#ff9800}
+
+.order-card-right {display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.view-order-btn   {background:#03a9f4;color:#fff;padding:6px 10px;border-radius:4px;font-weight:600}
+.view-order-btn i {margin-left:4px}
+
+.order-details-modal .modal-header{
+  background:#002b5b;color:#fff;padding:12px 20px;border-top-left-radius:8px;border-top-right-radius:8px}
+.order-details-modal .close-modal-btn{color:#fff}
+
+#modalDeleteBtn{color:#f44336;font-weight:600;margin-left:8px;cursor:pointer;background:none;border:0}
+#modalDeleteBtn:hover{text-decoration:underline}

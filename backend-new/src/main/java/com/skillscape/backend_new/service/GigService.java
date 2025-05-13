@@ -5,7 +5,11 @@ import com.skillscape.backend_new.dto.GigResponse;
 import com.skillscape.backend_new.model.GigEntity;
 import com.skillscape.backend_new.model.UserEntity;
 import com.skillscape.backend_new.repository.GigRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,5 +90,16 @@ public class GigService {
     return gigRepository.findByUser(owner).stream()
         .map(this::convertToDTO)
         .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteGig(Long id, UserEntity owner) {
+    GigEntity gig = gigRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Gig not found"));
+
+    if (!gig.getUser().getId().equals(owner.getId())) {
+        throw new AccessDeniedException("You do not own this gig");
+    }
+        gigRepository.delete(gig);
     }
 }

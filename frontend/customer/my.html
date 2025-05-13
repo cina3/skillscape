@@ -187,10 +187,10 @@
                     </div>
                 </div>
                 <div class="order-card-right">
-                    <a href="#" class="view-order-btn">
-                        View
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+                <a href="#" class="view-order-btn">Edit Gig <i class="fas fa-pencil-alt"></i></a>
+                <button class="delete-gig-btn" title="Remove gig">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
                 </div>
             </div>
 
@@ -236,12 +236,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="order-card-right">
-                    <a href="#" class="view-order-btn">
-                        View
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+                            <div class="order-card-right">
+            <a href="#" class="view-order-btn">
+                View Gig <i class="fas fa-arrow-right"></i>
+            </a>
+            </div>
             </div>
 
             <div class="order-card">
@@ -488,15 +487,14 @@
                     </div>
 
                     <div class="order-actions-section">
-                        <button class="primary-action-btn">
-                            <i class="fas fa-pencil-alt"></i>
-                            Edit Listing
-                        </button>
-                        <button class="secondary-action-btn">
-                            <i class="fas fa-times"></i>
-                            Cancel Listing
-                        </button>
-                    </div>
+  <button class="primary-action-btn" id="modalPrimaryActionBtn">
+    <i class="fas fa-pencil-alt"></i> Edit Gig
+  </button>
+  <button class="secondary-action-btn" id="modalSecondaryActionBtn">
+    <i class="fas fa-pause"></i> Pause Gig
+  </button>
+  <button id="modalDeleteBtn">Delete Gig</button>
+</div>
                 </div>
             </div>
         </div>

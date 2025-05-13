@@ -221,23 +221,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!orderSpecificStylesInjected) {
         document.head.insertAdjacentHTML('beforeend', `
           <style>
-            /* Enhanced styles for the order form */
             .back-to-gig:hover { transform: translateX(-3px); border-color: var(--brand-blue); background-color: #f8faff; }
             .back-to-gig:hover i { transform: translateX(-2px); }
             .back-to-gig:active { transform: translateX(-3px) scale(0.96); }
             
-            /* Input field focus states and animations */
             #requestedPrice:hover { border-color: var(--brand-blue); box-shadow: 0 3px 8px rgba(0,0,0,0.08); }
             #requestedPrice:focus { border-color: var(--brand-blue); box-shadow: 0 0 0 3px rgba(39,67,125,0.15); outline: none; }
             #orderDescription:hover { border-color: var(--brand-blue); box-shadow: 0 3px 8px rgba(0,0,0,0.08); }
             #orderDescription:focus { border-color: var(--brand-blue); box-shadow: 0 0 0 3px rgba(39,67,125,0.15); outline: none; }
             
-            /* File upload area with improved hover effects */
             .file-upload-area:hover { border-color: var(--brand-blue); background-color: #f8faff; transform: translateY(-2px); }
             .file-upload-area:hover i { transform: translateY(-5px); }
             .drag-over { border-color: var(--brand-blue) !important; background-color: #f0f7ff !important; box-shadow: 0 5px 15px rgba(39,67,125,0.1) !important; }
             
-            /* File item styling */
             .uploaded-file { display: flex; align-items: center; padding: 10px 15px; background-color: #f8faff; border: 1px solid var(--border-color); border-radius: 8px; transition: all 0.2s; }
             .uploaded-file:hover { background-color: white; box-shadow: 0 3px 8px rgba(0,0,0,0.08); transform: translateY(-1px); }
             .uploaded-file .fas { margin-right: 10px; color: var(--brand-blue); }
@@ -246,7 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .uploaded-file .remove-file:hover { opacity: 1; transform: scale(1.15); }
             .uploaded-file .remove-file:active { transform: scale(0.9); }
             
-            /* Order button and price interactions */
             .order-confirm-button:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(26,95,158,0.25) !important; }
             .order-confirm-button:active { transform: translateY(-1px) scale(0.98); }
             .price-input-wrapper:hover .currency-symbol { color: var(--brand-blue); }
@@ -254,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .payment-info:hover i { transform: scale(1.1); }
             .payment-info i { transition: transform 0.2s; }
             
-            /* Enhanced price change animations */
             .animated-price.slide-up { transform: translateY(-100%); opacity: 0; }
             .animated-price.slide-down { transform: translateY(100%); opacity: 0; }
             .price-changed#summaryPrice, .price-changed#totalPrice {
@@ -265,21 +259,17 @@ document.addEventListener('DOMContentLoaded', () => {
             .price-changed.price-proposal-section { border-left-color: #2e7d32; background: linear-gradient(to right, rgba(46,125,50,0.05), rgba(46,125,50,0.01)); }
             .pulse-circle { display: none !important; }
             
-            /* Link hover effects */
             .browse-files:hover { text-decoration: none; }
             .payment-info a:hover { text-decoration: underline; }
             
-            /* Card hover effects */
             .gig-title-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: translateY(-2px); }
             .order-summary:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.12); }
             
-            /* Enhanced price change animations */
             .animated-price.slide-up { transform: translateY(-100%); opacity: 0; }
             .animated-price.slide-down { transform: translateY(100%); opacity: 0; }
             .price-changed#summaryPrice, .price-changed#totalPrice { color: #2e7d32; font-weight: 600; }
             .price-changed.price-proposal-section { border-left-color: #2e7d32; background: linear-gradient(to right, rgba(46,125,50,0.05), rgba(46,125,50,0.01)); }
             
-            /* Custom slider styling */
             input[type=range] {
               -webkit-appearance: none;
               height: 5px;
@@ -306,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
               box-shadow: 0 0 6px rgba(26,95,158,0.4);
             }
             
-            /* Success and processing states */
             .order-confirm-button.processing, .order-confirm-button.success { position: relative; }
             .order-confirm-button.processing { background: linear-gradient(135deg, #5c8eb9, #3c6e97); }
             .order-confirm-button.success { background: linear-gradient(135deg, #4caf50, #2e7d32); }
@@ -638,6 +627,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const ratingValueEl = document.getElementById('ratingValue');
     const reviewCountEl = document.getElementById('reviewCount');
     const totalReviewCountEl = document.getElementById('totalReviewCount');
+     // 1) What You'll Get
+  const youGetEl = document.getElementById('whatYouGetList');
+  if (youGetEl && Array.isArray(gig.whatYouGet)) {
+    youGetEl.innerHTML = gig.whatYouGet
+      .map(item => `<li><i class="fas fa-check-circle"></i> ${escapeHTML(item)}</li>`)
+      .join('');
+  }
+
+  // 2) Tools & Technology
+  const techEl = document.getElementById('toolsTech');
+  if (techEl && Array.isArray(gig.technology)) {
+    techEl.textContent = gig.technology.join(' / ');
+  }
+
+  // 3) Languages
+  const langEl = document.getElementById('gigLanguages');
+  if (langEl && Array.isArray(gig.languages)) {
+    langEl.textContent = gig.languages.join(', ');
+  }
+
+  // 4) Delivery Time
+  const dtEl = document.getElementById('gigDeliveryTime');
+  if (dtEl && gig.deliveryTime != null) {
+    // if your API returns a number of days:
+    dtEl.textContent = typeof gig.deliveryTime === 'number'
+      ? `About ${gig.deliveryTime} day${gig.deliveryTime !== 1 ? 's' : ''}`
+      : gig.deliveryTime;
+  }
 
     if (gigTitleEl) gigTitleEl.textContent = gig.title || 'N/A';
     if (gigDescriptionEl) gigDescriptionEl.textContent = gig.description || 'No description available.';

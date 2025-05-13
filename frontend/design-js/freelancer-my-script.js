@@ -1,204 +1,147 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const viewOrderButtons = document.querySelectorAll('.view-order-btn');
-    const modal = document.getElementById('orderDetailsModal');
-    const closeModalButton = modal ? modal.querySelector('.close-modal-btn') : null;
-    const actionModal = document.getElementById('actionModal');
-    const closeActionModalButton = actionModal ? actionModal.querySelector('.close-action-modal') : null;
-    const leaveRatingButtons = document.querySelectorAll('.leave-rating-btn');
-    const stars = actionModal ? actionModal.querySelectorAll('.star-item') : [];
-    const ratingText = actionModal ? actionModal.querySelector('.rating-text') : null;
-    const submitRatingButton = actionModal ? actionModal.querySelector('#submitRatingBtn') : null;
-    const cancelRatingButton = actionModal ? actionModal.querySelector('#cancelRatingBtn') : null;
-    const ratingForm = actionModal ? actionModal.querySelector('#ratingForm') : null;
+console.log('[My-Gigs] script loaded');
 
-    const viewBidsButtons = document.querySelectorAll('.view-bids-btn');
-    const bidSortSelects = document.querySelectorAll('.bid-filter-select, #bidSortSelect');  
-    const bidTabButtons = document.querySelectorAll('.bid-tab-button');
+const API_BASE = 'http://localhost:8080/api';
+const TOKEN    = localStorage.getItem('authToken') || localStorage.getItem('token');
 
-    if (viewOrderButtons.length > 0 && modal && closeModalButton) {
-        viewOrderButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                modal.style.display = 'flex';
-                setTimeout(() => {
-                    modal.classList.add('visible');
-                }, 10); 
-            });
-        });
+const ok  = typeof successMessage === 'function' ? successMessage : m => alert(m);
+const bad = typeof errorMessage   === 'function' ? errorMessage   : m => alert(`❌ ${m}`);
 
-        closeModalButton.addEventListener('click', function() {
-            modal.classList.remove('visible');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300); 
-        });
+const $  = (sel, scope = document) => scope.querySelector(sel);
+const $$ = (sel, scope = document) => Array.from(scope.querySelectorAll(sel));
+const pretty = c => c.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, v => v.toUpperCase());
 
-        modal.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                closeModalButton.click();
-            }
-        });
-    } else {
-        if (!modal) console.error("Modal with ID 'orderDetailsModal' not found.");
-        if (!closeModalButton) console.error("Close button for modal not found.");
-        if (viewOrderButtons.length === 0) console.warn("No '.view-order-btn' elements found.");
-    }
+let currentGig = null;
 
-    if (leaveRatingButtons.length > 0 && actionModal && closeActionModalButton && ratingForm) {
-        leaveRatingButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                const orderTitle = this.closest('.order-card-center').querySelector('.order-title').textContent;
-                const orderImage = this.closest('.order-card').querySelector('.order-image').style.backgroundImage;
-                
-                actionModal.querySelector('.service-info h4').textContent = orderTitle;
-                actionModal.querySelector('.service-image').style.backgroundImage = orderImage;
-                
-                actionModal.style.display = 'flex';
-                setTimeout(() => {
-                    actionModal.classList.add('visible');
-                }, 10);
-            });
-        });
+function pricingBadge(g) {
+  if (!g.isPriceFixed) return '<span class="badge neg">Negotiable</span>';
+  return g.isPerHourPricing
+    ? '<span class="badge per-hour">Hourly</span>'
+    : '<span class="badge fixed">Fixed</span>';
+}
 
-        closeActionModalButton.addEventListener('click', function() {
-            actionModal.classList.remove('visible');
-            setTimeout(() => {
-                actionModal.style.display = 'none';
-                resetRatingForm();
-            }, 300);
-        });
+function createCard(g) {
+  const div = document.createElement('div');
+  div.className = 'order-card';
+  div.dataset.id = g.id;
+  div.gig = g;                        
 
-        actionModal.addEventListener('click', function(event) {
-            if (event.target === actionModal) {
-                closeActionModalButton.click();
-            }
-        });
+  div.innerHTML = `
+    <div class="order-card-left">
+      <div class="order-image" style="background-image:url('${g.coverImageUrl || '../assets/temp.png'}')">
+        <div class="order-provider">${pretty(g.category)}</div>
+      </div>
+    </div>
 
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                const ratingValue = this.dataset.value;
-                setActiveStars(ratingValue);
-                if (ratingText) ratingText.textContent = getRatingText(ratingValue);
-                if (submitRatingButton) submitRatingButton.disabled = false;
-            });
-        });
+    <div class="order-card-center">
+      <div class="order-status active"><i class="fas fa-bolt"></i> Active</div>
+      <h3 class="order-title">${g.title}</h3>
 
-        if (cancelRatingButton) {
-            cancelRatingButton.addEventListener('click', () => {
-                closeActionModalButton.click();
-            });
-        }
-        
-        ratingForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            console.log('Rating submitted:', {
-                rating: document.querySelector('.star-item.active:last-child')?.dataset.value,
-                review: document.getElementById('reviewText').value,
-                reason: document.getElementById('communicationReason').value
-            });
-            alert('Rating submitted successfully!'); 
-            closeActionModalButton.click();
-        });
+      <div class="order-details">
+        <div class="order-detail">
+          <span class="detail-label">Price:</span>
+          <span class="detail-value">$${g.price}</span>
+          ${pricingBadge(g)}
+        </div>
+        <div class="order-detail">
+          <span class="detail-label">Delivery:</span>
+          <span class="detail-value">${g.deliveryTimeDays} days</span>
+        </div>
+        <div class="order-detail">
+          <span class="detail-label">Languages:</span>
+          <span class="detail-value">${(g.languages || []).join(', ') || '—'}</span>
+        </div>
+        <div class="order-detail">
+          <span class="detail-label">Tools:</span>
+          <span class="detail-value">${g.toolsAndTechnology || '—'}</span>
+        </div>
+      </div>
+    </div>
 
-    } else {
-        if (leaveRatingButtons.length > 0) {
-            if (!actionModal) console.error("Action modal with ID 'actionModal' not found.");
-            if (!closeActionModalButton) console.error("Close button for action modal not found.");
-            if (!ratingForm) console.error("Rating form with ID 'ratingForm' not found.");
-        }
-    }
+    <div class="order-card-right">
+      <a href="#" class="view-order-btn">View Gig <i class="fas fa-arrow-right"></i></a>
+    </div>`;
+  return div;
+}
 
-    function setActiveStars(rating) {
-        stars.forEach(s => {
-            s.classList.remove('active');
-            if (parseInt(s.dataset.value) <= parseInt(rating)) {
-                s.classList.add('active');
-            }
-        });
-    }
+const modal = $('#orderDetailsModal');
 
-    function getRatingText(rating) {
-        switch (rating) {
-            case '1': return 'Poor';
-            case '2': return 'Fair';
-            case '3': return 'Good';
-            case '4': return 'Very Good';
-            case '5': return 'Excellent';
-            default: return 'Select a rating';
-        }
-    }
+function openModal(g) {
+  currentGig = g;
+  $('#modalGigTitle').textContent       = g.title;
+  $('#modalCategoryValue').textContent  = pretty(g.category);
+  $('#modalPriceValue').textContent     = `$${g.price}`;
+  $('#modalDateValue').textContent      = new Date(g.createdAt || Date.now()).toLocaleDateString();
+  $('#modalDescriptionContent').textContent = g.description;
 
-    function resetRatingForm() {
-        setActiveStars(0);
-        if (ratingText) ratingText.textContent = 'Select a rating';
-        if (submitRatingButton) submitRatingButton.disabled = true;
-        if (ratingForm) ratingForm.reset();
-    }
+  const files = $('#modalFilesList');
+  files.innerHTML = g.fileUrls && g.fileUrls.length
+      ? g.fileUrls.map(u => `<a href="${u}" target="_blank">${u.split('/').pop()}</a>`).join('<br>')
+      : '—';
 
-    viewBidsButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bidsList = this.nextElementSibling;
-            const icon = this.querySelector('i');
-            if (bidsList && bidsList.classList.contains('bids-list')) {
-                const isVisible = bidsList.style.display === 'block';
-                bidsList.style.display = isVisible ? 'none' : 'block';
-                if (icon) {
-                    icon.classList.toggle('fa-chevron-down', isVisible);
-                    icon.classList.toggle('fa-chevron-up', !isVisible);
-                }
-            }
-        });
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('visible'), 10);
+}
+
+function closeModal() {
+  modal.classList.remove('visible');
+  setTimeout(() => (modal.style.display = 'none'), 300);
+  currentGig = null;
+}
+
+async function deleteGig() {
+  if (!currentGig) return;
+  if (!confirm('Delete this gig permanently?')) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/gigs/${currentGig.id}`, {
+      method:  'DELETE',
+      headers: TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    bidSortSelects.forEach(select => {
-        select.addEventListener('change', function() {
-            const bidsListContainer = this.closest('.bid-section, .bid-tab-content').querySelector('.bids-list');
-            if (bidsListContainer) {
-                sortBids(bidsListContainer, this.value);
-            }
-        });
+    document.querySelector(`.order-card[data-id='${currentGig.id}']`)?.remove();
+    closeModal();
+    ok('Gig deleted');
+  } catch (err) {
+    console.error(err);
+    bad('Failed to delete gig.');
+  }
+}
+
+async function loadGigs() {
+  const grid = $('.orders-grid');
+  grid.textContent = 'Loading…';
+  console.log('[My-Gigs] fetching /gigs/my-gigs – token?', !!TOKEN);
+
+  try {
+    const res = await fetch(`${API_BASE}/gigs/my-gigs`, {
+      headers: TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    function sortBids(bidsListContainer, sortBy) {
-        const bids = Array.from(bidsListContainer.querySelectorAll('.bid-card'));
-        bids.sort((a, b) => {
-            const priceA = parseFloat(a.dataset.price);
-            const priceB = parseFloat(b.dataset.price);
-            const ratingA = parseFloat(a.dataset.rating);
-            const ratingB = parseFloat(b.dataset.rating);
+    const gigs = await res.json();
+    grid.innerHTML = gigs.length ? '' : '<p>You have no gigs yet.</p>';
+    gigs.forEach(g => grid.appendChild(createCard(g)));
+  } catch (err) {
+    console.error(err);
+    grid.innerHTML = '<p class="error">Failed to load gigs.</p>';
+  }
+}
 
-            switch (sortBy) {
-                case 'price-asc':
-                    return priceA - priceB;
-                case 'price-desc':
-                    return priceB - priceA;
-                case 'rating-desc':
-                    return ratingB - ratingA;
-                default:
-                    return 0;
-            }
-        });
-        bids.forEach(bid => bidsListContainer.appendChild(bid));
+document.addEventListener('DOMContentLoaded', () => {
+  loadGigs();
+
+  $('.orders-grid').addEventListener('click', e => {
+    const view = e.target.closest('.view-order-btn');
+    if (view) {
+      e.preventDefault();
+      openModal(view.closest('.order-card').gig);
     }
-    
-    bidTabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const targetTabId = this.dataset.target;
-            
-            bidTabButtons.forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.bid-tab-content').forEach(content => {
-                if (content.closest('#orderDetailsModal')) { 
-                    content.style.display = 'none';
-                }
-            });
-            
-            this.classList.add('active');
-            const targetContent = document.getElementById(targetTabId);
-            if (targetContent) {
-                targetContent.style.display = 'block';
-            }
-        });
-    });
+  });
 
+  $('#orderDetailsModal .close-modal-btn').onclick = closeModal;
+  modal.addEventListener('click', e => {
+    if (e.target.id === 'orderDetailsModal') closeModal();
+  });
+  $('#modalDeleteBtn').onclick = deleteGig;
 });

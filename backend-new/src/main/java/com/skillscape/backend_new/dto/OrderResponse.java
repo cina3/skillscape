@@ -1,4 +1,3 @@
-// src/main/java/com/skillscape/backend_new/dto/OrderResponseDto.java
 package com.skillscape.backend_new.dto;
 
 import com.skillscape.backend_new.model.Status;
