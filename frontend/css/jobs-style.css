@@ -746,6 +746,10 @@
     background-color: var(--status-active);
 }
 
+.status-btn[data-status="active"] {
+    display: none !important;
+}
+
 .status-btn.in-progress {
     background-color: var(--status-in-progress);
 }

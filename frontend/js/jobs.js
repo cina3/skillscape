@@ -64,7 +64,8 @@ function mapApiOrderToJobFormat(o) {
     status: o.status.toLowerCase(),
     description: o.requirements,
     clientFiles: o.uploadUrls || [],
-    progress: o.percentage === null || o.percentage === undefined ? 0 : o.percentage 
+    progress: o.percentage === null || o.percentage === undefined ? 0 : o.percentage,
+    deliveredUrls: o.deliveryFileUrls || []
   };
 }
 
@@ -82,11 +83,10 @@ async function fetchJobs() {
 
 function filterJobs() {
   const status = document.getElementById('statusFilter').value;
-  renderJobs(
-    status === 'all'
-      ? allJobs
-      : allJobs.filter(j => j.status === status)
-  );
+  const jobs = status === 'all'
+    ? allJobs.filter(j => j.status !== 'cancelled')
+    : allJobs.filter(j => j.status === status);
+  renderJobs(jobs);
 }
 
 function renderJobs(jobs) {
@@ -181,89 +181,22 @@ function initModals() {
         
         apiFetch(`http://localhost:8080/api/orders/${orderIdToVerify}`)
           .then(verifiedOrder => {
+            let newlyMappedJob;
             if (verifiedOrder) {
               console.log(`Verification GET for job ${orderIdToVerify} - RAW percentage from server: ${verifiedOrder.percentage}`);
-              
-              const newlyMappedJob = mapApiOrderToJobFormat(verifiedOrder); 
+              newlyMappedJob = mapApiOrderToJobFormat(verifiedOrder); 
               console.log(`Verification GET for job ${orderIdToVerify} - MAPPED progress for frontend: ${newlyMappedJob.progress}`);
-
-
-              if (currentJob && currentJob.id === newlyMappedJob.id) {
-                Object.assign(currentJob, newlyMappedJob);
-              }
-              const jobIndexInAllJobs = allJobs.findIndex(j => j.id === newlyMappedJob.id);
-              if (jobIndexInAllJobs !== -1) {
-                allJobs[jobIndexInAllJobs] = newlyMappedJob;
-              }
-              
-              const progressSlider = document.getElementById('progressSlider');
-              const progressValueText = document.getElementById('progressValue');
-              
-              progressValueText.textContent = `${newlyMappedJob.progress}%`;
-              progressSlider.value = newlyMappedJob.progress;
-              progressSlider.style.setProperty('--progress-percent', `${newlyMappedJob.progress}%`);
-
-              if (document.getElementById('jobDetailsModal').classList.contains('visible') && currentJob && currentJob.id === newlyMappedJob.id) {
-                openJobModal(currentJob);
-              }
-
-              if (String(newlyMappedJob.progress) === '100') {
-                if (confirm('Progress is 100%. Mark job as DELIVERED?')) {
-                  changeStatus('DELIVERED')
-                    .then(() => {
-                      alert('Job successfully marked as DELIVERED.');
-                      if (document.getElementById('jobDetailsModal').classList.contains('visible') && currentJob) {
-                          const finalUpdatedJob = allJobs.find(j => j.id === currentJob.id);
-                          if (finalUpdatedJob) openJobModal(finalUpdatedJob);
-                      }
-                    })
-                    .catch(err => {
-                      console.error('Failed to mark job as DELIVERED after progress update:', err);
-                      alert(`Failed to mark job as DELIVERED: ${err.message}`);
-                    });
-                } else {
-                  fetchJobs(); 
-                }
-              } else {
-                fetchJobs();
-              }
             } else {
-              console.log(`Verification GET request for job ${orderIdToVerify} - Order not found or no content. Display may not reflect true server state if PATCH response was also empty.`);
+              console.log(`Verification GET request for job ${orderIdToVerify} - Order not found or no content. Using PATCH response if available.`);
               if (!updatedOrderFromServer) {
+                console.error("No data from PATCH response and verification failed. UI may be stale. Re-fetching all jobs.");
                 fetchJobs(); 
                 return;
               }
-              const newlyMappedJob = mapApiOrderToJobFormat(updatedOrderFromServer);
+              newlyMappedJob = mapApiOrderToJobFormat(updatedOrderFromServer);
               console.warn(`Using potentially stale data from PATCH response for job ${orderIdToVerify} as verification failed.`);
-              if (currentJob && currentJob.id === newlyMappedJob.id) {
-                Object.assign(currentJob, newlyMappedJob);
-              }
-              const jobIndexInAllJobs = allJobs.findIndex(j => j.id === newlyMappedJob.id);
-              if (jobIndexInAllJobs !== -1) {
-                allJobs[jobIndexInAllJobs] = newlyMappedJob;
-              }
-              const progressSlider = document.getElementById('progressSlider');
-              const progressValueText = document.getElementById('progressValue');
-              progressValueText.textContent = `${newlyMappedJob.progress}%`;
-              progressSlider.value = newlyMappedJob.progress;
-              progressSlider.style.setProperty('--progress-percent', `${newlyMappedJob.progress}%`);
-              if (document.getElementById('jobDetailsModal').classList.contains('visible') && currentJob && currentJob.id === newlyMappedJob.id) {
-                openJobModal(currentJob);
-              }
-              if (String(newlyMappedJob.progress) === '100') {
-                fetchJobs();
-              }
             }
-          })
-          .catch(err => {
-            console.error(`Error fetching job ${orderIdToVerify} for verification:`, err);
-            if (!updatedOrderFromServer) {
-                console.error("No data from PATCH response and verification failed. UI may be stale.");
-                fetchJobs(); 
-                return;
-            }
-            const newlyMappedJob = mapApiOrderToJobFormat(updatedOrderFromServer);
-            console.warn(`Using potentially stale data from PATCH response for job ${orderIdToVerify} due to verification error.`);
+
             if (currentJob && currentJob.id === newlyMappedJob.id) {
               Object.assign(currentJob, newlyMappedJob);
             }
@@ -271,16 +204,38 @@ function initModals() {
             if (jobIndexInAllJobs !== -1) {
               allJobs[jobIndexInAllJobs] = newlyMappedJob;
             }
+            
             const progressSlider = document.getElementById('progressSlider');
             const progressValueText = document.getElementById('progressValue');
+            
             progressValueText.textContent = `${newlyMappedJob.progress}%`;
             progressSlider.value = newlyMappedJob.progress;
             progressSlider.style.setProperty('--progress-percent', `${newlyMappedJob.progress}%`);
+
             if (document.getElementById('jobDetailsModal').classList.contains('visible') && currentJob && currentJob.id === newlyMappedJob.id) {
               openJobModal(currentJob);
             }
-            if (String(newlyMappedJob.progress) === '100') {
-              fetchJobs();
+
+          })
+          .catch(err => {
+            console.error(`Error fetching job ${orderIdToVerify} for verification:`, err);
+            if (updatedOrderFromServer) {
+                const newlyMappedJob = mapApiOrderToJobFormat(updatedOrderFromServer);
+                console.warn(`Using potentially stale data from PATCH response for job ${orderIdToVerify} due to verification error.`);
+                if (currentJob && currentJob.id === newlyMappedJob.id) Object.assign(currentJob, newlyMappedJob);
+                const jobIndexInAllJobs = allJobs.findIndex(j => j.id === newlyMappedJob.id);
+                if (jobIndexInAllJobs !== -1) allJobs[jobIndexInAllJobs] = newlyMappedJob;
+                
+                const progressSlider = document.getElementById('progressSlider');
+                const progressValueText = document.getElementById('progressValue');
+                progressValueText.textContent = `${newlyMappedJob.progress}%`;
+                progressSlider.value = newlyMappedJob.progress;
+                progressSlider.style.setProperty('--progress-percent', `${newlyMappedJob.progress}%`);
+                if (document.getElementById('jobDetailsModal').classList.contains('visible') && currentJob && currentJob.id === newlyMappedJob.id) {
+                    openJobModal(currentJob);
+                }
+            } else {
+                 console.error("No data from PATCH response and verification failed. UI may be stale.");
             }
           });
       }).catch(err => {
@@ -292,24 +247,35 @@ function initModals() {
   document.getElementById('submitDelivery')
     .addEventListener('click', () => {
       if (!currentJob) return;
-      changeStatus('DELIVERED').then(() => {
-        alert('Work delivered!');
-        closeAllModals();
-      });
+      const uploaded = document.getElementById('uploadedFilesList')
+        .querySelectorAll('.uploaded-file-item .uploaded-file-name');
+      const urls = Array.from(uploaded).map((el, i) =>
+        `/uploads/order_${currentJob.id}/file${i + 1}_${el.textContent.replace(/\s+/g, '_')}`
+      );
+      currentJob.deliveredUrls = urls;
+      currentJob.progress = 100;
+      const idx = allJobs.findIndex(j => j.id === currentJob.id);
+      if (idx !== -1) allJobs[idx] = currentJob;
+      changeStatusAndRefresh('delivered');
+      closeAllModals();
+    });
+
+  document.getElementById('getTheJobBtn')
+    .addEventListener('click', () => {
+      if (!currentJob) return;
+      const s = currentJob.status;
+      if (s === 'pending') changeStatusAndRefresh('in_progress');
+      else if (s === 'in_progress') changeStatusAndRefresh('delivered');
+      else if (s === 'delivered') changeStatusAndRefresh('in_progress');
     });
 
   document.querySelectorAll('#jobDetailsModal .status-buttons .status-btn').forEach(button => {
+    if (button.id === 'getTheJobBtn') return;
+
     button.addEventListener('click', () => {
       if (currentJob) {
         const newStatus = button.dataset.status;
-        changeStatus(newStatus.toUpperCase()).then(() => {
-          currentJob.status = newStatus; 
-          openJobModal(currentJob);
-          alert(`Job status changed to ${newStatus.toUpperCase()}`);
-        }).catch(err => {
-          console.error('Failed to change status', err);
-          alert(`Failed to change status: ${err.message}`);
-        });
+        changeStatusAndRefresh(newStatus.toUpperCase());
       }
     });
   });
@@ -349,7 +315,7 @@ function openJobModal(job) {
   document.getElementById('modalDescription').textContent = job.description || 'No requirements provided.';
 
   const modalStatus = document.getElementById('modalStatus');
-  const statusText = job.status.charAt(0).toUpperCase() + job.status.slice(1);
+  const statusText = job.status.charAt(0).toUpperCase() + job.status.slice(1).replace('_', ' ');
   modalStatus.className = `info-value status-indicator ${job.status.toLowerCase()}`;
   modalStatus.innerHTML = `<i class="fas ${getStatusIconClass(job.status)}"></i> ${statusText}`;
 
@@ -391,13 +357,41 @@ function openJobModal(job) {
   progressValue.textContent = `${job.progress || 0}%`;
   progressSlider.style.setProperty('--progress-percent', `${job.progress || 0}%`);
 
-  document.querySelectorAll('#jobDetailsModal .status-buttons .status-btn').forEach(button => {
-    button.classList.remove('selected');
-    if (button.dataset.status === job.status.toLowerCase()) {
-      button.classList.add('selected');
-    }
-  });
-  
+  const sc = document.querySelector('.status-controls-section');
+  const oa = document.querySelector('.order-actions-section');
+  const btnA = document.getElementById('getTheJobBtn');
+  const btnIP = document.querySelector('.status-buttons [data-status="in_progress"]');
+  const btnC = document.querySelector('.status-buttons [data-status="cancelled"]');
+  const slider = document.getElementById('progressSlider');
+  const upBtn = document.getElementById('updateProgressBtn');
+
+  sc.style.display = 'block';
+  oa.style.display = 'flex';
+  [btnA, btnIP, btnC].forEach(b => b && (b.style.display = 'none'));
+  slider.style.display = 'block';
+  upBtn.style.display = 'inline-block';
+
+  if (job.status === 'pending') {
+    btnA.textContent = 'Accept Job';
+    btnA.style.display = 'inline-flex';
+    btnC.style.display = 'inline-flex';
+    slider.style.display = 'none';
+    upBtn.style.display = 'none';
+  } else if (job.status === 'in_progress') {
+    btnA.textContent = 'Mark Delivered';
+    btnA.style.display = 'inline-flex';
+    btnC.style.display = 'inline-flex';
+  } else if (job.status === 'delivered') {
+    btnIP.textContent = 'Reopen Job';
+    btnIP.style.display = 'inline-flex';
+    btnC.style.display = 'inline-flex';
+    slider.style.display = 'none';
+    upBtn.style.display = 'none';
+  } else if (job.status === 'cancelled') {
+    sc.style.display = 'none';
+    oa.style.display = 'none';
+  }
+
   document.getElementById('jobDetailsModal').classList.add('visible');
   document.body.style.overflow = 'hidden';
 }
@@ -410,12 +404,36 @@ function closeAllModals() {
 
 function changeStatus(newStatus) {
   if (!currentJob) return Promise.reject(new Error("No current job selected"));
+
   return apiFetch(
     `http://localhost:8080/api/orders/${currentJob.id}/status?status=${newStatus.toUpperCase()}`,
     { method: 'PATCH' }
   ).then(() => {
     fetchJobs();
   });
+}
+
+function changeStatusAndRefresh(newStatus) {
+    if (!currentJob) return;
+    const upperNewStatus = newStatus.toUpperCase();
+
+    changeStatus(upperNewStatus).then(() => {
+        setTimeout(() => {
+            const updatedJob = allJobs.find(j => j.id === currentJob.id);
+            if (updatedJob) {
+                currentJob = updatedJob; 
+                openJobModal(currentJob);
+            } else {
+                closeAllModals();
+            }
+            alert(`Job status successfully changed to ${upperNewStatus}.`);
+        }, 500);
+    }).catch(err => {
+        console.error(`Failed to change status to ${upperNewStatus}`, err);
+        alert(`Failed to change status: ${err.message}`);
+        const stillCurrentJob = allJobs.find(j => j.id === currentJob.id);
+        if (stillCurrentJob) openJobModal(stillCurrentJob);
+    });
 }
 
 function formatDate(iso) {
