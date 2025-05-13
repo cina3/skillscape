@@ -29,12 +29,6 @@
           <div class="order-info-section">
             <div class="info-grid">
               <div class="info-item">
-                <span class="info-label">Status</span>
-                <span class="info-value status-indicator active" id="modalGigStatus">
-                  <i class="fas fa-bolt"></i> Active
-                </span>
-              </div>
-              <div class="info-item">
                 <span class="info-label">Listed</span>
                 <span class="info-value" id="modalDateValue">—</span>
               </div>
@@ -46,6 +40,18 @@
                 <span class="info-label">Price</span>
                 <span class="info-value price" id="modalPriceValue">—</span>
               </div>
+              <div class="info-item">
+                <span class="info-label">Pricing Type</span>
+                <span class="info-value" id="modalPricingTypeValue">—</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Languages</span>
+                <span class="info-value" id="modalLanguagesValue">—</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Tools & Tech</span>
+                <span class="info-value" id="modalToolsValue">—</span>
+              </div>
             </div>
           </div>
 
@@ -53,29 +59,23 @@
             <h3>Gig Description</h3>
             <div class="request-content" id="modalDescriptionContent">—</div>
           </div>
+          
+          <div class="what-you-get-section">
+            <h3>What You Get</h3>
+            <ul class="what-you-get-list" id="modalWhatYouGetList">
+              <li class="what-you-get-item"><i class="fas fa-check-circle"></i> Loading features...</li>
+            </ul>
+          </div>
 
           <div class="order-files-section">
             <h3>Attached Files</h3>
             <div class="files-list" id="modalFilesList">—</div>
           </div>
 
-          <div class="bid-tab">
-            <div class="bid-tab-header">
-              <button class="bid-tab-button active" data-target="messagesTabModal">Messages</button>
-            </div>
-            <div id="messagesTabModal" class="bid-tab-content">
-              <div class="order-messages-section">No messages yet…</div>
-            </div>
-          </div>
-
           <div class="order-actions-section">
-            <button class="primary-action-btn" id="modalPrimaryActionBtn">
-              <i class="fas fa-pencil-alt"></i> Edit Gig
+            <button class="delete-action-btn" id="modalDeleteBtn" onclick="deleteGig()">
+              <i class="fas fa-trash-alt"></i> Delete Gig
             </button>
-            <button class="secondary-action-btn" id="modalSecondaryActionBtn">
-              <i class="fas fa-pause"></i> Pause Gig
-            </button>
-            <button id="modalDeleteBtn">Delete Gig</button>
           </div>
         </div>
       </div>
