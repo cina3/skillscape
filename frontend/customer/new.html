@@ -1,215 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Create New Listing – SkillScape</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-  />
-  <link rel="stylesheet" href="../css/customer-shared-style.css" />
-  <link rel="stylesheet" href="../css/customer-new-style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Listing - SkillScape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/customer-shared-style.css"> 
+    <link rel="stylesheet" href="../css/freelancer-new-style.css">
 </head>
 <body>
-  <div id="header-placeholder"></div>
-  <div id="hamburger-menu-placeholder"></div>
+    <div id="header-placeholder"></div>
+    <div id="hamburger-menu-placeholder"></div>
 
-  <main class="new-listing-container">
-    <div class="page-header">
-      <h1>Create a New Listing</h1>
-      <p class="subtitle">
-        Describe your project in detail to find the perfect freelancer.
-      </p>
+    <main class="new-listing-container"> 
+        <div class="page-header">
+            <h1>Create a New Listing</h1>
+            <p class="subtitle">Describe your project in detail to find the perfect freelancer.</p>
+        </div>
+
+        <form id="newListingForm" class="listing-form">
+            <div class="form-section">
+                <h2 class="section-title">Basic Information</h2>
+                
+                <div class="form-group">
+                    <label for="listingTitle">Listing Title <span class="required">*</span></label>
+                    <input type="text" id="listingTitle" name="title" placeholder="E.g., 'Website Redesign for E-commerce Store'" required>
+                    <small class="form-hint">Be clear and specific about what you need.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category <span class="required">*</span></label>
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="WEB_DESIGN">Web Design</option>
+                        <option value="ENGINEERING">Engineering</option>
+                        <option value="ART_DESIGN">Art & Design</option>
+                        <option value="MUSIC">Music</option>
+                        <option value="VIDEO_EDITING">Video Editing</option>
+                        <option value="IT_SOFTWARE">IT & Software</option>
+                        <option value="AI_SERVICES">AI Services</option>
+                        <option value="MARKETING">Marketing</option>
+                        <option value="FINANCE">Finance</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Project Details</h2>
+                
+                <div class="form-group">
+                    <label for="description">Project Description <span class="required">*</span></label>
+                    <textarea id="description" name="description" rows="6" placeholder="Provide a detailed description of your project requirements..." required></textarea>
+                    <small class="form-hint">Be detailed about what you need, your process, and what freelancers can expect.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="whatYouGet">Deliverables / What You Need (Max 5 items) <span class="required">*</span></label>
+                    <textarea id="whatYouGet" name="whatYouGet" rows="5" placeholder="List key deliverables needed, e.g., 'Source files', 'Multiple revisions', 'Final design in high resolution'" required></textarea>
+                    <small class="form-hint">Enter each item on a new line. Limit to 5 items. This will be displayed as a list.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="toolsAndTechnology">Required Tools & Technology</label>
+                    <input type="text" id="toolsAndTechnology" name="toolsAndTechnology" placeholder="E.g., 'Adobe Photoshop, Figma, Python, Django'">
+                    <small class="form-hint">Specify main tools or technologies needed for this project.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="languages">Required Languages/Skills <span class="required">*</span></label>
+                    <input type="text" id="languages" name="languages" placeholder="E.g., 'English, Spanish, JavaScript, React'">
+                    <small class="form-hint">List languages needed for this project (spoken or programming), separated by commas.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="coverImage">Cover Image</label>
+                    <div class="cover-image-container">
+                        <div class="cover-image-header">
+                            <div class="size-limit-badge">
+                                Max 2MB
+                            </div>
+                        </div>
+                        <input type="file" id="coverImage" name="coverImage" accept="image/*" style="display: none;">
+                        <div id="coverImagePreview" class="cover-preview">
+                            <img src="#" alt="Cover Image Preview" style="display:none;" />
+                            <div class="placeholder">
+                                <i class="fas fa-image"></i>
+                                <span>No image selected</span>
+                            </div>
+                        </div>
+                        <div class="cover-actions">
+                            <label for="coverImage" class="btn-upload">
+                                Choose Cover Image
+                            </label>
+                            <button type="button" id="removeCoverImage" class="gallery-action-btn" style="display:none">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                    <small class="form-hint">Upload a representative image for your project (JPG, PNG, GIF).</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Project Attachments</label>
+                    <div class="file-upload-container">
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <p>Drag and drop files here</p>
+                            <p>or <span class="browse-files">browse files</span></p>
+                            <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx" style="display:none">
+                        </div>
+                        <div class="gallery-container">
+                            <div class="gallery-header">
+                                <div class="gallery-limits">
+                                    <span class="gallery-count" id="galleryCount">
+                                        0/5 files
+                                    </span>
+                                    <span class="size-limit-badge" id="totalGallerySize">
+                                        0 MB / 25MB
+                                    </span>
+                                </div>
+                                <div class="gallery-actions">
+                                    <button type="button" id="clearGallery" class="gallery-action-btn" style="display:none">
+                                        Clear
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="gallery-progress" id="galleryProgress">
+                                <div class="gallery-progress-bar" id="galleryProgressBar" style="width: 0%"></div>
+                            </div>
+                            <div class="uploaded-files" id="uploadedFiles"></div>
+                        </div>
+                    </div>
+                    <small class="form-hint">Add up to 5 files to help explain your project. Each file must be under 5MB.</small>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Budget & Timeline</h2>
+                
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="pricingNature">Pricing Nature <span class="required">*</span></label>
+                        <select id="pricingNature" name="pricingNature" required>
+                            <option value="" disabled selected>Select pricing nature</option>
+                            <option value="fixed_direct">Fixed Price</option>
+                            <option value="negotiable">Negotiable (Open to Bids)</option>
+                        </select>
+                        <small class="form-hint">Choose if your budget is firm or open to negotiation.</small>
+                    </div>
+                    
+                    <div class="form-group half-width">
+                        <label for="billingUnit">Billing Unit <span class="required">*</span></label>
+                        <select id="billingUnit" name="billingUnit" required>
+                            <option value="" disabled selected>Select billing unit</option>
+                            <option value="hourly">Per Hour</option>
+                            <option value="project">Per Project</option>
+                        </select>
+                        <small class="form-hint">Choose how you want to pay for the work.</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id="priceLabel">Budget ($) <span class="required">*</span></label>
+                    <div class="price-input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="budget" name="price" placeholder="Enter amount" min="1" step="0.01" required style="padding-left: 35px;">
+                    </div>
+                    <small class="form-hint" id="priceHint">Set your budget for this project.</small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="deliveryTimeDays">Expected Delivery Time <span class="required">*</span></label>
+                        <select id="deliveryTimeDays" name="deliveryTimeDays" required>
+                            <option value="" disabled selected>Select timeframe</option>
+                            <option value="1">1 day</option>
+                            <option value="2">2 days</option>
+                            <option value="3">3 days</option>
+                            <option value="7">1 week</option>
+                            <option value="14">2 weeks</option>
+                            <option value="21">3 weeks</option>
+                            <option value="30">1 month</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group half-width" id="customDeliveryTimeGroup" style="display: none;">
+                        <label for="customDeliveryTime">Custom Delivery Time (days) <span class="required">*</span></label>
+                        <input type="number" id="customDeliveryTime" name="customDeliveryTime" min="1" placeholder="Enter days">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary full-width">
+                    Post Listing
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Listing Published!</h3>
+                <button class="close-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <i class="fas fa-check-circle success-icon"></i>
+                <p>Your listing has been successfully published. Freelancers can now view and bid on your project.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="viewListingBtn">View Listings</button>
+                <button class="btn btn-secondary" id="closeModalBtn">Close</button>
+            </div>
+        </div>
     </div>
 
-    <form id="newListingForm" class="listing-form">
-      <div class="form-section">
-        <h2 class="section-title">Basic Information</h2>
+    <footer class="site-footer"><p>© 2025 SkillScape. All rights reserved.</p></footer>
 
-        <div class="form-group">
-          <label for="listingTitle"
-            >Listing Title <span class="required">*</span></label
-          >
-          <input
-            type="text"
-            id="listingTitle"
-            name="title"
-            placeholder="E.g., 'Website Redesign for E-commerce Store'"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="category"
-            >Category <span class="required">*</span></label
-          >
-          <select id="category" name="category" required>
-            <option value="" disabled selected>Select a category</option>
-            <option value="WEB_DESIGN">Web Design</option>
-            <option value="LOGO_DESIGN">Logo Design</option>
-            <option value="SOFTWARE_DEVELOPMENT">Software Development</option>
-            <option value="MARKETING">Marketing</option>
-            <option value="WRITING_TRANSLATION">Writing & Translation</option>
-            <option value="VIDEO_ANIMATION">Video & Animation</option>
-            <option value="MUSIC_AUDIO">Music & Audio</option>
-            <option value="BUSINESS">Business</option>
-            <option value="OTHER">Other</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="languages"
-            >Required Languages/Skills <span class="required">*</span></label
-          >
-          <input
-            type="text"
-            id="languages"
-            name="languages"
-            placeholder="E.g., 'JavaScript, React, Node.js'"
-            required
-          />
-          <small class="form-hint">
-            Separate each language or skill with a comma.
-          </small>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h2 class="section-title">Project Details</h2>
-
-        <div class="form-group">
-          <label for="description"
-            >Project Description <span class="required">*</span></label
-          >
-          <textarea
-            id="description"
-            name="description"
-            rows="6"
-            placeholder="Provide a detailed description of your project requirements..."
-            required
-          ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="coverImageUrl">Cover Image URL</label>
-          <input
-            type="url"
-            id="coverImageUrl"
-            name="coverImageUrl"
-            placeholder="https://example.com/cover.png"
-          />
-        </div>
-
-        <div class="form-group">
-          <label>Project Attachments</label>
-          <div class="file-upload-container" id="fileUploadContainer">
-            <div class="file-upload-area" id="fileUploadArea">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <p>Drag & drop files here</p>
-              <p>or <span class="browse-files">browse files</span></p>
-              <p class="file-hint">
-                Upload images or PDFs (max 5MB each)
-              </p>
-              <input type="file" id="fileInput" multiple style="display:none" />
-            </div>
-            <div class="uploaded-files" id="uploadedFiles"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h2 class="section-title">Scope & Tools</h2>
-
-        <div id="whatYouGetContainer">
-          <label>What You’ll Get (up to 5 bullet points)</label>
-          <button type="button" id="addBulletBtn" class="btn btn-sm">
-            + Add Bullet
-          </button>
-        </div>
-
-        <div class="form-group">
-          <label for="toolsAndTechnology">Tools & Technology</label>
-          <textarea
-            id="toolsAndTechnology"
-            name="toolsAndTechnology"
-            placeholder="E.g., 'React, Tailwind, Node.js'"
-            rows="2"
-          ></textarea>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h2 class="section-title">Budget & Timeline</h2>
-
-        <div class="form-row">
-          <div class="form-group half-width">
-            <label for="budgetType"
-              >Budget Type <span class="required">*</span></label
-            >
-            <select id="budgetType" name="budgetType" required>
-              <option value="" disabled selected>Select type</option>
-              <option value="fixed">Fixed Price</option>
-              <option value="hourly">Hourly Rate</option>
-            </select>
-          </div>
-
-          <div class="form-group half-width">
-            <label for="budget"><span class="required">*</span> Budget</label>
-            <div class="price-input-wrapper">
-              <span class="currency-symbol">$</span>
-              <input
-                type="number"
-                id="budget"
-                name="price"
-                placeholder="Amount"
-                min="1"
-                step="0.01"
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="deliveryTimeDays"
-            >Delivery Time (days) <span class="required">*</span></label
-          >
-          <input
-            type="number"
-            id="deliveryTimeDays"
-            name="deliveryTimeDays"
-            min="1"
-            required
-          />
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary full-width">
-          Post Listing
-        </button>
-      </div>
-    </form>
-  </main>
-  <div id="successModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <span class="close-button" onclick="document.getElementById('successModal').style.display='none'">&times;</span>
-      <h2>Success!</h2>
-      <p>Your listing has been posted successfully.</p>
-      <button onclick="window.location.href='dashboard.html'" class="btn btn-primary">Go to Dashboard</button>
-    </div>
-  </div>
-
-  <footer class="site-footer">
-    <p>© 2025 SkillScape. All rights reserved.</p>
-  </footer>
-    <script src="../js/customer-new.js"></script>   
-    <script src="../design-js/customer-new-script.js"></script>  
+    <script src="../js/customer-new.js"></script>
     <script src="../design-js/customer-shared-script.js"></script>
+    <script src="../design-js/freelancer-new-script.js"></script>
 </body>
 </html>

@@ -147,6 +147,10 @@ textarea:focus {
     font-weight: 500;
 }
 
+input[name="price"] {
+    padding-left: 35px !important;
+}
+
 .file-upload-container {
     margin-top: 15px;
 }
