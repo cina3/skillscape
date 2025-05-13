@@ -41,7 +41,7 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/my") // Changed from /buyer to /my
+    @GetMapping("/my") 
     public ResponseEntity<List<OrderResponse>> myPurchases(Principal principal) {
         UserEntity buyer = userRepo.findByEmail(principal.getName())
             .orElseThrow(() ->

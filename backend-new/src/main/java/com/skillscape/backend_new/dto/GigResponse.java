@@ -1,6 +1,7 @@
 package com.skillscape.backend_new.dto;
 
 import com.skillscape.backend_new.model.Category;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;

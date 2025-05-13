@@ -4,6 +4,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileUploadArea = document.getElementById('fileUploadArea');
     const fileInput = document.getElementById('fileInput');
     const uploadedFiles = document.getElementById('uploadedFiles');
+    const galleryCount = document.getElementById('galleryCount');
+    const galleryProgress = document.getElementById('galleryProgress');
+    const galleryProgressBar = document.getElementById('galleryProgressBar');
+    const clearGalleryBtn = document.getElementById('clearGallery');
+    const MAX_FILES = 5;
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+    const MAX_TOTAL_SIZE = 25 * 1024 * 1024;
+    
+    let totalGallerySize = 0;
     
     if (fileUploadArea && fileInput) {
         fileUploadArea.addEventListener('click', function() {
@@ -30,193 +39,329 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         function handleFiles(files) {
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const fileSize = formatFileSize(file.size);
-                const fileExtension = file.name.split('.').pop().toLowerCase();
-                
-                const fileItem = document.createElement('div');
-                fileItem.className = 'uploaded-file-item';
-                
-                let iconClass = 'fa-file';
-                if (['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(fileExtension)) {
-                    iconClass = 'fa-file-image';
-                } else if (['doc', 'docx', 'pdf', 'txt', 'rtf'].includes(fileExtension)) {
-                    iconClass = 'fa-file-alt';
-                } else if (['xls', 'xlsx', 'csv'].includes(fileExtension)) {
-                    iconClass = 'fa-file-excel';
-                } else if (['zip', 'rar', '7z'].includes(fileExtension)) {
-                    iconClass = 'fa-file-archive';
-                }
-                
-                fileItem.innerHTML = `
-                    <i class="fas ${iconClass} file-icon"></i>
-                    <span class="file-name">${file.name}</span>
-                    <span class="file-size">${fileSize}</span>
-                    <button type="button" class="remove-file" aria-label="Remove file">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                
-                fileItem.querySelector('.remove-file').addEventListener('click', function() {
-                    fileItem.remove();
-                });
-                
-                if (uploadedFiles) {
-                    uploadedFiles.appendChild(fileItem);
-                }
+            const currentFiles = uploadedFiles.querySelectorAll('.gallery-thumb').length;
+            const filesArray = Array.from(files);
+            const filesToProcess = filesArray.slice(0, MAX_FILES - currentFiles);
+            
+            if (filesToProcess.length < filesArray.length) {
+                showFileError(`Only ${MAX_FILES} files allowed. Added ${filesToProcess.length} out of ${filesArray.length}.`);
             }
+            
+            if (filesToProcess.length === 0) {
+                showFileError(`Maximum of ${MAX_FILES} files already added.`);
+                return;
+            }
+            
+            filesToProcess.forEach(file => {
+                if (file.size > MAX_FILE_SIZE) {
+                    showFileError(`${file.name} exceeds 5MB limit.`);
+                    return;
+                }
+                
+                if (totalGallerySize + file.size > MAX_TOTAL_SIZE) {
+                    showFileError(`Adding this file would exceed the 25MB total limit.`);
+                    return;
+                }
+                
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                const allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'pdf', 'doc', 'docx'];
+                
+                if (!allowedTypes.includes(fileExt)) {
+                    showFileError(`${file.name}: File type not allowed.`);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                const fileItem = document.createElement('div');
+                fileItem.className = 'gallery-thumb';
+                fileItem.dataset.filename = file.name;
+                fileItem.dataset.filesize = file.size;
+                
+                fileItem.innerHTML = '<div class="file-loading"></div>';
+                uploadedFiles.appendChild(fileItem);
+                
+                reader.onload = function(e) {
+                    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(fileExt);
+                    
+                    const sizeStr = formatFileSize(file.size);
+                    
+                    if (isImage) {
+                        fileItem.innerHTML = `
+                            <img src="${e.target.result}" alt="${file.name}">
+                            <div class="file-size-badge">${sizeStr}</div>
+                            <button class="remove-thumb" aria-label="Remove">×</button>
+                        `;
+                    } else {
+                        fileItem.innerHTML = `
+                            <div class="file-icon-container">
+                                <span class="file-ext">${fileExt}</span>
+                            </div>
+                            <div class="file-size-badge">${sizeStr}</div>
+                            <button class="remove-thumb" aria-label="Remove">×</button>
+                        `;
+                    }
+                    
+                    totalGallerySize += file.size;
+                    
+                    fileItem.querySelector('.remove-thumb').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        totalGallerySize -= parseInt(fileItem.dataset.filesize, 10) || 0;
+                        
+                        URL.revokeObjectURL(e.target.result); 
+                        fileItem.remove();
+                        updateGalleryCount();
+                    });
+                    
+                    updateGalleryCount();
+                };
+                
+                reader.onerror = function() {
+                    fileItem.remove();
+                    showFileError(`Error reading ${file.name}`);
+                };
+                
+                reader.readAsDataURL(file);
+            });
             
             fileInput.value = ''; 
         }
         
+        function showFileError(message) {
+            const errorEl = document.getElementById('fileError');
+            if (!errorEl) {
+                const error = document.createElement('div');
+                error.id = 'fileError';
+                error.className = 'file-error';
+                error.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+                const container = document.querySelector('.gallery-container');
+                if (container) {
+                    container.insertBefore(error, uploadedFiles);
+                } else {
+                    uploadedFiles.parentNode.insertBefore(error, uploadedFiles);
+                }
+                
+                setTimeout(() => {
+                    if (error.parentNode) error.remove();
+                }, 5000);
+            } else {
+                errorEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+                
+                clearTimeout(errorEl.dataset.timeout);
+                errorEl.dataset.timeout = setTimeout(() => {
+                    if (errorEl.parentNode) errorEl.remove();
+                }, 5000);
+            }
+        }
+        
+        function updateGalleryCount() {
+            const current = uploadedFiles.querySelectorAll('.gallery-thumb').length;
+            
+            if (galleryCount) {
+                galleryCount.textContent = `${current}/${MAX_FILES} files`;
+            }
+            
+            if (galleryProgress && galleryProgressBar) {
+                const percentage = (current / MAX_FILES) * 100;
+                galleryProgressBar.style.width = `${percentage}%`;
+                
+                const totalSizeEl = document.getElementById('totalGallerySize');
+                if (totalSizeEl) {
+                    const percentOfMax = Math.round((totalGallerySize / MAX_TOTAL_SIZE) * 100);
+                    totalSizeEl.textContent = `${formatFileSize(totalGallerySize)} / 25MB`;
+                }
+            }
+            
+            if (fileUploadArea) {
+                if (current >= MAX_FILES) {
+                    fileUploadArea.classList.add('disabled');
+                } else {
+                    fileUploadArea.classList.remove('disabled');
+                }
+            }
+            
+            if (clearGalleryBtn) {
+                clearGalleryBtn.style.display = current > 0 ? 'inline-block' : 'none';
+            }
+        }
+        
         function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
+            if (bytes === 0) return '0 B';
             
             const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const sizes = ['B', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+        
+        updateGalleryCount();
+        
+        if (clearGalleryBtn) {
+            clearGalleryBtn.addEventListener('click', function() {
+                if (confirm('Clear all uploaded files?')) {
+                    const items = uploadedFiles.querySelectorAll('.gallery-thumb');
+                    items.forEach(item => {
+                        if (item.querySelector('img')) {
+                            URL.revokeObjectURL(item.querySelector('img').src);
+                        }
+                        item.remove();
+                    });
+                    totalGallerySize = 0; 
+                    updateGalleryCount();
+                }
+            });
         }
     }
     
-    const newGigForm = document.getElementById('newGigForm'); 
-    const successModal = document.getElementById('successModal');
-    const viewGigBtn = document.getElementById('viewGigBtn'); 
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const saveAsDraftBtn = document.getElementById('saveAsDraftBtn');
-
-    const deliveryTimeSelect = document.getElementById('deliveryTimeDays');
-    const customDeliveryTimeGroup = document.getElementById('customDeliveryTimeGroup');
-    const customDeliveryTimeInput = document.getElementById('customDeliveryTime');
-
     const coverImageInput = document.getElementById('coverImage');
     const coverImagePreviewContainer = document.getElementById('coverImagePreview');
-    let coverImagePreviewImg = null;
-    let noImageText = null;
-
-    const billingUnitSelect = document.getElementById('billingUnit');
-    const priceLabel = document.getElementById('priceLabel');
-    const priceHint = document.getElementById('priceHint');
-    const priceInput = document.getElementById('price');
-
-    if (billingUnitSelect && priceLabel && priceHint && priceInput) {
-        billingUnitSelect.addEventListener('change', function() {
-            if (this.value === 'hourly') {
-                priceLabel.innerHTML = 'Hourly Rate ($) <span class="required">*</span>';
-                priceHint.textContent = 'Enter your hourly rate.';
-                priceInput.min = "1"; 
-            } else if (this.value === 'project_item') {
-                priceLabel.innerHTML = 'Project / Item Price ($) <span class="required">*</span>';
-                priceHint.textContent = 'Enter the total price for the project or per item.';
-                priceInput.min = "5"; 
-                priceLabel.innerHTML = 'Price ($) <span class="required">*</span>';
-                priceHint.textContent = 'Enter the amount based on selected billing unit.';
-                priceInput.min = "1"; 
-            }
-        });
-        if(billingUnitSelect.value) {
-            billingUnitSelect.dispatchEvent(new Event('change'));
-        }
-    }
-
-    if (coverImagePreviewContainer) {
-        coverImagePreviewImg = coverImagePreviewContainer.querySelector('img');
-        noImageText = coverImagePreviewContainer.querySelector('.no-image-text');
-    }
-
-    if (coverImageInput && coverImagePreviewImg && noImageText) {
+    const coverImageRemoveBtn = document.getElementById('removeCoverImage');
+    const coverSizeLimit = document.getElementById('coverSizeLimit');
+    const MAX_COVER_SIZE = 5 * 1024 * 1024; 
+    
+    if (coverImageInput && coverImagePreviewContainer) {
         coverImageInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 const file = this.files[0];
-                const reader = new FileReader();
                 
-                reader.onload = function(e) {
-                    coverImagePreviewImg.src = e.target.result;
-                    coverImagePreviewImg.style.display = 'block';
-                    noImageText.style.display = 'none';
-                }
-                
-                reader.readAsDataURL(file);
-            } else {
-                coverImagePreviewImg.src = '#';
-                coverImagePreviewImg.style.display = 'none';
-                noImageText.style.display = 'block';
-            }
-        });
-    }
-
-    if (deliveryTimeSelect && customDeliveryTimeGroup && customDeliveryTimeInput) {
-        deliveryTimeSelect.addEventListener('change', function() {
-            if (this.value === 'custom') {
-                customDeliveryTimeGroup.style.display = 'block';
-                customDeliveryTimeInput.required = true;
-            } else {
-                customDeliveryTimeGroup.style.display = 'none';
-                customDeliveryTimeInput.required = false;
-                customDeliveryTimeInput.value = '';  
-            }
-        });
-    }
-    
-    if (newGigForm) {
-        newGigForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const whatYouGetInput = document.getElementById('whatYouGet');
-            if (whatYouGetInput) {
-                const lines = whatYouGetInput.value.split('\n').filter(line => line.trim() !== '');
-                if (lines.length > 5) {
-                    alert('Please limit "What You Get / Key Offerings" to a maximum of 5 items.');
-                    whatYouGetInput.focus();
+                if (file.size > MAX_COVER_SIZE) {
+                    showCoverError(`Cover image exceeds 2MB limit.`);
+                    this.value = '';
                     return;
                 }
+                
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                if (!['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) {
+                    showCoverError(`Cover must be an image (JPG, PNG, GIF).`);
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                const img = coverImagePreviewContainer.querySelector('img');
+                const placeholder = coverImagePreviewContainer.querySelector('.placeholder');
+                
+                if (placeholder) {
+                    placeholder.innerHTML = '<div class="file-loading"></div>';
+                }
+                
+                reader.onload = function(e) {
+                    if (img) {
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    }
+                    
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                    
+                    const sizeBadgeId = 'coverSizeBadge';
+                    let sizeBadge = document.getElementById(sizeBadgeId);
+                    if (!sizeBadge) {
+                        sizeBadge = document.createElement('div');
+                        sizeBadge.id = sizeBadgeId;
+                        sizeBadge.className = 'cover-size-badge';
+                        coverImagePreviewContainer.appendChild(sizeBadge);
+                    }
+                    
+                    sizeBadge.textContent = formatFileSize(file.size);
+                    sizeBadge.style.display = 'block';
+                    
+                    if (coverImageRemoveBtn) {
+                        coverImageRemoveBtn.style.display = 'inline-block';
+                    }
+                };
+                
+                reader.onerror = function() {
+                    showCoverError(`Error reading ${file.name}`);
+                    resetCoverImage();
+                };
+                
+                reader.readAsDataURL(file);
             }
-
-            if (coverImageInput && coverImageInput.files.length === 0) {
-                alert('Please upload a cover image for your gig.');
-                coverImageInput.focus();
-                return;
+        });
+        
+        if (coverImageRemoveBtn) {
+            coverImageRemoveBtn.addEventListener('click', function() {
+                resetCoverImage();
+                coverImageInput.value = '';
+            });
+        }
+        
+        function resetCoverImage() {
+            const img = coverImagePreviewContainer.querySelector('img');
+            const placeholder = coverImagePreviewContainer.querySelector('.placeholder');
+            const sizeBadge = document.getElementById('coverSizeBadge');
+            
+            if (img) {
+                img.src = '';
+                img.style.display = 'none';
             }
             
-            if (deliveryTimeSelect && deliveryTimeSelect.value === 'custom' && customDeliveryTimeInput && !customDeliveryTimeInput.value) {
-                alert('Please enter the number of custom delivery days.');
-                customDeliveryTimeInput.focus();
-                return;
+            if (placeholder) {
+                placeholder.innerHTML = `<i class="fas fa-image"></i>
+                    <span>No image selected</span>`;
+                placeholder.style.display = 'flex';
             }
-
-            if (successModal) {
-                successModal.style.display = 'flex';
+            
+            if (sizeBadge) {
+                sizeBadge.style.display = 'none';
             }
-        });
+            
+            if (coverImageRemoveBtn) {
+                coverImageRemoveBtn.style.display = 'none';
+            }
+        }
+        
+        function showCoverError(message) {
+            const errorId = 'coverImageError';
+            let errorEl = document.getElementById(errorId);
+            
+            if (!errorEl) {
+                errorEl = document.createElement('div');
+                errorEl.id = errorId;
+                errorEl.className = 'file-error';
+                errorEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+                coverImagePreviewContainer.parentNode.appendChild(errorEl);
+            } else {
+                errorEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            }
+            
+            clearTimeout(errorEl.dataset.timeout);
+            errorEl.dataset.timeout = setTimeout(() => {
+                if (errorEl.parentNode) errorEl.remove();
+            }, 5000);
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+        
+        if (coverSizeLimit) {
+            coverSizeLimit.textContent = 'Max 2MB';
+        }
     }
     
-    if (saveAsDraftBtn) {
-        saveAsDraftBtn.addEventListener('click', function() {
-            alert('Gig saved as draft'); 
-        });
-    }
-    
+    const successModal = document.getElementById('successModal');
     if (successModal) {
-        const closeModalIcon = successModal.querySelector('.close-modal');
-        
-        if (closeModalIcon) {
-            closeModalIcon.addEventListener('click', function() {
+        const closeButtons = successModal.querySelectorAll('.close-modal, #closeModalBtn');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
                 successModal.style.display = 'none';
             });
-        }
+        });
         
+        const viewGigBtn = document.getElementById('viewGigBtn');
         if (viewGigBtn) {
+            viewGigBtn.textContent = 'View Gigs'; 
             viewGigBtn.addEventListener('click', function() {
-                alert('Redirecting to view gig...');  
-                successModal.style.display = 'none';
-            });
-        }
-        
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', function() {
-                successModal.style.display = 'none';
+                window.location.href = 'my.html';
             });
         }
         

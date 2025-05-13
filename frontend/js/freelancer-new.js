@@ -5,49 +5,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const BASE  = 'http://localhost:8080/api';
   const TOKEN = localStorage.getItem('authToken') || localStorage.getItem('token');
 
-const mapCategory = v => ({
-  webdesign:    'WEB_DESIGN',
-  engineering:  'ENGINEERING',
-  artdesign:    'ART_DESIGN',
-  music:        'MUSIC',
-  videoediting: 'VIDEO_EDITING',
-  itsoftware:   'IT_SOFTWARE',
-  aiservices:   'AI_SERVICES',
-  marketing:    'MARKETING',
-  finance:      'FINANCE',
-  other:        'OTHER'
-}[v] || 'OTHER');
-
-  const coverInput = document.getElementById('coverImage');
-  const coverPrev  = document.querySelector('#coverImagePreview img');
-  coverInput?.addEventListener('change', e => {
-    const f = e.target.files[0];
-    if (!f) return;
-    coverPrev.src = URL.createObjectURL(f);
-    coverPrev.style.display = 'block';
-    coverInput.nextElementSibling
-      .querySelector('.no-image-text')?.remove();
-  });
-
-  const galleryArea  = document.getElementById('fileUploadArea');
-  const galleryInput = document.getElementById('fileInput');
-  const galleryList  = document.getElementById('uploadedFiles');
-
-  galleryArea?.addEventListener('click', () => galleryInput.click());
-  galleryInput?.addEventListener('change', e => addGallery(e.target.files));
-
-  function addGallery(files) {
-    Array.from(files).forEach(f => {
-      if (f.size > 5*1024*1024) return bad(`${f.name} exceeds 5 MB`);
-      const d = document.createElement('div');
-      d.className = 'gallery-thumb';
-      d.innerHTML = `
-        <img src="${URL.createObjectURL(f)}" alt="">
-        <button class="remove-thumb" aria-label="Remove">&times;</button>`;
-      d.querySelector('.remove-thumb').onclick = () => d.remove();
-      galleryList.appendChild(d);
-    });
-  }
+  const mapCategory = v => ({
+    webdesign:    'WEB_DESIGN',
+    engineering:  'ENGINEERING',
+    artdesign:    'ART_DESIGN',
+    music:        'MUSIC',
+    videoediting: 'VIDEO_EDITING',
+    itsoftware:   'IT_SOFTWARE',
+    aiservices:   'AI_SERVICES',
+    marketing:    'MARKETING',
+    finance:      'FINANCE',
+    other:        'OTHER'
+  }[v] || 'OTHER');
 
   const selDelivery = document.getElementById('deliveryTimeDays');
   const grpCustom   = document.getElementById('customDeliveryTimeGroup');
@@ -75,8 +44,7 @@ const mapCategory = v => ({
     ev.preventDefault();
 
     const bullets = document.getElementById('whatYouGet').value
-      .split('\n').map(s=>s.trim()).filter(Boolean).slice(0,5);
-    if (!bullets.length) return bad('Add at least one “What you get” bullet (max 5).');
+      .split('\n').map(s=>s.trim()).filter(Boolean);
 
     const title = document.getElementById('title').value.trim();
     if (title.length < 5) return bad('Title must be at least 5 characters.');
@@ -92,6 +60,30 @@ const mapCategory = v => ({
     const days = selDelivery.value === 'custom' ? +inpCustom.value : +selDelivery.value;
     if (!days) return bad('Specify delivery time.');
 
+    // Cover image validation
+    const coverInput = document.getElementById('coverImage');
+    if (!coverInput.files || coverInput.files.length === 0) {
+      return bad('Please upload a cover image for your gig.');
+    }
+
+    let coverImageUrl = null;
+    if (coverInput.files && coverInput.files.length > 0) {
+      coverImageUrl = coverInput.files[0].name;
+    }
+
+    // Gallery images collection
+    const uploadedFiles = document.getElementById('uploadedFiles');
+    const galleryFileUrls = [];
+    
+    if (uploadedFiles) {
+      const galleryItems = uploadedFiles.querySelectorAll('.gallery-thumb');
+      galleryItems.forEach(item => {
+        if (item.dataset.filename) {
+          galleryFileUrls.push(item.dataset.filename);
+        }
+      });
+    }
+
     const payload = {
       title,
       description:        desc,
@@ -104,11 +96,17 @@ const mapCategory = v => ({
       toolsAndTechnology: document.getElementById('toolsAndTechnology').value.trim(),
       languages:          document.getElementById('languages').value
                             .split(',').map(s=>s.trim()).filter(Boolean),
-      coverImageUrl: null,
-      fileUrls:      []
+      coverImageUrl: coverImageUrl,
+      fileUrls: galleryFileUrls
     };
 
     try {
+      // Show loading state
+      const submitBtn = document.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
+
       const res = await fetch(`${BASE}/gigs`, {
         method : 'POST',
         headers: {
@@ -124,11 +122,42 @@ const mapCategory = v => ({
         throw new Error(raw);
       }
 
-      ok('Gig published!');
-      document.getElementById('successModal').style.display = 'block';
+      // Reset button state
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+
+      const successModal = document.getElementById('successModal');
+      if (successModal) {
+        successModal.style.display = 'flex'; // Use flex for consistency
+        
+        // Ensure modal event handlers are attached
+        const closeButtons = successModal.querySelectorAll('.close-modal, #closeModalBtn');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                successModal.style.display = 'none';
+            });
+        });
+        
+        // Make View Gigs button redirect to my.html
+        const viewGigBtn = document.getElementById('viewGigBtn');
+        if (viewGigBtn) {
+            viewGigBtn.textContent = 'View Gigs'; // Ensure text matches
+            viewGigBtn.removeEventListener('click', viewGigBtn.clickHandler);
+            viewGigBtn.clickHandler = function() {
+                window.location.href = 'my.html';
+            };
+            viewGigBtn.addEventListener('click', viewGigBtn.clickHandler);
+        }
+      }
 
     } catch (err) {
       console.error(err);
+      // Reset button state
+      const submitBtn = document.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Publish Gig';
+      }
       bad(err.message.slice(0, 300));
     }
   });

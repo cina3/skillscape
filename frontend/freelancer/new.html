@@ -76,32 +76,62 @@
 
                 <div class="form-group">
                     <label for="coverImage">Cover Image <span class="required">*</span></label>
-                    <div class="cover-image-upload-area">
+                    <div class="cover-image-container">
+                        <div class="cover-image-header">
+                            <div class="size-limit-badge">
+                                Max 2MB
+                            </div>
+                        </div>
                         <input type="file" id="coverImage" name="coverImage" accept="image/*" required style="display: none;">
-                        <label for="coverImage" class="btn btn-upload">
-                            <i class="fas fa-upload"></i> Choose Cover Image
-                        </label>
-                        <div id="coverImagePreview" class="image-preview-container">
+                        <div id="coverImagePreview" class="cover-preview">
                             <img src="#" alt="Cover Image Preview" style="display:none;" />
-                            <span class="no-image-text">No image selected</span>
+                            <div class="placeholder">
+                                No image selected
+                            </div>
+                        </div>
+                        <div class="cover-actions">
+                            <label for="coverImage" class="btn-upload">
+                                Choose Cover Image
+                            </label>
+                            <button type="button" id="removeCoverImage" class="gallery-action-btn" style="display:none">
+                                Remove
+                            </button>
                         </div>
                     </div>
-                    <small class="form-hint">Upload a compelling cover image for your gig (e.g., JPG, PNG, max 2MB). This will be the first impression.</small>
+                    <small class="form-hint">Upload a compelling cover image for your gig (JPG, PNG, GIF).</small>
                 </div>
                 
                 <div class="form-group">
                     <label>Gig Gallery / Portfolio</label>
-                    <div class="file-upload-container" id="fileUploadContainer">
+                    <div class="file-upload-container">
                         <div class="file-upload-area" id="fileUploadArea">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Drag and drop images or work samples here</p>
+                            <p>Drag and drop files here</p>
                             <p>or <span class="browse-files">browse files</span></p>
-                            <p class="file-hint">Upload images or examples of your work (max 5MB each)</p>
-                            <input type="file" id="fileInput" multiple style="display:none">
+                            <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx" style="display:none">
                         </div>
-                        <div class="uploaded-files" id="uploadedFiles">
+                        <div class="gallery-container">
+                            <div class="gallery-header">
+                                <div class="gallery-limits">
+                                    <span class="gallery-count" id="galleryCount">
+                                        0/5 files
+                                    </span>
+                                    <span class="size-limit-badge" id="totalGallerySize">
+                                        0 MB / 25MB
+                                    </span>
+                                </div>
+                                <div class="gallery-actions">
+                                    <button type="button" id="clearGallery" class="gallery-action-btn" style="display:none">
+                                        Clear
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="gallery-progress" id="galleryProgress">
+                                <div class="gallery-progress-bar" id="galleryProgressBar" style="width: 0%"></div>
+                            </div>
+                            <div class="uploaded-files" id="uploadedFiles"></div>
                         </div>
                     </div>
+                    <small class="form-hint">Add up to 5 files to showcase your work. Each file must be under 5MB.</small>
                 </div>
             </div>
 
@@ -157,7 +187,6 @@
             </div>
 
             <div class="form-actions">
-                <button type="button" id="saveAsDraftBtn" class="btn btn-secondary">Save as Draft</button>
                 <button type="submit" class="btn btn-primary">Publish Gig</button>
             </div>
         </form>
@@ -171,7 +200,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Gig Published Successfully!</h3>
-                <button class="close-modal">&times;</button>
+                <button class="close-modal" type="button">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="success-icon">
@@ -179,8 +208,8 @@
                 </div>
                 <p>Your gig has been successfully published. Clients can now find your service.</p>
                 <div class="modal-actions">
-                    <button class="btn btn-secondary" id="viewGigBtn">View Gig</button> 
-                    <button class="btn btn-primary" id="closeModalBtn">Done</button>
+                    <button type="button" class="btn btn-secondary" id="viewGigBtn">View Gigs</button> 
+                    <button type="button" class="btn btn-primary" id="closeModalBtn">Done</button>
                 </div>
             </div>
         </div>
