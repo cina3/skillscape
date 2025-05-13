@@ -2,8 +2,34 @@
     <div class="header-content">
         <div class="logo">SkillScape</div>
         <div class="search-bar">
-            <input type="search" placeholder="Search SkillScape for categories, users, projects...">
-            <i class="fas fa-search search-icon"></i>
+            <div class="search-container" id="skillscapeSearchComponent">
+                <div class="search-input-wrapper" id="searchInputWrapper">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search SkillScape...">
+                    <button class="search-button" id="searchButton">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="search-results-dropdown" id="searchResultsDropdown">
+                    <div class="search-result-item category-item">
+                        <div class="result-text">
+                            <span class="result-title">Web Design</span>
+                            <span class="result-category">in Categories</span>
+                        </div>
+                        <div class="result-icon">
+                            <img src="../assets/temp.png" alt="Web Design" class="category-icon">
+                        </div>
+                    </div>
+                    <div class="search-result-item">
+                        <div class="result-text">
+                            <span class="result-title">webdesigner</span>
+                            <span class="result-category">in Freelancers</span>
+                        </div>
+                        <div class="result-icon">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="menu-icon">
             <i class="fas fa-bars"></i>

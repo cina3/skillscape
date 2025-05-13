@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - SkillScape</title>
+    <link rel="stylesheet" href="../css/customer-shared-style.css">
+    <link rel="stylesheet" href="../css/search-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div id="hamburger-menu-placeholder"></div>
+    
+    <main class="search-page-container">
+        <div class="search-header">
+            <h1>Search Results</h1>
+            <div class="search-filter">
+                <button class="filter-button">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+                <div class="sort-dropdown">
+                    <select id="sortOptions">
+                        <option value="relevance">Most Relevant</option>
+                        <option value="newest">Newest</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-categories">
+            <button class="category-tab active">All</button>
+            <button class="category-tab">Freelancers</button>
+            <button class="category-tab">Categories</button>
+            <button class="category-tab">Projects</button>
+            <button class="category-tab">Proposals</button>
+        </div>
+
+        <div class="search-results">
+            <h2 class="results-section-title">Web Design in Categories</h2>
+            <div class="results-grid category-results">
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="../assets/temp.png" alt="Web Design">
+                    </div>
+                    <div class="category-info">
+                        <h3>Web Design</h3>
+                        <p>1,234 freelancers</p>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="../assets/temp.png" alt="Modern Web Design">
+                    </div>
+                    <div class="category-info">
+                        <h3>Modern Web Design</h3>
+                        <p>891 freelancers</p>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="../assets/temp.png" alt="Web Security Design">
+                    </div>
+                    <div class="category-info">
+                        <h3>Web Security Design</h3>
+                        <p>567 freelancers</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="results-section-title">Freelancers matching "web d"</h2>
+            <div class="results-grid freelancer-results">
+                <div class="freelancer-card">
+                    <div class="freelancer-header">
+                        <div class="freelancer-image">
+                            <img src="../assets/temp.png" alt="webdesigner">
+                        </div>
+                        <div class="freelancer-info">
+                            <h3>webdesigner</h3>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.9</span> (42 reviews)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="freelancer-skills">
+                        <span class="skill-tag">HTML</span>
+                        <span class="skill-tag">CSS</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">UI/UX</span>
+                    </div>
+                    <div class="freelancer-description">
+                        <p>Experienced web designer with 5+ years of professional experience creating beautiful websites...</p>
+                    </div>
+                </div>
+
+                <div class="freelancer-card">
+                    <div class="freelancer-header">
+                        <div class="freelancer-image">
+                            <img src="../assets/temp.png" alt="webd">
+                        </div>
+                        <div class="freelancer-info">
+                            <h3>webd</h3>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.7</span> (28 reviews)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="freelancer-skills">
+                        <span class="skill-tag">WordPress</span>
+                        <span class="skill-tag">Shopify</span>
+                        <span class="skill-tag">SEO</span>
+                    </div>
+                    <div class="freelancer-description">
+                        <p>Web development specialist focusing on e-commerce solutions and responsive design...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="../design-js/customer-shared-script.js"></script>
+    <script src="../design-js/search-script.js"></script>
+</body>
+</html>

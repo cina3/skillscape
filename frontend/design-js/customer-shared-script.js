@@ -72,6 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(() => {
         setupEventListeners();
         setActiveMenuItem(); 
+        if (window.initializeAllSearchBars) { 
+            window.initializeAllSearchBars(); 
+        }
     })
     .catch(error => {
         const body = document.querySelector('body');
