@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,8 @@ public class OrderService {
         order.setRequirements(dto.getRequirements());
         order.setExpectedDeliveryDate(dto.getExpectedDeliveryDate());
         order.setUploadUrls(dto.getUploadUrls() != null ? dto.getUploadUrls() : List.of());
+        order.setDeliveredUrls(order.getDeliveredUrls() != null ? order.getDeliveredUrls() : List.of());
+        order.setPercentage(0);
 
         OrderEntity saved = orderRepo.save(order);
         return toDto(saved);
@@ -75,18 +78,6 @@ public class OrderService {
                         .collect(Collectors.toList());
     }
 
-    @Transactional
-    public OrderResponse updateStatus(Long orderId, Status status) {
-        OrderEntity order = orderRepo.findById(orderId)
-            .orElseThrow(() -> new EntityNotFoundException("Order not found"));
-
-        order.setStatus(status);
-        if (status == Status.DELIVERED) {
-            order.setDeliveredAt(java.time.LocalDateTime.now());
-        }
-        return toDto(orderRepo.save(order));
-    }
-
     private OrderResponse toDto(OrderEntity o) {
         OrderResponse dto = new OrderResponse();
         dto.setId(o.getId());
@@ -101,8 +92,38 @@ public class OrderService {
         dto.setExpectedDeliveryDate(o.getExpectedDeliveryDate());
         dto.setDeliveredAt(o.getDeliveredAt());
         dto.setUploadUrls(o.getUploadUrls());
+        dto.setDeliveredUrls(o.getDeliveredUrls());
+        dto.setPercentage(o.getPercentage());
         dto.setCreatedAt(o.getCreatedAt());
         dto.setUpdatedAt(o.getUpdatedAt());
         return dto;
+    }
+
+    @Transactional
+    public OrderResponse updateStatus(Long orderId, Status status) {
+        OrderEntity order = orderRepo.findById(orderId)
+            .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+        order.setStatus(status);
+        if (status == Status.DELIVERED) {
+            order.setDeliveredAt(LocalDateTime.now());
+        }
+        return toDto(orderRepo.save(order));
+    }
+
+    @Transactional
+    public OrderResponse updateProgress(Long orderId, Integer percentage) {
+        OrderEntity order = orderRepo.findById(orderId)
+            .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+        order.setPercentage(percentage);
+        return toDto(orderRepo.save(order));
+    }
+
+    @Transactional(readOnly = true)
+    public OrderResponse getOrderById(Long orderId) {
+        OrderEntity order = orderRepo.findById(orderId)
+            .orElseThrow(() ->
+                new EntityNotFoundException("Order not found: " + orderId)
+            );
+        return toDto(order);
     }
 }

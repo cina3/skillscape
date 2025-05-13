@@ -73,6 +73,17 @@ public class OrderEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+      name = "order_deliver_urls",
+      joinColumns = @JoinColumn(name = "order_id")
+    )
+    @Column(name = "deliver_url")
+    private List<String> deliveredUrls;
+
+    @Column(name = "order_percentage", nullable = false)
+    private Integer percentage;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

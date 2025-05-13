@@ -63,6 +63,12 @@ public class OrderController {
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("/{orderId}") 
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long orderId) {
+        OrderResponse order = orderService.getOrderById(orderId); 
+        return ResponseEntity.ok(order);
+    }
+
     @PatchMapping("/{orderId}/status")
     public ResponseEntity<OrderResponse> updateStatus(
         @PathVariable Long orderId,
@@ -71,4 +77,15 @@ public class OrderController {
         OrderResponse updated = orderService.updateStatus(orderId, status);
         return ResponseEntity.ok(updated);
     }
+
+    @PatchMapping("/{orderId}/percentage")
+    public ResponseEntity<OrderResponse> updateProgress(
+        @PathVariable Long orderId,
+        @RequestBody Integer percentage
+    ) {
+        OrderResponse updated = orderService.updateProgress(orderId, percentage);
+        return ResponseEntity.ok(updated);
+    }
+
+    
 }

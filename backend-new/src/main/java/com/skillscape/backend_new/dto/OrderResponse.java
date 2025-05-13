@@ -25,6 +25,10 @@ public class OrderResponse {
     private LocalDateTime expectedDeliveryDate;
     private LocalDateTime deliveredAt;
     private List<String> uploadUrls;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private List<String> deliveredUrls;
+    private Integer percentage;
 }
