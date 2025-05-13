@@ -30,7 +30,14 @@ public class ListingController {
                .body(service.createListing(dto, user.getUsername()));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/my")
+    public ResponseEntity<List<ListingResponse>> getMyListings(
+            @AuthenticationPrincipal UserDetails user) {
+        List<ListingResponse> listings = service.getListingsByUserEmail(user.getUsername());
+        return ResponseEntity.ok(listings);
+    }
+
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<ListingResponse> getOne(@PathVariable Long id) {
         return ResponseEntity.ok(service.getListingById(id));
     }
@@ -40,7 +47,7 @@ public class ListingController {
         return ResponseEntity.ok(service.getAllListings());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id:\\d+}")
     public ResponseEntity<ListingResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody CreateListingRequest dto,
@@ -48,7 +55,7 @@ public class ListingController {
         return ResponseEntity.ok(service.updateListing(id, dto, user.getUsername()));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails user) {

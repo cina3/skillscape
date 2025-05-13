@@ -47,6 +47,15 @@ public class ListingService {
         return repo.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<ListingResponse> getListingsByUserEmail(String userEmail) {
+        UserEntity user = userService.getUserByEmail(userEmail);
+        return repo.findByUser(user) 
+                   .stream()
+                   .map(this::mapToDto)
+                   .collect(Collectors.toList());
+    }
+
     public ListingResponse updateListing(Long id, CreateListingRequest dto, String userEmail) {
         ListingEntity l = repo.findById(id)
                               .orElseThrow(() -> new IllegalArgumentException("Listing not found: " + id));
