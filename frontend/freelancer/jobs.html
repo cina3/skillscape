@@ -1,10 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Jobs - SkillScape</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Jobs – SkillScape</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  />
+  <link rel="stylesheet" href="../css/customer-shared-style.css" />
+  <link rel="stylesheet" href="../css/jobs-style.css" />
 </head>
 <body>
+  <div id="header-placeholder"></div>
+  <div id="hamburger-menu-placeholder"></div>
+
+  <main class="jobs-container">
+    <div class="jobs-header">
+      <h1>My Jobs</h1>
+      <div class="jobs-filter">
+        <select id="statusFilter" class="status-filter">
+          <option value="all">All Jobs</option>
+          <option value="active">Active</option>
+          <option value="in_progress">In Progress</option>
+          <option value="pending">Pending</option>
+          <option value="delivered">Delivered</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="jobs-grid" id="jobsGrid">
+    </div>
+
+    <div id="jobDetailsModal" class="job-details-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalJobTitle">Job Details</h2>
+          <button class="close-modal-btn"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Order ID</span>
+              <span class="info-value" id="modalOrderID"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Status</span>
+              <span class="info-value status-indicator" id="modalStatus"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Buyer</span>
+              <span class="info-value" id="modalBuyer"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Price</span>
+              <span class="info-value price" id="modalPrice"></span>
+              <span class="badge" id="modalPriceType"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Created On</span>
+              <span class="info-value" id="modalCreatedAt"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Updated On</span>
+              <span class="info-value" id="modalUpdatedAt"></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Due Date</span>
+              <span class="info-value" id="modalDueDate"></span>
+            </div>
+          </div>
+
+          <div class="order-request-section">
+            <h3>Project Requirements</h3>
+            <div class="request-content" id="modalDescription"></div>
+          </div>
+
+          <div class="order-files-section">
+            <h3>Client Files</h3>
+            <div class="files-list" id="modalFilesList"></div>
+          </div>
+
+          <div class="status-controls-section">
+            <h3>Job Status Management</h3>
+            <div class="status-buttons">
+              <button class="status-btn active" data-status="active"><i class="fas fa-play-circle"></i> Mark Active</button>
+              <button class="status-btn in-progress" data-status="in_progress"><i class="fas fa-tasks"></i> Mark In Progress</button>
+              <button class="status-btn pending" data-status="pending"><i class="fas fa-pause-circle"></i> Mark Pending</button>
+              <button class="status-btn delivered" data-status="delivered"><i class="fas fa-truck"></i> Mark Delivered</button>
+              <button class="status-btn cancelled" data-status="cancelled"><i class="fas fa-times-circle"></i> Mark Cancelled</button>
+            </div>
+
+            <h4>Completion Progress</h4>
+            <div class="progress-slider-container">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                class="progress-slider"
+                id="progressSlider"
+              />
+              <span id="progressValue">0%</span>
+            </div>
+            <button class="update-progress-btn" id="updateProgressBtn">
+              Update Progress
+            </button>
+          </div>
+
+          <div class="order-actions-section">
+            <button class="primary-action-btn" id="deliverWorkBtn">
+              <i class="fas fa-paper-plane"></i> Deliver Work
+            </button>
+            <button class="secondary-action-btn" id="messageClientBtn">
+              <i class="fas fa-comment"></i> Message Client
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="deliverWorkModal" class="action-modal">
+      <div class="action-modal-content">
+        <div class="action-modal-header">
+          <h3>Deliver Your Work</h3>
+          <button class="close-action-modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="action-modal-body">
+          <div class="form-group">
+            <label for="deliveryMessage">Delivery Message</label>
+            <textarea
+              id="deliveryMessage"
+              placeholder="Describe what you're delivering..."
+              rows="4"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Upload Files</label>
+            <div class="delivery-uploader" id="uploadArea">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p>Drag & drop files here or <span class="browse-button">browse</span></p>
+              <input type="file" id="fileInput" multiple hidden />
+            </div>
+            <div class="uploaded-files-list" id="uploadedFilesList"></div>
+          </div>
+          <div class="action-buttons">
+            <button class="cancel-button">Cancel</button>
+            <button class="submit-button" id="submitDelivery">Submit Delivery</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 SkillScape. All rights reserved.</p>
+  </footer>
+
+  <script src="../design-js/freelancer-shared-script.js"></script>
+  <script src="../design-js/jobs-script.js"></script>
+  <script src="../js/jobs.js"></script>
 </body>
 </html>

@@ -346,9 +346,9 @@
 }
 
 .feature-list li {
-    padding: 8px 0; /* Adjusted padding slightly */
+    padding: 8px 0; 
     display: flex;
-    align-items: center; /* Better vertical alignment with icon */
+    align-items: center; 
     line-height: 1.4;
 }
 
@@ -356,15 +356,15 @@
     color: var(--brand-blue);
     margin-right: 12px;
     font-size: 1.1rem;
-    flex-shrink: 0; /* Prevent icon from shrinking */
+    flex-shrink: 0; 
 }
 
 .feature-list li .feature-item-text {
-    flex-grow: 1; /* Allow text to take available space */
+    flex-grow: 1; 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0; /* Crucial for flex items to truncate */
+    min-width: 0;
 }
 
 .gig-sidebar {
