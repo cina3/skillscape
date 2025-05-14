@@ -129,6 +129,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    function initializeSkillScapeSearch() {
+        console.log("Local initializeSkillScapeSearch in customer-shared-script.js - consider if still needed.");
+    }
+
 });
 
 window.showInbox = function(e) {

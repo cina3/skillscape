@@ -69,6 +69,12 @@ async function handleLogin(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        window.location.href = '../auth/choose-account.html';
+        return;
+    }
+
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);

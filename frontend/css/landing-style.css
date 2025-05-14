@@ -79,7 +79,7 @@ body {
 
 .hero-section {
     height: 750px;
-    background-image: url('../assets/temp.png');
+    background-image: url('../assets/landing/landing.png');
     background-size: cover;
     background-position: center;
     position: relative;

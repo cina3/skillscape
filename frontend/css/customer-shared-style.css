@@ -57,19 +57,9 @@ body {
 .site-header .search-bar {
     flex-grow: 1;
     margin: 0 30px;
-    display: flex;
-    align-items: center;
-    background-color: var(--card-item-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 25px;
-    padding: 0px 15px;
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
-    position: relative;
-}
-
-.site-header .search-bar:focus-within {
-    border-color: var(--button-blue);
-    box-shadow: 0 0 0 3px rgba(58, 80, 107, 0.15);
+    display: flex; 
+    align-items: center; 
+    position: relative; 
 }
 
 .site-header .search-bar input[type="search"] {
@@ -81,94 +71,22 @@ body {
     background-color: transparent;
 }
 
-.site-header .search-bar .search-icon {
-    font-size: 1.2em;
-    color: var(--text-muted);
-    padding-left: 10px;
-    cursor: pointer;
-}
-
-.site-header .search-bar .search-results-dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 0;
-    right: 0;
-    background-color: var(--card-item-bg);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    z-index: 1002;
-    max-height: 400px;
-    overflow-y: auto;
-    display: none;
-}
-
-.site-header .search-bar .search-results-dropdown.show {
-    display: block;
-    animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.site-header .search-bar .search-result-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 15px;
-    border-bottom: 1px solid var(--border-color);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.site-header .search-bar .search-result-item:last-child {
-    border-bottom: none;
-}
-
-.site-header .search-bar .search-result-item:hover {
-    background-color: rgba(0, 0, 0, 0.03);
-}
-
-.site-header .search-bar .result-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.site-header .search-bar .result-title {
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 3px;
-}
-
-.site-header .search-bar .result-category {
-    font-size: 0.85em;
-    color: var(--text-muted);
-}
-
-.site-header .search-bar .result-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.site-header .search-bar .result-icon i {
-    color: var(--text-muted);
-    transition: transform 0.2s ease;
-}
-
-.site-header .search-bar .search-result-item:hover .result-icon i {
-    transform: translateX(3px);
-    color: var(--brand-blue);
-}
-
-.site-header .search-bar .category-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    object-fit: cover;
-}
+/* Styles for .site-header .search-bar .search-results-dropdown, .search-result-item, etc. are moved to search-style.css */
+/* Remove the following rules or ensure they don't conflict:
+.site-header .search-bar .search-results-dropdown { ... }
+.site-header .search-bar .search-results-dropdown.show { ... }
+@keyframes fadeIn { ... } // If this was only for the dropdown, it can be moved or adapted in search-style.css
+.site-header .search-bar .search-result-item { ... }
+.site-header .search-bar .search-result-item:last-child { ... }
+.site-header .search-bar .search-result-item:hover { ... }
+.site-header .search-bar .result-text { ... }
+.site-header .search-bar .result-title { ... }
+.site-header .search-bar .result-category { ... }
+.site-header .search-bar .result-icon { ... }
+.site-header .search-bar .result-icon i { ... }
+.site-header .search-bar .search-result-item:hover .result-icon i { ... }
+.site-header .search-bar .category-icon { ... }
+*/
 
 .site-header .menu-icon {
     font-size: 1.8em;

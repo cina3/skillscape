@@ -12,12 +12,18 @@ window.initializeAllSearchBars = function() {
     }
     
     searchInputs.forEach((searchInput) => {
-        const closestSearchBar = searchInput.closest('.search-bar') || searchInput.closest('.search-input-wrapper');
-        if (!closestSearchBar) return;
+        const searchComponentRoot = searchInput.closest('.search-container') || searchInput.closest('.search-input-wrapper') || searchInput.closest('.search-bar');
+        if (!searchComponentRoot) {
+            console.warn("Search component root not found for input:", searchInput);
+            return;
+        }
 
-        const closestDropdown = closestSearchBar.querySelector('.search-results-dropdown');
+        const closestDropdown = searchComponentRoot.querySelector('.search-results-dropdown');
         
-        if (!closestDropdown) return;
+        if (!closestDropdown) {
+            console.warn("Search results dropdown not found within root:", searchComponentRoot);
+            return;
+        }
         
         const newSearchInput = searchInput.cloneNode(true);
         searchInput.parentNode.replaceChild(newSearchInput, searchInput);
@@ -48,10 +54,13 @@ window.initializeAllSearchBars = function() {
     });
     
     searchButtons.forEach((searchButton) => {
-        const closestSearchBar = searchButton.closest('.search-bar') || searchButton.closest('.search-input-wrapper');
-        if (!closestSearchBar) return;
+        const searchComponentRoot = searchButton.closest('.search-container') || searchButton.closest('.search-input-wrapper') || searchButton.closest('.search-bar');
+        if (!searchComponentRoot) {
+            console.warn("Search component root not found for button:", searchButton);
+            return;
+        }
 
-        const searchInput = closestSearchBar.querySelector('input[type="search"], .search-input');
+        const searchInput = searchComponentRoot.querySelector('input[type="search"], .search-input');
 
         const newSearchButton = searchButton.cloneNode(true);
         searchButton.parentNode.replaceChild(newSearchButton, searchButton);
@@ -65,7 +74,8 @@ window.initializeAllSearchBars = function() {
     
     if (!document.body.hasAttribute('data-search-click-outside-listener')) {
         document.addEventListener('click', function(event) {
-            const isClickInsideSearchComponent = Array.from(document.querySelectorAll('.search-bar, .search-container')).some(container => container.contains(event.target));
+            const isClickInsideSearchComponent = Array.from(document.querySelectorAll('.search-container, .search-bar, .search-input-wrapper'))
+                .some(container => container.contains(event.target));
             
             if (!isClickInsideSearchComponent) {
                 hideAllSearchResults();
@@ -77,16 +87,33 @@ window.initializeAllSearchBars = function() {
     searchResultsDropdowns.forEach(dropdown => {
         if (!dropdown) return;
         
+        dropdown.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
         const resultItems = dropdown.querySelectorAll('.search-result-item');
         resultItems.forEach(item => {
             const newItem = item.cloneNode(true);
             item.parentNode.replaceChild(newItem, item);
 
             newItem.addEventListener('click', function() {
-                const resultTitle = this.querySelector('.result-title').textContent;
-                const resultCategory = this.querySelector('.result-category').textContent;
-                const categoryType = resultCategory.replace('in ', '').trim().toLowerCase();
-                navigateToSearchResult(resultTitle, categoryType);
+                const resultTitleElement = this.querySelector('.result-title');
+                const resultCategoryElement = this.querySelector('.result-category');
+                
+                if (resultTitleElement && resultCategoryElement) {
+                    const resultTitle = resultTitleElement.textContent;
+                    let categoryType = this.dataset.categoryType;
+                    if (!categoryType && resultCategoryElement) {
+                        categoryType = resultCategoryElement.textContent.replace('in ', '').trim().toLowerCase();
+                    }
+
+                    if (resultTitle && categoryType) {
+                        navigateToSearchResult(resultTitle, categoryType);
+                        hideAllSearchResults();
+                    } else {
+                        console.warn("Could not determine title or category type for navigation.", this);
+                    }
+                }
             });
         });
     });
@@ -160,39 +187,48 @@ function resetSearchResults(dropdown) {
 function filterSearchResults(query, dropdown) {
     if (!dropdown) return;
     
-    const resultItems = dropdown.querySelectorAll('.search-result-item');
+    const resultItems = dropdown.querySelectorAll('.search-result-item:not(.no-results)');
+    let visibleItemsCount = 0;
     
     resultItems.forEach(item => {
-        const title = item.querySelector('.result-title').textContent.toLowerCase();
+        const titleElement = item.querySelector('.result-title');
+        const categoryElement = item.querySelector('.result-category');
+        let match = false;
+
+        if (titleElement && titleElement.textContent.toLowerCase().includes(query)) {
+            match = true;
+        }
+        if (categoryElement && categoryElement.textContent.toLowerCase().includes(query)) {
+            match = true;
+        }
         
-        if (title.includes(query)) {
+        if (match) {
             item.style.display = 'flex';
+            visibleItemsCount++;
         } else {
             item.style.display = 'none';
         }
     });
     
-    const visibleItems = Array.from(resultItems).filter(item => item.style.display !== 'none');
-    if (visibleItems.length === 0) {
-        let noResultsItem = dropdown.querySelector('.no-results');
+    let noResultsItem = dropdown.querySelector('.no-results');
+    if (visibleItemsCount === 0 && query.length > 0) {
         if (!noResultsItem) {
             noResultsItem = document.createElement('div');
             noResultsItem.className = 'search-result-item no-results';
             noResultsItem.innerHTML = `
                 <div class="result-text">
-                    <span class="result-title">No results found</span>
+                    <span class="result-title">No results found for "${query}"</span>
                     <span class="result-category">Try a different search term</span>
                 </div>
             `;
             dropdown.appendChild(noResultsItem);
-        } else {
-            noResultsItem.style.display = 'flex';
         }
-    } else {
-        const noResultsItem = dropdown.querySelector('.no-results');
-        if (noResultsItem) {
-            noResultsItem.style.display = 'none';
-        }
+        noResultsItem.style.display = 'flex';
+        const noResultsTitle = noResultsItem.querySelector('.result-title');
+        if (noResultsTitle) noResultsTitle.textContent = `No results found for "${query}"`;
+
+    } else if (noResultsItem) {
+        noResultsItem.style.display = 'none';
     }
 }
 

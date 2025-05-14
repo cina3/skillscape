@@ -77,8 +77,8 @@ async function handleSignup(event) {
             const genericErrorPattern = /bad request/i;
             if (
                 genericErrorPattern.test(errorMessageText) &&
-                !(typeof responseData === 'object' && responseData !== null && responseData.message) && // No specific responseData.message
-                !(typeof responseData === 'object' && responseData !== null && responseData.errors && responseData.errors.length > 0) // No specific responseData.errors
+                !(typeof responseData === 'object' && responseData !== null && responseData.message) && 
+                !(typeof responseData === 'object' && responseData !== null && responseData.errors && responseData.errors.length > 0) 
             ) {
                 errorMessageText = 'There was an issue with the information provided. Please review your details and try again.';
             }
@@ -92,6 +92,12 @@ async function handleSignup(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        window.location.href = '../auth/choose-account.html';
+        return;
+    }
+
     const signupForm = document.getElementById('signupForm');
     if (signupForm) {
         signupForm.addEventListener('submit', handleSignup);
