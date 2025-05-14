@@ -49,33 +49,58 @@ function apiFetch(path, opts = {}) {
     });
 }
 
-function mapApiOrderToJobFormat(o) {
-  if (!o) return null; 
+function mapApiOrderToJobFormat(dataBundle) {
+  const { order, gigDetails } = dataBundle;
+  if (!order) return null; 
+
+  const originalGigTitle = (gigDetails && gigDetails.title) 
+                ? gigDetails.title 
+                : `Gig #${order.gigId}`;
+  
+  const displayTitle = `Order For ${originalGigTitle}`;
+
   return {
-    id: o.id,
-    title: `Gig #${o.gigId}`,
-    buyer: `Buyer #${o.buyerId}`,
+    id: order.id,
+    title: displayTitle, 
+    buyer: "",          
+    gigId: order.gigId,
     image: '../assets/temp.png', 
-    price: `$${o.orderPrice}`,
-    priceType: o.priceFixed ? 'fixed' : 'hourly',
-    dueDate: formatDate(o.expectedDeliveryDate),
-    createdAt: formatDate(o.createdAt),
-    updatedAt: formatDate(o.updatedAt),
-    status: o.status.toLowerCase(),
-    description: o.requirements,
-    clientFiles: o.uploadUrls || [],
-    progress: o.percentage === null || o.percentage === undefined ? 0 : o.percentage,
-    deliveredUrls: o.deliveryFileUrls || []
+    price: `$${order.orderPrice}`,
+    priceType: order.priceFixed ? 'fixed' : 'hourly',
+    createdAt: formatDate(order.createdAt),
+    updatedAt: formatDate(order.updatedAt),
+    status: order.status.toLowerCase(),
+    description: order.requirements,
+    clientFiles: order.uploadUrls || [],
+    progress: order.percentage === null || order.percentage === undefined ? 0 : order.percentage,
+    deliveredUrls: order.deliveryFileUrls || []
   };
 }
 
 async function fetchJobs() {
   try {
-    const data = await apiFetch('http://localhost:8080/api/orders/seller');
-    allJobs = data.map(mapApiOrderToJobFormat).filter(job => job !== null); 
+    const orders = await apiFetch('http://localhost:8080/api/orders/seller');
+    
+    const jobsWithDetailsPromises = orders.map(async (order) => {
+      try {
+        const gigDetails = await apiFetch(`http://localhost:8080/api/gigs/${order.gigId}`)
+          .catch(e => {
+            console.warn(`Failed to fetch gig details for gigId ${order.gigId}:`, e.message);
+            return null; 
+          });
+        
+        
+        return mapApiOrderToJobFormat({ order, gigDetails });  
+      } catch (e) {
+        console.error(`Error processing order ${order.id} with additional details:`, e.message);
+        return mapApiOrderToJobFormat({ order, gigDetails: null }); 
+      }
+    });
+
+    allJobs = (await Promise.all(jobsWithDetailsPromises)).filter(job => job !== null);
     renderJobs(allJobs);
   } catch (e) {
-    console.error('could not load jobs', e);
+    console.error('Could not load jobs:', e.message);
     document.getElementById('jobsGrid').innerHTML =
       '<p class="error">Failed to load your jobs.</p>';
   }
@@ -107,7 +132,6 @@ function renderJobs(jobs) {
     card.innerHTML = `
       <div class="job-card-left">
         <div class="job-image" style="background-image:url('${job.image}')">
-          <div class="job-buyer">From: ${job.buyer}</div>
         </div>
       </div>
       <div class="job-card-center">
@@ -116,7 +140,7 @@ function renderJobs(jobs) {
         </span>
         <h3 class="job-title">${job.title}</h3>
         <p class="job-price">Price: ${job.price}</p>
-        <p class="job-due-date">Due: ${job.dueDate}</p>
+        <p class="job-gig-id">Gig ID: ${job.gigId}</p>
       </div>
       <div class="job-card-right">
         <button class="view-job-btn">View Details</button>
@@ -188,7 +212,7 @@ function initModals() {
             let newlyMappedJob;
             if (verifiedOrder) {
               console.log(`Verification GET for job ${orderIdToVerify} - RAW percentage from server: ${verifiedOrder.percentage}`);
-              newlyMappedJob = mapApiOrderToJobFormat(verifiedOrder); 
+              newlyMappedJob = mapApiOrderToJobFormat({ order: verifiedOrder, gigDetails: null }); 
               console.log(`Verification GET for job ${orderIdToVerify} - MAPPED progress for frontend: ${newlyMappedJob.progress}`);
             } else {
               console.log(`Verification GET request for job ${orderIdToVerify} - Order not found or no content. Using PATCH response if available.`);
@@ -197,7 +221,7 @@ function initModals() {
                 fetchJobs(); 
                 return;
               }
-              newlyMappedJob = mapApiOrderToJobFormat(updatedOrderFromServer);
+              newlyMappedJob = mapApiOrderToJobFormat({ order: updatedOrderFromServer, gigDetails: null });
               console.warn(`Using potentially stale data from PATCH response for job ${orderIdToVerify} as verification failed.`);
             }
 
@@ -224,7 +248,7 @@ function initModals() {
           .catch(err => {
             console.error(`Error fetching job ${orderIdToVerify} for verification:`, err);
             if (updatedOrderFromServer) {
-                const newlyMappedJob = mapApiOrderToJobFormat(updatedOrderFromServer);
+                const newlyMappedJob = mapApiOrderToJobFormat({ order: updatedOrderFromServer, gigDetails: null });
                 console.warn(`Using potentially stale data from PATCH response for job ${orderIdToVerify} due to verification error.`);
                 if (currentJob && currentJob.id === newlyMappedJob.id) Object.assign(currentJob, newlyMappedJob);
                 const jobIndexInAllJobs = allJobs.findIndex(j => j.id === newlyMappedJob.id);
@@ -315,7 +339,9 @@ function openJobModal(job) {
   document.getElementById('modalPrice').textContent = job.price;
   document.getElementById('modalCreatedAt').textContent = job.createdAt;
   document.getElementById('modalUpdatedAt').textContent = job.updatedAt;
-  document.getElementById('modalDueDate').textContent = job.dueDate;
+  if (document.getElementById('modalGigID')) {
+    document.getElementById('modalGigID').textContent = job.gigId;
+  }
   document.getElementById('modalDescription').textContent = job.description || 'No requirements provided.';
 
   const modalStatus = document.getElementById('modalStatus');
@@ -368,6 +394,11 @@ function openJobModal(job) {
   const btnC = document.querySelector('.status-buttons [data-status="cancelled"]');
   const slider = document.getElementById('progressSlider');
   const upBtn = document.getElementById('updateProgressBtn');
+
+  const dueDateModalElement = document.getElementById('modalDueDate');
+  if (dueDateModalElement && dueDateModalElement.parentElement.classList.contains('info-item')) {
+      dueDateModalElement.parentElement.style.display = 'none';
+  }
 
   sc.style.display = 'block';
   oa.style.display = 'flex';
