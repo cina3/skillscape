@@ -128,9 +128,28 @@
     padding: 22px 25px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     background: white;
     min-width: 0;
+}
+
+.job-card-center .badge {
+    margin-bottom: 10px;
+    align-self: flex-start;
+}
+
+.job-card-center .job-title {
+    margin-bottom: 10px;
+}
+
+.job-card-center p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0 0 8px 0;
+}
+
+.job-card-center p:last-child {
+    margin-bottom: 0;
 }
 
 .job-status {
@@ -214,34 +233,37 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    padding: 20px;
+    align-items: stretch;
+    padding: 0;
     flex-shrink: 0;
-    background-color: #f8f9fa;
+    background-color: transparent;
+    min-width: 150px;
 }
 
 .view-job-btn {
-    background: var(--brand-blue);
+    background: var(--brand-blue-dark);
     color: #fff;
-    padding: 10px 16px;
-    border-radius: 8px;
+    padding: 20px;
+    border-radius: 0 16px 16px 0;
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
     transition: all 0.3s ease;
     text-align: center;
     text-decoration: none;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 140px;
+    width: 100%;
+    height: 100%;
     border: none;
     cursor: pointer;
+    font-size: 0.95rem;
 }
 
 .view-job-btn:hover {
-    background: var(--brand-blue-dark);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    background: var(--brand-blue);
+    transform: none;
+    box-shadow: none;
 }
 
 .job-details-modal {

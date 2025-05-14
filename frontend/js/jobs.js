@@ -105,18 +105,22 @@ function renderJobs(jobs) {
     const card = document.createElement('div');
     card.className = 'job-card';
     card.innerHTML = `
-      <div class="job-image" style="background-image:url('${job.image}')">
-        <div class="job-buyer">From: ${job.buyer}</div>
+      <div class="job-card-left">
+        <div class="job-image" style="background-image:url('${job.image}')">
+          <div class="job-buyer">From: ${job.buyer}</div>
+        </div>
       </div>
-      <div class="job-info">
-        <span class="badge ${job.priceType}">
-          ${job.priceType==='fixed'?'Fixed':'Per Hour'}
+      <div class="job-card-center">
+        <span class="badge ${job.priceType === 'fixed' ? 'fixed' : 'per-hour'}">
+          ${job.priceType === 'fixed' ? 'Fixed Price' : 'Per Hour'}
         </span>
-        <h3>${job.title}</h3>
-        <p>Price: ${job.price}</p>
-        <p>Due: ${job.dueDate}</p>
+        <h3 class="job-title">${job.title}</h3>
+        <p class="job-price">Price: ${job.price}</p>
+        <p class="job-due-date">Due: ${job.dueDate}</p>
       </div>
-      <button class="view-job-btn">View Details</button>`;
+      <div class="job-card-right">
+        <button class="view-job-btn">View Details</button>
+      </div>`;
     grid.appendChild(card);
     card.querySelector('.view-job-btn')
       .addEventListener('click', () => openJobModal(job));
