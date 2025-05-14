@@ -1,0 +1,34 @@
+.hero-section {
+    width: 100%;
+    min-height: 600px; 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: #fff; 
+    text-align: left; 
+}
+
+.hero-section > div.hero-slide.variant-1 { 
+    background-image: url('../assets/freelancer-home/1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-section > div.hero-slide.variant-2 { 
+    background-image: url('../assets/freelancer-home/2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-section > div.hero-slide.variant-3 {
+    background-image: url('../assets/freelancer-home/3.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+

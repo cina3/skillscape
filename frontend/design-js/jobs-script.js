@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.text())
         .then(data => {
             headerPlaceholder.innerHTML = data;
-            initializeSearch();
         })
         .catch(error => console.error('Error loading header:', error));
 
@@ -357,23 +356,6 @@ function handleFiles(files) {
         
         fileItem.querySelector('.remove-file-btn').addEventListener('click', () => {
             fileItem.remove();
-        });
-    }
-}
-
-function initializeSearch() {
-    const searchInput = document.getElementById('searchInput');
-    const searchResults = document.getElementById('searchResultsDropdown');
-    
-    if (searchInput) {
-        searchInput.addEventListener('focus', () => {
-            searchResults.classList.add('show');
-        });
-        
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#skillscapeSearchComponent')) {
-                searchResults.classList.remove('show');
-            }
         });
     }
 }

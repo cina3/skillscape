@@ -54,40 +54,6 @@ body {
     color: var(--text-dark);
 }
 
-.site-header .search-bar {
-    flex-grow: 1;
-    margin: 0 30px;
-    display: flex; 
-    align-items: center; 
-    position: relative; 
-}
-
-.site-header .search-bar input[type="search"] {
-    flex-grow: 1;
-    padding: 10px;
-    border: none;
-    outline: none;
-    font-size: 0.95em;
-    background-color: transparent;
-}
-
-/* Styles for .site-header .search-bar .search-results-dropdown, .search-result-item, etc. are moved to search-style.css */
-/* Remove the following rules or ensure they don't conflict:
-.site-header .search-bar .search-results-dropdown { ... }
-.site-header .search-bar .search-results-dropdown.show { ... }
-@keyframes fadeIn { ... } // If this was only for the dropdown, it can be moved or adapted in search-style.css
-.site-header .search-bar .search-result-item { ... }
-.site-header .search-bar .search-result-item:last-child { ... }
-.site-header .search-bar .search-result-item:hover { ... }
-.site-header .search-bar .result-text { ... }
-.site-header .search-bar .result-title { ... }
-.site-header .search-bar .result-category { ... }
-.site-header .search-bar .result-icon { ... }
-.site-header .search-bar .result-icon i { ... }
-.site-header .search-bar .search-result-item:hover .result-icon i { ... }
-.site-header .search-bar .category-icon { ... }
-*/
-
 .site-header .menu-icon {
     font-size: 1.8em;
     color: var(--text-dark);
@@ -412,9 +378,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    .site-header .search-bar {
-        display: none;
-    }
     .site-header .header-content {
         justify-content: space-between;
     }

@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
-                const headerHeight = document.querySelector('.site-header').offsetHeight; // Changed from .static-header
+                const headerHeight = document.querySelector('.site-header').offsetHeight; 
                 const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
                 
                 window.scrollTo({
@@ -39,17 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    const searchBar = document.querySelector('.search-bar input');
-    if (searchBar) {
-        searchBar.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = 'auth/login.html';
-        });
-        
-        searchBar.addEventListener('keydown', function(e) {
-            e.preventDefault();
-        });
-    }
     
     const header = document.querySelector('.site-header'); 
     

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../css/home-style.css">
     <link rel="stylesheet" href="../css/customer-shared-style.css">
+    <link rel="stylesheet" href="../css/freelancer-hero-styles.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
@@ -17,28 +18,28 @@
             <button class="hero-arrow prev-arrow hidden" aria-label="Previous slide">
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <div class="hero-slide active-slide">
+            <div class="hero-slide active-slide variant-1">
                 <div class="hero-content">
                     <h1>Welcome Back!<br>Find Your Next Project.</h1>
-                    <a href="#" class="hero-button">
+                    <a href="browse.html" class="hero-button">
                         Browse Available Gigs
                         <i class="fas fa-arrow-right arrow-icon"></i>
                     </a>
                 </div>
             </div>
-            <div class="hero-slide">
+            <div class="hero-slide variant-2">
                 <div class="hero-content">
                     <h1>Showcase Your Skills.<br>Stand Out to Clients.</h1>
-                    <a href="#" class="hero-button">
-                        Update Your Profile
+                    <a href="jobs.html" class="hero-button">
+                        Check Your Jobs
                         <i class="fas fa-arrow-right arrow-icon"></i>
                     </a>
                 </div>
             </div>
-            <div class="hero-slide">
+            <div class="hero-slide variant-3">
                 <div class="hero-content">
                     <h1>Manage Your Work.<br>Grow Your Freelance Career.</h1>
-                    <a href="#" class="hero-button">
+                    <a href="my.html" class="hero-button">
                         View Your Gigs
                         <i class="fas fa-arrow-right arrow-icon"></i>
                     </a>
@@ -57,101 +58,35 @@
             <section class="content-section browse-section">
                 <h2 class="section-title">Browse Categories</h2>
                 <div class="browse-categories">
-                    <div class="category-item">
+                    <a class="category-item" href="browse.html?category=web-design">
                         <div class="category-name">Web Design</div>
-                    </div>
-                    <div class="category-item">
+                    </a>
+                    <a class="category-item" href="browse.html?category=engineering">
                         <div class="category-name">Engineering</div>
-                    </div>
-                    <div class="category-item">
+                    </a>
+                    <a class="category-item" href="browse.html?category=art-design">
                         <div class="category-name">Art & Design</div>
-                    </div>
-                    <div class="category-item">
+                    </a>
+                    <a class="category-item" href="browse.html?category=music">
                         <div class="category-name">Music</div>
-                    </div>
-                    <div class="category-item">
+                    </a>
+                    <a class="category-item" href="browse.html?category=video-editing">
                         <div class="category-name">Video Editing</div>
-                    </div>
-                    <div class="category-item">
+                    </a>
+                    <a class="category-item" href="browse.html?category=it-software">
                         <div class="category-name">IT & Software</div>
-                    </div>
+                    </a>
                 </div>
-                <a href="#" class="see-all-button">
+                <a href="browse.html" class="see-all-button">
                     See All Categories <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
             </section>
             <section class="content-section recommended-section">
-                <h2 class="section-title">Recommended Jobs For You</h2>
+                <h2 class="section-title">Latest Listings</h2>
                 <div class="recommended-list">
-                    <div class="recommended-item">
-                        <div class="item-image">
-                            <img src="../assets/temp.png" alt="Modern Web Design">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-title">Modern Web Design</h3>
-                            <p class="item-seller">by webdesigner</p>
-                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 4.1</p>
-                        </div>
-                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
-                    </div>
-                    <div class="recommended-item">
-                        <div class="item-image">
-                            <img src="../assets/temp.png" alt="JavaFX GUI Design">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-title">JavaFX GUI Design</h3>
-                            <p class="item-seller">by javafxguru</p>
-                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 3.7</p>
-                        </div>
-                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
-                    </div>
-                    <div class="recommended-item">
-                        <div class="item-image">
-                            <img src="../assets/temp.png" alt="Chinese Translation">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-title">Chinese Translation</h3>
-                            <p class="item-seller">by xiaomei</p>
-                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 3.5</p>
-                        </div>
-                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
-                    </div>
-                    <div class="recommended-item">
-                        <div class="item-image">
-                            <img src="../assets/temp.png" alt="Web Advertising">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-title">Web Advertising</h3>
-                            <p class="item-seller">by marketing3</p>
-                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 4.9</p>
-                        </div>
-                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
-                    </div>
-                    <div class="recommended-item">
-                        <div class="item-image">
-                            <img src="../assets/temp.png" alt="SEO Optimization">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-title">SEO Optimization</h3>
-                            <p class="item-seller">by seospecialist</p>
-                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 4.7</p>
-                        </div>
-                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
-                    </div>
-                    <div class="recommended-item">
-                        <div class="item-image">
-                            <img src="../assets/temp.png" alt="Content Creation">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-title">Content Creation</h3>
-                            <p class="item-seller">by writerpro</p>
-                            <p class="item-rating"><i class="fas fa-star star-icon"></i> 4.3</p>
-                        </div>
-                        <a href="#" class="view-button">View <i class="fas fa-chevron-right arrow-icon"></i></a>
-                    </div>
                 </div>
-                <a href="#" class="see-all-button">
-                    See All Gigs <i class="fas fa-chevron-right arrow-icon"></i>
+                <a href="browse.html" class="see-all-button">
+                    See All Listings <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
             </section>
         </div>
@@ -161,5 +96,6 @@
     </footer>
     <script src="../design-js/home-script.js"></script>
     <script src="../design-js/freelancer-shared-script.js"></script>
+    <script src="../js/freelancer-home.js"></script>
 </body>
 </html>
