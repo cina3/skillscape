@@ -24,7 +24,7 @@
         <div id="orderDetailsModal" class="order-details-modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2>C++ Programming</h2>
+                    <h2></h2>
                     <button class="close-modal-btn"><i class="fas fa-times"></i></button>
                 </div>
                 
@@ -33,26 +33,27 @@
                         <div class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Status</span>
-                                <span class="info-value status-indicator in-progress">
-                                    <i class="fas fa-spinner"></i>
-                                    In Progress
-                                </span>
+                                <span class="info-value status-indicator"></span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Order Date</span>
-                                <span class="info-value">May 15, 2025</span>
+                                <span class="info-value" id="modalOrderDate"></span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Provider</span>
-                                <span class="info-value">cppguru</span>
+                                <span class="info-value" id="modalProviderName"></span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Expected Delivery</span>
-                                <span class="info-value">May 25, 2025</span>
+                                <span class="info-value" id="modalExpectedDelivery"></span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Total Cost</span>
-                                <span class="info-value price">$48</span>
+                                <span class="info-value price" id="modalTotalCost"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Category</span>
+                                <span class="info-value" id="modalCategory"></span>
                             </div>
                         </div>
                     </div>
@@ -60,69 +61,21 @@
                     <div class="order-request-section">
                         <h3>Your Request</h3>
                         <div class="request-content">
-                            <p>Build a simple command-line file management tool for organizing files in a directory based on their extensions (e.g., move all .jpg files to an "Images" folder, .pdf to "Documents", etc.). It should be lightweight, fast, and work on both Windows and Linux.</p>
+                            <p></p>
                         </div>
                     </div>
 
                     <div class="order-files-section">
                         <h3>Attached Files</h3>
                         <div class="files-list">
-                            <div class="file-item">
-                                <i class="fas fa-file-image"></i>
-                                <span class="file-name">image.png</span>
-                                <a href="#" class="file-download-btn">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                            </div>
-                            <div class="file-item">
-                                <i class="fas fa-file-alt"></i>
-                                <span class="file-name">request.txt</span>
-                                <a href="#" class="file-download-btn">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                            </div>
-                            <div class="file-item">
-                                <i class="fas fa-file-image"></i>
-                                <span class="file-name">image4.png</span>
-                                <a href="#" class="file-download-btn">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                            </div>
-                            <div class="file-item">
-                                <i class="fas fa-file-image"></i>
-                                <span class="file-name">image5.png</span>
-                                <a href="#" class="file-download-btn">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                            </div>
+                            <!-- Files will be populated dynamically -->
                         </div>
                     </div>
 
                     <div class="order-messages-section">
                         <h3>Messages</h3>
-                        <div class="message-item">
-                            <div class="message-avatar" style="background-image: url('../assets/temp.png');"></div>
-                            <div class="message-content">
-                                <div class="message-header">
-                                    <span class="message-sender">cppguru</span>
-                                    <span class="message-time">Yesterday at 3:45 PM</span>
-                                </div>
-                                <div class="message-text">
-                                    I've started working on your file management tool. I'll be using C++ with standard libraries to ensure cross-platform compatibility. Do you have any specific preferences for the command syntax?
-                                </div>
-                            </div>
-                        </div>
-                        <div class="message-item user-message">
-                            <div class="message-avatar" style="background-image: url('../assets/temp.png');"></div>
-                            <div class="message-content">
-                                <div class="message-header">
-                                    <span class="message-sender">You</span>
-                                    <span class="message-time">Yesterday at 4:20 PM</span>
-                                </div>
-                                <div class="message-text">
-                                    Thanks for getting started! I'd prefer a simple command syntax like "fileorg [directory] [options]". Please make sure error handling is robust.
-                                </div>
-                            </div>
+                        <div class="messages-list">
+                            <!-- Messages will be populated dynamically -->
                         </div>
                     </div>
 
@@ -150,8 +103,8 @@
                     <div class="service-details">
                         <div class="service-image" style="background-image: url('../assets/temp.png');"></div>
                         <div class="service-info">
-                            <h4>Logo Design</h4>
-                            <p>by photoshopper</p>
+                            <h4></h4>
+                            <p></p>
                         </div>
                     </div>
                     
@@ -190,8 +143,8 @@
                     <div class="service-details">
                         <div class="service-image" style="background-image: url('../assets/temp.png');"></div>
                         <div class="service-info">
-                            <h4>C++ Programming</h4>
-                            <p>by cppguru</p>
+                            <h4></h4>
+                            <p></p>
                         </div>
                     </div>
                     

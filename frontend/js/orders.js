@@ -186,41 +186,89 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateOrderDetailsModal(order) {
+        console.log('Populating modal with order:', order); // Debug full order object
+
         currentOrderForModal = order;
         const modal = orderDetailsModal;
         const statusInfo = getStatusInfo(order.status);
 
+        // Header ve status bilgilerini güncelle
         modal.querySelector('.modal-header h2').textContent = `Order ID: ${escapeHTML(order.id)}`;
         modal.querySelector('.status-indicator').className = `info-value status-indicator ${statusInfo.class}`;
-        modal.querySelector('.status-indicator i').className = statusInfo.icon;
         modal.querySelector('.status-indicator').innerHTML = `<i class="${statusInfo.icon}"></i> ${statusInfo.text}`;
         
-        const modalOrderDateEl = modal.querySelector('#modalOrderDate');
-        if (modalOrderDateEl) modalOrderDateEl.textContent = formatDate(order.createdAt);
-        
-        const modalProviderNameEl = modal.querySelector('#modalProviderName');
-        if (modalProviderNameEl) modalProviderNameEl.textContent = `Seller ID: ${escapeHTML(order.sellerId)}`;
-        
-        const modalExpectedDeliveryEl = modal.querySelector('#modalExpectedDelivery');
-        if (modalExpectedDeliveryEl) modalExpectedDeliveryEl.textContent = formatDate(order.expectedDeliveryDate);
-        
-        const modalTotalCostEl = modal.querySelector('#modalTotalCost');
-        if (modalTotalCostEl) modalTotalCostEl.textContent = `$${parseFloat(order.orderPrice).toFixed(2)}`;
-        
-        const modalCategoryEl = modal.querySelector('#modalCategory');
-        if (modalCategoryEl) modalCategoryEl.textContent = 'N/A';
-        
-        modal.querySelector('.request-content p').textContent = escapeHTML(order.requirements || 'No requirements specified.');
+        // Sipariş detaylarını güncelle
+        if (order.gigTitle) { // Changed from order.title to order.gigTitle
+            modal.querySelector('.modal-header h3').textContent = escapeHTML(order.gigTitle);
+        }
 
+        // Tarihleri güncelle
+        const modalOrderDateEl = modal.querySelector('#modalOrderDate');
+        if (modalOrderDateEl) {
+            modalOrderDateEl.textContent = formatDate(order.createdAt);
+        }
+        
+        // Satıcı bilgilerini güncelle
+        const modalProviderNameEl = modal.querySelector('#modalProviderName');
+        if (modalProviderNameEl) {
+            modalProviderNameEl.textContent = order.sellerName || `Seller ID: ${escapeHTML(order.sellerId)}`;
+        }
+        
+        // Teslim tarihini güncelle
+        const modalExpectedDeliveryEl = modal.querySelector('#modalExpectedDelivery');
+        if (modalExpectedDeliveryEl) {
+            let deliveryDate;
+            
+            if (order.createdAt && order.deliveryTimeDays) {
+                const createdDate = new Date(order.createdAt);
+                deliveryDate = new Date(createdDate.getTime() + (order.deliveryTimeDays * 24 * 60 * 60 * 1000));
+            } else if (order.expectedDeliveryDate) {
+                deliveryDate = new Date(order.expectedDeliveryDate);
+            }
+
+            modalExpectedDeliveryEl.textContent = deliveryDate ? formatDate(deliveryDate) : 'N/A';
+        }
+        
+        // Fiyat bilgisini güncelle
+        const modalTotalCostEl = modal.querySelector('#modalTotalCost');
+        if (modalTotalCostEl) {
+            modalTotalCostEl.textContent = `$${parseFloat(order.orderPrice).toFixed(2)}`;
+        }
+        
+        // Kategori bilgisini güncelle
+        const modalCategoryEl = modal.querySelector('#modalCategory');
+        if (modalCategoryEl) {
+            const categoryMapping = {
+                'WEB_DESIGN': 'Web Design',
+                'ENGINEERING': 'Engineering',
+                'ART_DESIGN': 'Art & Design',
+                'MUSIC': 'Music',
+                'VIDEO_EDITING': 'Video Editing',
+                'IT_SOFTWARE': 'IT & Software',
+                'AI_SERVICES': 'AI Services',
+                'MARKETING': 'Marketing',
+                'FINANCE': 'Finance',
+                'OTHER': 'Other'
+            };
+            
+            const rawCategory = order.category || order.gig?.category || 'OTHER';
+            const displayCategory = categoryMapping[rawCategory] || rawCategory;
+            modalCategoryEl.textContent = displayCategory;
+        }
+
+        // İstekleri/gereksinimleri güncelle
+        const requestContent = modal.querySelector('.request-content p');
+        if (requestContent) {
+            requestContent.textContent = escapeHTML(order.requirements || 'No requirements specified.');
+        }
+
+        // Dosyaları güncelle
         const filesList = modal.querySelector('.files-list');
         filesList.innerHTML = '';
         if (order.uploadUrls && order.uploadUrls.length > 0) {
             order.uploadUrls.forEach(url => {
                 const fileName = url.split('/').pop();
-                let iconClass = 'fa-file';
-                if (/\.(jpe?g|png|gif)$/i.test(fileName)) iconClass = 'fa-file-image';
-                else if (/\.(pdf)$/i.test(fileName)) iconClass = 'fa-file-pdf';
-                else if (/\.(docx?|txt)$/i.test(fileName)) iconClass = 'fa-file-alt';
+                let iconClass = getFileIconClass(fileName);
 
                 filesList.innerHTML += `
                     <div class="file-item">
@@ -236,6 +284,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         openModal(modal);
+    }
+
+    // Dosya uzantısına göre icon belirleme yardımcı fonksiyonu
+    function getFileIconClass(fileName) {
+        if (/\.(jpe?g|png|gif)$/i.test(fileName)) return 'fa-file-image';
+        if (/\.(pdf)$/i.test(fileName)) return 'fa-file-pdf';
+        if (/\.(docx?|txt)$/i.test(fileName)) return 'fa-file-alt';
+        return 'fa-file';
     }
 
     function populateRatingModal(order) {
@@ -401,33 +457,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadOrders() {
-        if (!ordersGrid) {
-            console.error('Orders grid not found');
-            return;
-        }
-        ordersGrid.innerHTML = '<p>Loading orders...</p>';
-
-        if (!TOKEN) {
-            ordersGrid.innerHTML = '<p>Please log in to see your orders. (Auth token not found)</p>';
-            console.warn('Auth token not found.');
-            return;
-        }
-
         try {
             const response = await fetch(`${API_BASE_URL}/orders/my`, {
                 headers: {
                     'Authorization': `Bearer ${TOKEN}`
                 }
             });
-            if (!response.ok) {
-                if (response.status === 401 || response.status === 403) {
-                     ordersGrid.innerHTML = '<p>Authentication failed. Please log in again.</p>';
-                } else {
-                    ordersGrid.innerHTML = `<p>Error loading orders: ${response.statusText}</p>`;
+            
+            const orders = await response.json();
+            
+            // Fetch gig details for each order
+            allFetchedOrders = await Promise.all(orders.map(async order => {
+                if (order.gigId) {
+                    try {
+                        const gigResponse = await fetch(`${API_BASE_URL}/gigs/${order.gigId}`, {
+                            headers: {
+                                'Authorization': `Bearer ${TOKEN}`
+                            }
+                        });
+                        const gigData = await gigResponse.json();
+                        return {
+                            ...order,
+                            gig: gigData,
+                            category: gigData.category,
+                            deliveryTimeDays: gigData.deliveryTimeDays
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching gig details for order ${order.id}:`, error);
+                        return order;
+                    }
                 }
-                throw new Error(`Failed to fetch orders: ${response.status}`);
+                return order;
+            }));
+
+            if (!ordersGrid) {
+                console.error('Orders grid not found');
+                return;
             }
-            allFetchedOrders = await response.json();
+            ordersGrid.innerHTML = '<p>Loading orders...</p>';
+
+            if (!TOKEN) {
+                ordersGrid.innerHTML = '<p>Please log in to see your orders. (Auth token not found)</p>';
+                console.warn('Auth token not found.');
+                return;
+            }
 
             if (allFetchedOrders.length === 0) {
                 ordersGrid.innerHTML = '<p>You have no orders yet.</p>';
