@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Listings - SkillScape</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../css/customer-shared-style.css">
     <link rel="stylesheet" href="../css/customer-my-style.css">
@@ -12,27 +12,29 @@
 <body>
     <div id="header-placeholder"></div>
     <div id="hamburger-menu-placeholder"></div>
-    
-    <main class="orders-container">
-        <div class="orders-header">
+
+    <main class="listings-container">
+        <div class="listings-header">
             <h1>My Listings</h1>
         </div>
 
-        <div class="orders-grid">
-            <div class="loading-container" style="text-align:center; padding: 60px 20px;">
-                <i class="fas fa-spinner fa-spin fa-3x" style="color:#3498db; margin-bottom:20px;"></i>
-                <h3>Loading your listings...</h3>
-                <p>Please wait while we fetch your listings...</p>
+        <div class="listings-grid">
+            <div class="empty-state" id="emptyState">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No listings found</h3>
+                <p>You haven't created any listings yet. Get started by creating your first listing.</p>
+                <a href="new.html" class="create-listing-btn">Create New Listing</a>
             </div>
         </div>
 
-        <div id="orderDetailsModal" class="order-details-modal">
+        <div id="listingDetailsModal" class="listing-details-modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>Listing Details</h2>
-                    <button class="close-modal-btn"><i class="fas fa-times"></i></button>
+                    <button class="close-modal-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                
                 <div class="modal-body">
                 </div>
             </div>
@@ -44,6 +46,6 @@
     </footer>
 
     <script src="../design-js/customer-shared-script.js"></script>
-    <script src="../js/customer-my.js"></script>
+    <script src="../design-js/customer-my-script.js"></script>
 </body>
 </html>

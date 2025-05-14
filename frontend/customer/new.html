@@ -106,8 +106,10 @@
                     <label>Project Attachments</label>
                     <div class="file-upload-container">
                         <div class="file-upload-area" id="fileUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
                             <p>Drag and drop files here</p>
                             <p>or <span class="browse-files">browse files</span></p>
+                            <p class="upload-subtitle">Supports PDF, DOCX, JPG, PNG (Max: 5MB per file)</p>
                             <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx" style="display:none">
                         </div>
                         <div class="gallery-container">
@@ -209,7 +211,8 @@
             </div>
             <div class="modal-body">
                 <i class="fas fa-check-circle success-icon"></i>
-                <p>Your listing has been successfully published. Freelancers can now view and bid on your project.</p>
+                <p>Your listing has been successfully published.</p>
+                <p class="modal-subtitle">Freelancers can now view and bid on your project.</p>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-primary" id="viewListingBtn">View Listings</button>

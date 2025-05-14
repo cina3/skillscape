@@ -79,25 +79,27 @@ public class OrderService {
     }
 
     private OrderResponse toDto(OrderEntity o) {
-        OrderResponse dto = new OrderResponse();
-        dto.setId(o.getId());
-        dto.setGigId(o.getGig().getId());
-        dto.setBuyerId(o.getBuyer().getId());
-        dto.setSellerId(o.getSeller().getId());
-        dto.setOrderPrice(o.getOrderPrice());
-        dto.setPriceFixed(o.isPriceFixed());
-        dto.setPerHourPricing(o.isPerHourPricing());
-        dto.setStatus(o.getStatus());
-        dto.setRequirements(o.getRequirements());
-        dto.setExpectedDeliveryDate(o.getExpectedDeliveryDate());
-        dto.setDeliveredAt(o.getDeliveredAt());
-        dto.setUploadUrls(o.getUploadUrls());
-        dto.setDeliveredUrls(o.getDeliveredUrls());
-        dto.setPercentage(o.getPercentage());
-        dto.setCreatedAt(o.getCreatedAt());
-        dto.setUpdatedAt(o.getUpdatedAt());
-        return dto;
-    }
+    OrderResponse dto = new OrderResponse();
+    dto.setId(o.getId());
+    dto.setGigId(o.getGig() != null
+        ? o.getGig().getId()
+        : null);
+    dto.setBuyerId(o.getBuyer().getId());
+    dto.setSellerId(o.getSeller().getId());
+    dto.setOrderPrice(o.getOrderPrice());
+    dto.setPriceFixed(o.isPriceFixed());
+    dto.setPerHourPricing(o.isPerHourPricing());
+    dto.setStatus(o.getStatus());
+    dto.setRequirements(o.getRequirements());
+    dto.setExpectedDeliveryDate(o.getExpectedDeliveryDate());
+    dto.setDeliveredAt(o.getDeliveredAt());
+    dto.setUploadUrls(o.getUploadUrls());
+    dto.setDeliveredUrls(o.getDeliveredUrls());
+    dto.setPercentage(o.getPercentage());
+    dto.setCreatedAt(o.getCreatedAt());
+    dto.setUpdatedAt(o.getUpdatedAt());
+    return dto;
+}
 
     @Transactional
     public OrderResponse updateStatus(Long orderId, Status status) {

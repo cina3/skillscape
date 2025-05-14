@@ -1,318 +1,231 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const viewOrderButtons = document.querySelectorAll('.view-order-btn');
-    const orderModal = document.getElementById('orderDetailsModal');
-    const closeModalBtn = document.querySelector('.close-modal-btn');
-    
-    const leaveRatingBtn = document.querySelector('.leave-rating-btn');
-    const ratingModal = document.getElementById('ratingModal');
-    const ratingStars = document.querySelectorAll('.star-item');
-    const ratingText = document.querySelector('.rating-text');
-    const submitRatingBtn = document.getElementById('submitRating');
-    
-    const reportIssueBtn = document.getElementById('reportIssueBtn');
-    const reportIssueModal = document.getElementById('reportIssueModal');
-    const issueTypeSelect = document.getElementById('issueType');
-    const issueDescriptionField = document.getElementById('issueDescription');
-    const submitIssueBtn = document.getElementById('submitIssue');
-    
-    const closeModalButtons = document.querySelectorAll('.close-action-modal');
-    const cancelButtons = document.querySelectorAll('.cancel-button');
-    
-    viewOrderButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            orderModal.classList.add('visible');
-            document.body.style.overflow = 'hidden';
-        });
+document.addEventListener('DOMContentLoaded', () => {
+  const listingsGrid = document.querySelector('.listings-grid');
+  const emptyState = document.getElementById('emptyState');
+  const modal = document.getElementById('listingDetailsModal');
+  const modalBody = modal.querySelector('.modal-body');
+  let listingsData = [];
+
+  function fetchListings() {
+    fetch('http://localhost:8080/api/listings/my', {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(localStorage.getItem('authToken') && {
+          'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+        })
+      }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch listings');
+        return res.json();
+      })
+      .then(data => {
+        listingsData = data;
+        renderListings();
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error loading listings');
+      });
+  }
+
+  function renderListings() {
+    listingsGrid.innerHTML = '';
+    if (!listingsData.length) {
+      emptyState.style.display = 'block';
+      return;
+    }
+    emptyState.style.display = 'none';
+    listingsData.forEach(l => listingsGrid.appendChild(createListingCard(l)));
+  }
+
+  function createListingCard(l) {
+    const card = document.createElement('div');
+    card.className = 'listing-card';
+    card.dataset.id = l.id;
+    const statusLower = l.status.toLowerCase();
+    const statusDisplay = l.status.charAt(0) + l.status.slice(1).toLowerCase();
+    const budget = l.priceFixed ? `$${l.price}` : `$${l.price}/hr`;
+    const bidsCount = (l.bids || []).length;
+
+    card.innerHTML = `
+      <div class="listing-card-left">
+        <div class="listing-image" style="background-image:url(${l.coverImageUrl || '../assets/temp.png'})"></div>
+      </div>
+      <div class="listing-card-center">
+        <span class="listing-status ${statusLower}">${statusDisplay}</span>
+        <h3 class="listing-title">${l.title}</h3>
+        <div class="listing-details">
+          <div class="listing-detail"><span class="detail-label">Budget:</span><span class="detail-value">${budget}</span></div>
+          <div class="listing-detail"><span class="detail-label">Category:</span><span class="detail-value">${l.category}</span></div>
+          <div class="listing-detail"><span class="detail-label">Created:</span><span class="detail-value">${formatDate(l.createdAt)}</span></div>
+          <div class="listing-detail"><span class="detail-label">${statusLower==='active'?'Bids:':'Status:'}</span><span class="detail-value">${statusLower==='active'?bidsCount:statusDisplay}</span></div>
+        </div>
+      </div>
+      <div class="listing-card-right">
+        <button class="view-listing-btn enhanced" data-id="${l.id}"><i class="fas fa-eye"></i> ${statusLower==='active'?'View Bids':'View Details'}</button>
+        <button class="delete-listing-btn" data-id="${l.id}"><i class="fas fa-trash-alt"></i> Delete</button>
+      </div>
+    `;
+
+    card.addEventListener('click', e => {
+      if (!e.target.closest('button')) openListingDetails(l.id);
     });
-    
-    closeModalBtn.addEventListener('click', function() {
-        orderModal.classList.remove('visible');
-        document.body.style.overflow = '';
+    card.querySelector('.view-listing-btn').addEventListener('click', e => {
+      e.stopPropagation(); openListingDetails(l.id);
     });
-    
-    orderModal.addEventListener('click', function(e) {
-        if (e.target === orderModal) {
-            orderModal.classList.remove('visible');
-            document.body.style.overflow = '';
-        }
+    card.querySelector('.delete-listing-btn').addEventListener('click', e => {
+      e.stopPropagation(); deleteListing(l.id);
     });
-    
-    let selectedRating = 0;
-    
-    ratingStars.forEach(star => {
-        star.addEventListener('click', function() {
-            const rating = parseInt(this.dataset.rating);
-            selectedRating = rating;
-            
-            ratingStars.forEach(s => {
-                if (parseInt(s.dataset.rating) <= rating) {
-                    s.classList.remove('far');
-                    s.classList.add('fas');
-                    s.classList.add('active');
-                } else {
-                    s.classList.remove('fas');
-                    s.classList.remove('active');
-                    s.classList.add('far');
-                }
-            });
-            
-            ratingText.textContent = getRatingText(rating);
-            submitRatingBtn.disabled = false;
-        });
-        
-        star.addEventListener('mouseenter', function() {
-            const rating = parseInt(this.dataset.rating);
-            
-            ratingStars.forEach(s => {
-                if (parseInt(s.dataset.rating) <= rating) {
-                    s.classList.add('hover');
-                }
-            });
-        });
-        
-        star.addEventListener('mouseleave', function() {
-            ratingStars.forEach(s => s.classList.remove('hover'));
-        });
-    });
-    
-    if (leaveRatingBtn) {
-        leaveRatingBtn.addEventListener('click', function() {
-            ratingModal.classList.add('visible');
-            document.body.style.overflow = 'hidden';
-        });
-    }
-    
-    if (reportIssueBtn) {
-        reportIssueBtn.addEventListener('click', function() {
-            reportIssueModal.classList.add('visible');
-            document.body.style.overflow = 'hidden';
-        });
-    }
-    
-    closeModalButtons.forEach(button => {
-        button.addEventListener('click', closeActionModal);
-    });
-    
-    cancelButtons.forEach(button => {
-        button.addEventListener('click', closeActionModal);
-    });
-    
-    function closeActionModal() {
-        document.querySelectorAll('.action-modal').forEach(modal => {
-            modal.classList.remove('visible');
-        });
-        document.body.style.overflow = '';
-        resetForms();
-    }
-    
-    if (submitRatingBtn) {
-        submitRatingBtn.addEventListener('click', function() {
-            const commentText = document.getElementById('ratingComment').value;
-            
-            console.log(`Submitting rating: ${selectedRating} stars`);
-            console.log(`Comment: ${commentText}`);
-            
-            alert(`Thank you for your ${selectedRating}-star rating!`);
-            closeActionModal();
-        });
-    }
-    
-    if (submitIssueBtn) {
-        submitIssueBtn.addEventListener('click', function() {
-            const issueType = issueTypeSelect.value;
-            const issueDescription = issueDescriptionField.value;
-            
-            if (!issueType || !issueDescription) {
-                alert('Please fill out all fields');
-                return;
-            }
-            
-            console.log(`Issue type: ${issueType}`);
-            console.log(`Description: ${issueDescription}`);
-            
-            alert('Your issue has been reported. We will review it shortly.');
-            closeActionModal();
-        });
-    }
-    
-    function resetForms() {
-        selectedRating = 0;
-        ratingStars.forEach(s => {
-            s.classList.remove('fas', 'active');
-            s.classList.add('far');
-        });
-        ratingText.textContent = 'Select your rating';
-        submitRatingBtn.disabled = true;
-        if (document.getElementById('ratingComment')) {
-            document.getElementById('ratingComment').value = '';
-        }
-        
-        if (issueTypeSelect) issueTypeSelect.value = '';
-        if (issueDescriptionField) issueDescriptionField.value = '';
-    }
-    
-    function getRatingText(rating) {
-        switch(rating) {
-            case 1: return 'Poor';
-            case 2: return 'Fair';
-            case 3: return 'Good';
-            case 4: return 'Very Good';
-            case 5: return 'Excellent';
-            default: return 'Select your rating';
-        }
-    }
-    
-    const cancelOrderBtn = document.querySelector('.cancel-order-btn');
-    if (cancelOrderBtn) {
-        cancelOrderBtn.addEventListener('click', function() {
-            if (confirm('Are you sure you want to cancel this order?')) {
-                alert('Order cancellation would be processed here');
-            }
-        });
-    }
-    
-    const reorderBtn = document.querySelector('.reorder-btn');
-    if (reorderBtn) {
-        reorderBtn.addEventListener('click', function() {
-            alert('Order will be recreated with the same specifications');
-        });
-    }
-    
-    const bidTabButtons = document.querySelectorAll('.bid-tab-button');
-    const bidTabContents = document.querySelectorAll('.bid-tab-content');
-    
-    bidTabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const target = this.dataset.target;
-            
-            bidTabButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            bidTabContents.forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            document.getElementById(target).style.display = 'block';
-        });
-    });
-    
-    const viewBidsButtons = document.querySelectorAll('.view-bids-btn');
-    
-    viewBidsButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bidSection = this.closest('.bid-section');
-            const bidsList = bidSection.querySelector('.bids-list');
-            
-            if (bidsList.style.display === 'none' || !bidsList.style.display) {
-                bidsList.style.display = 'flex';
-                this.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Bids';
-            } else {
-                bidsList.style.display = 'none';
-                this.innerHTML = '<i class="fas fa-chevron-down"></i> View Bids';
-            }
-        });
-    });
-    
-    const awardButtons = document.querySelectorAll('.award-btn');
-    
-    awardButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bidderName = this.dataset.bidder;
-            
-            if (confirm(`Are you sure you want to award this project to ${bidderName}?`)) {
-                alert(`Project awarded to ${bidderName}! They have been notified.`);
-                
-                const card = this.closest('.order-card');
-                const statusBadge = card.querySelector('.order-status');
-                
-                statusBadge.className = 'order-status awarded';
-                statusBadge.innerHTML = '<i class="fas fa-trophy"></i> Awarded';
-                
-                const bidActions = card.querySelectorAll('.bid-actions');
-                bidActions.forEach(action => {
-                    action.style.display = 'none';
-                });
-                
-                card.querySelector('.bid-section').innerHTML = `
-                    <div class="awarded-message">
-                        <p><i class="fas fa-check-circle"></i> Awarded to ${bidderName}</p>
+
+    return card;
+  }
+
+  function openListingDetails(id) {
+    const l = listingsData.find(x => x.id === +id);
+    if (!l) return;
+    const statusLower = l.status.toLowerCase();
+    const statusDisplay = l.status.charAt(0) + l.status.slice(1).toLowerCase();
+    const bids = l.bids || [];
+    const isActive = statusLower === 'active';
+
+    modal.querySelector('.modal-header h2').textContent = isActive ? 'Review Bids' : 'Listing Details';
+
+    let html = `
+      <div class="listing-header">
+        <h3>${l.title}</h3>
+        <div class="listing-meta">
+          <div class="listing-meta-item"><i class="fas fa-tag"></i><span><strong>Budget:</strong> ${l.priceFixed?`$${l.price}`:`$${l.price}/hr`}</span></div>
+          <div class="listing-meta-item"><i class="fas fa-folder"></i><span><strong>Category:</strong> ${l.category}</span></div>
+          <div class="listing-meta-item"><i class="fas fa-calendar-alt"></i><span><strong>Posted:</strong> ${formatDate(l.createdAt)}</span></div>
+          <div class="listing-meta-item"><i class="fas fa-circle ${ statusLower==='active'?'text-primary': statusLower==='awarded'?'text-info':'text-success' }"></i><span><strong>Status:</strong> ${statusDisplay}</span></div>
+        </div>
+      </div>
+      <div class="listing-content">
+        <div class="content-section">
+          <h4 class="section-title"><i class="fas fa-align-left"></i>Project Description</h4>
+          <p class="description-text">${l.description}</p>
+        </div>
+    `;
+
+    if (isActive) {
+      html += `
+        <div class="content-section">
+          <h4 class="section-title"><i class="fas fa-comments-dollar"></i>Submitted Bids</h4>
+          ${bids.length ? `<div class="bids-list">
+            ${bids.map(b => {
+              const rating = (b.bidderRating!=null) ? `<div class="bidder-rating"><i class="fas fa-star"></i> ${b.bidderRating.toFixed(1)}</div>` : '';
+              return `
+                <div class="bid-card">
+                  <div class="bid-header">
+                    <div class="bidder-info">
+                      <div class="bidder-avatar">${b.bidderInitials||'?'}</div>
+                      <div class="bidder-details">
+                        <div class="bidder-name">${b.bidderDisplayName}</div>
+                        ${rating}
+                      </div>
                     </div>
-                `;
-            }
-        });
-    });
-    
-    const statusChangeButtons = document.querySelectorAll('.change-status-btn');
-    
-    statusChangeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const newStatus = this.dataset.status;
-            const listingId = this.dataset.listing;
-            
-            if (confirm(`Are you sure you want to change this listing to ${newStatus}?`)) {
-                console.log(`Changing listing ${listingId} status to ${newStatus}`);
-                
-                const card = this.closest('.order-card');
-                const statusBadge = card.querySelector('.order-status');
-                const statusActions = card.querySelector('.status-actions');
-                
-                switch(newStatus) {
-                    case 'active':
-                        statusBadge.className = 'order-status active';
-                        statusBadge.innerHTML = '<i class="fas fa-bolt"></i> Active';
-                        break;
-                    case 'completed':
-                        statusBadge.className = 'order-status completed';
-                        statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
-                        break;
-                    case 'cancelled':
-                        statusBadge.className = 'order-status cancelled';
-                        statusBadge.innerHTML = '<i class="fas fa-ban"></i> Cancelled';
-                        break;
-                }
-                
-                if (statusActions) {
-                    statusActions.style.display = 'none';
-                }
-                
-                alert(`Listing status changed to ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`);
-            }
-        });
-    });
-    
-    const contactBidderButtons = document.querySelectorAll('.contact-bidder-btn');
-    
-    contactBidderButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bidderName = this.dataset.bidder;
-            alert(`Opening message dialog with ${bidderName}...`);
-        });
-    });
-    
-    const bidSortSelect = document.getElementById('bidSortSelect');
-    
-    if (bidSortSelect) {
-        bidSortSelect.addEventListener('change', function() {
-            const sortValue = this.value;
-            const bidsList = document.querySelector('.bids-list');
-            const bids = Array.from(bidsList.querySelectorAll('.bid-card'));
-            
-            bids.sort((a, b) => {
-                if (sortValue === 'price-asc') {
-                    return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
-                } else if (sortValue === 'price-desc') {
-                    return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
-                } else if (sortValue === 'rating-desc') {
-                    return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
-                }
-                return 0;
-            });
-            
-            bidsList.innerHTML = '';
-            bids.forEach(bid => {
-                bidsList.appendChild(bid);
-            });
-        });
+                    <div class="bid-price">$${b.requestedPrice}</div>
+                  </div>
+                  <div class="bid-content">${b.description}</div>
+                  <div class="bid-actions">
+                    <button class="award-btn" data-bid-id="${b.id}"><i class="fas fa-check-circle"></i> Award this freelancer</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>` : `
+            <div class="no-bids-container">
+              <i class="fas fa-coffee"></i>
+              <h5>No bids yet</h5>
+              <p>No one’s bid on this yet. Try promoting it!</p>
+            </div>
+          `}
+        </div>
+      `;
+    } else if (statusLower === 'awarded') {
+      html += `
+        <div class="content-section">
+          <h4 class="section-title"><i class="fas fa-user-check"></i> Awarded Freelancer</h4>
+          <div class="awarded-section">
+            <div class="awarded-header">
+              <div class="freelancer-avatar">${l.awardedInitials||'?'}</div>
+              <div class="freelancer-info">
+                <h5>${l.awardedToUserDisplayName}</h5>
+                ${(l.awardedRating!=null)?`<p><i class="fas fa-star"></i> ${l.awardedRating.toFixed(1)}</p>`:''}
+              </div>
+            </div>
+            <div class="job-progress">
+              <div class="progress-stats">
+                <span>Progress: <strong>${l.orderProgress}%</strong></span>
+                <span>Expected: <strong>${formatDate(l.expectedDelivery)}</strong></span>
+              </div>
+              <div class="progress-bar-container"><div class="progress-bar-fill" style="width:${l.orderProgress}%"></div></div>
+              <button class="btn btn-sm btn-outline-secondary mt-2"><i class="fas fa-comment-alt"></i> Message Freelancer</button>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="content-section">
+          <h4 class="section-title"><i class="fas fa-check-circle"></i> Project Completed</h4>
+          <div class="awarded-section">
+            <div class="awarded-header">
+              <div class="freelancer-avatar">${l.awardedInitials||'?'}</div>
+              <div class="freelancer-info">
+                <h5>${l.awardedToUserDisplayName}</h5>
+                ${(l.awardedRating!=null)?`<p><i class="fas fa-star"></i> ${l.awardedRating.toFixed(1)}</p>`:''}
+              </div>
+            </div>
+            <div class="job-progress">
+              <div class="progress-stats"><span>Completed: <strong>${formatDate(l.completedDate)}</strong></span></div>
+              <div class="progress-bar-container"><div class="progress-bar-fill" style="width:100%"></div></div>
+              <div class="mt-3">
+                <button class="btn btn-success me-2"><i class="fas fa-download"></i> Download</button>
+                <button class="btn btn-outline-primary"><i class="fas fa-star"></i> Leave Feedback</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
+
+    html += `</div>`;
+    modalBody.innerHTML = html;
+
+    if (isActive) {
+      modalBody.querySelectorAll('.award-btn').forEach(btn =>
+        btn.addEventListener('click', () => awardBid(id, btn.dataset.bidId))
+      );
+    }
+
+    modal.classList.add('visible');
+    modal.querySelector('.close-modal-btn').onclick = () => modal.classList.remove('visible');
+    modal.onclick = e => { if (e.target === modal) modal.classList.remove('visible'); };
+  }
+
+  function deleteListing(id) {
+    if (!confirm('Delete this listing?')) return;
+    fetch(`http://localhost:8080/api/listings/${id}`, { method:'DELETE', headers:{ 'Content-Type':'application/json', ...(localStorage.getItem('authToken')&&{'Authorization':'Bearer '+localStorage.getItem('authToken')}) }})
+      .then(r => { if(!r.ok) throw ''; listingsData = listingsData.filter(x=>x.id!==id); renderListings(); alert('Deleted'); })
+      .catch(()=>alert('Delete failed'));
+  }
+
+  function awardBid(listingId, bidId) {
+    if (!confirm('Award this freelancer?')) return;
+    fetch(`http://localhost:8080/api/listings/${listingId}/award`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', ...(localStorage.getItem('authToken')&&{'Authorization':'Bearer '+localStorage.getItem('authToken')}) },
+      body: JSON.stringify({ bidId: parseInt(bidId) })
+    })
+      .then(r => { if(!r.ok) throw ''; return r.json() })
+      .then(o => { fetchListings(); modal.classList.remove('visible'); alert(`Awarded! Order ${o.id}`); })
+      .catch(()=>alert('Award failed'));
+  }
+
+  function formatDate(s) {
+    return new Date(s).toLocaleDateString(undefined, { year:'numeric',month:'short',day:'numeric' });
+  }
+
+  fetchListings();
 });

@@ -80,25 +80,22 @@ function mapApiOrderToJobFormat(dataBundle) {
 async function fetchJobs() {
   try {
     const orders = await apiFetch('http://localhost:8080/api/orders/seller');
-    
-    const jobsWithDetailsPromises = orders.map(async (order) => {
-      try {
-        const gigDetails = await apiFetch(`http://localhost:8080/api/gigs/${order.gigId}`)
-          .catch(e => {
-            console.warn(`Failed to fetch gig details for gigId ${order.gigId}:`, e.message);
-            return null; 
-          });
-        
-        
-        return mapApiOrderToJobFormat({ order, gigDetails });  
-      } catch (e) {
-        console.error(`Error processing order ${order.id} with additional details:`, e.message);
-        return mapApiOrderToJobFormat({ order, gigDetails: null }); 
-      }
-    });
 
-    allJobs = (await Promise.all(jobsWithDetailsPromises)).filter(job => job !== null);
+    const jobsWithDetails = await Promise.all(orders.map(async order => {
+      let gigDetails = null;
+      if (order.gigId != null) {
+        try {
+          gigDetails = await apiFetch(`/api/gigs/${order.gigId}`);
+        } catch (e) {
+          console.warn(`No gig for gigId ${order.gigId}:`, e.message);
+        }
+      }
+      return mapApiOrderToJobFormat({ order, gigDetails });
+    }));
+
+    allJobs = jobsWithDetails.filter(job => job !== null);
     renderJobs(allJobs);
+
   } catch (e) {
     console.error('Could not load jobs:', e.message);
     document.getElementById('jobsGrid').innerHTML =

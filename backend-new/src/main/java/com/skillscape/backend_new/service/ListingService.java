@@ -7,6 +7,7 @@ import com.skillscape.backend_new.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,8 +28,6 @@ public class ListingService {
         this.userService  = userService;
     }
 
-  
-
     public ListingResponse createListing(CreateListingRequest dto, String userEmail) {
         UserEntity user = userService.getUserByEmail(userEmail);
         ListingEntity listing = mapToEntity(dto);
@@ -46,6 +45,14 @@ public class ListingService {
     @Transactional(readOnly = true)
     public List<ListingResponse> getAllListings() {
         return listingRepo.findAll()
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ListingResponse> getListingsByStatus(Status status) {
+        return listingRepo.findByStatus(status)
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
@@ -81,7 +88,6 @@ public class ListingService {
         listingRepo.delete(listing);
     }
 
-
     public BidResponse placeBid(BidRequest dto, String bidderEmail) {
         ListingEntity listing = listingRepo.findById(dto.getListingId())
                 .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
@@ -97,47 +103,55 @@ public class ListingService {
         listing.getBids().add(bid);
         listingRepo.save(listing);
 
-        BidEntity savedBid = listing.getBids()
-                .stream()
+        BidEntity savedBid = listing.getBids().stream()
                 .max(Comparator.comparing(BidEntity::getCreatedAt))
                 .orElseThrow();
 
         return mapBidToDto(savedBid);
     }
 
-    public OrderResponse awardBid(Long listingId, Long bidId, String ownerEmail) {
-        ListingEntity listing = listingRepo.findById(listingId)
-                .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
+    @Transactional
+public OrderResponse awardBid(Long listingId, Long bidId, String ownerEmail) {
+    ListingEntity listing = listingRepo.findById(listingId)
+            .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
 
-        if (!listing.getUser().getEmail().equals(ownerEmail))
-            throw new SecurityException("Not authorized to award this listing");
+    if (!listing.getUser().getEmail().equals(ownerEmail))
+        throw new SecurityException("Not authorized to award this listing");
 
-        BidEntity bid = listing.getBids()
-                .stream()
-                .filter(b -> b.getId().equals(bidId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Bid not found on this listing"));
+    BidEntity bid = listing.getBids().stream()
+            .filter(b -> b.getId().equals(bidId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Bid not found on this listing"));
 
-        listing.setStatus(Status.DELIVERED);           
-        listing.setAwardedToUser(bid.getBidder());
-        listingRepo.save(listing);
+    listing.setStatus(Status.DELIVERED);
+    listing.setAwardedToUser(bid.getBidder());
+    listingRepo.save(listing);
 
-        OrderEntity order = new OrderEntity();
-        order.setBuyer(listing.getUser());
-        order.setSeller(bid.getBidder());
-        order.setGig(null);
-        order.setOrderPrice(bid.getRequestedPrice());
-        order.setPriceFixed(listing.isPriceFixed());
-        order.setPerHourPricing(listing.isPerHourPricing());
-        order.setRequirements(listing.getRequirements());
-        order.setExpectedDeliveryDate(listing.getExpectedDeliveryDate());
-        order.setUploadUrls(listing.getUploadUrls());
-        order.setPercentage(0);
+    OrderEntity order = new OrderEntity();
+    order.setBuyer(listing.getUser());
+    order.setSeller(bid.getBidder());
+    order.setGig(null);
+    order.setOrderPrice(bid.getRequestedPrice());
+    order.setPriceFixed(listing.isPriceFixed());
+    order.setPerHourPricing(listing.isPerHourPricing());
+    order.setRequirements(
+        listing.getRequirements() != null ? listing.getRequirements() : ""
+    );
+    order.setExpectedDeliveryDate(listing.getExpectedDeliveryDate());
 
-        return toOrderDto(orderRepo.save(order));
-    }
+    order.setUploadUrls(
+        listing.getUploadUrls() != null
+            ? new ArrayList<>(listing.getUploadUrls())
+            : new ArrayList<>()
+    );
 
-   
+    order.setPercentage(0);
+
+    OrderEntity saved = orderRepo.save(order);
+    return toOrderDto(saved);
+}
+
+
     private ListingEntity mapToEntity(CreateListingRequest d) {
         ListingEntity e = new ListingEntity();
         copyDtoToEntity(d, e);
@@ -184,6 +198,20 @@ public class ListingService {
         r.setStatus(e.getStatus());
         r.setRequirements(e.getRequirements());
         r.setExpectedDeliveryDate(e.getExpectedDeliveryDate());
+
+        r.setUserId(e.getUser().getId());
+        r.setUserDisplayName(e.getUser().getDisplayName());
+
+        if (e.getAwardedToUser() != null) {
+            r.setAwardedToUserId(e.getAwardedToUser().getId());
+            r.setAwardedToUserDisplayName(
+                e.getAwardedToUser().getDisplayName());
+        }
+
+        r.setBids(e.getBids().stream()
+               .map(this::mapBidToDto)
+               .collect(Collectors.toList()));
+
         return r;
     }
 
@@ -212,9 +240,10 @@ public class ListingService {
         r.setExpectedDeliveryDate(o.getExpectedDeliveryDate());
         r.setDeliveredAt(o.getDeliveredAt());
         r.setUploadUrls(o.getUploadUrls());
+        r.setDeliveredUrls(o.getDeliveredUrls());
+        r.setPercentage(o.getPercentage());
         r.setCreatedAt(o.getCreatedAt());
         r.setUpdatedAt(o.getUpdatedAt());
-        r.setPercentage(o.getPercentage());
         return r;
     }
 }

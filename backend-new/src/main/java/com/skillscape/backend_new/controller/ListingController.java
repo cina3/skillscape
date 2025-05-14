@@ -1,6 +1,7 @@
 package com.skillscape.backend_new.controller;
 
 import com.skillscape.backend_new.dto.*;
+import com.skillscape.backend_new.model.Status;
 import com.skillscape.backend_new.service.ListingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,7 +21,6 @@ public class ListingController {
         this.service = service;
     }
 
-
     @PostMapping
     public ResponseEntity<ListingResponse> createListing(
             @Valid @RequestBody CreateListingRequest dto,
@@ -36,13 +36,15 @@ public class ListingController {
 
     @GetMapping
     public ResponseEntity<List<ListingResponse>> allListings() {
-        return ResponseEntity.ok(service.getAllListings());
+        return ResponseEntity.ok(service.getListingsByStatus(Status.ACTIVE));
     }
 
     @GetMapping("/my")
     public ResponseEntity<List<ListingResponse>> myListings(
             @AuthenticationPrincipal UserDetails user) {
-        return ResponseEntity.ok(service.getListingsByUserEmail(user.getUsername()));
+        return ResponseEntity.ok(
+            service.getListingsByUserEmail(user.getUsername())
+        );
     }
 
     @PutMapping("/{id}")
@@ -50,7 +52,9 @@ public class ListingController {
             @PathVariable Long id,
             @Valid @RequestBody CreateListingRequest dto,
             @AuthenticationPrincipal UserDetails user) {
-        return ResponseEntity.ok(service.updateListing(id, dto, user.getUsername()));
+        return ResponseEntity.ok(
+            service.updateListing(id, dto, user.getUsername())
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -61,24 +65,24 @@ public class ListingController {
         return ResponseEntity.noContent().build();
     }
 
-
     @PostMapping("/{listingId}/bids")
     public ResponseEntity<BidResponse> placeBid(
             @PathVariable Long listingId,
             @Valid @RequestBody BidRequest bid,
             @AuthenticationPrincipal UserDetails user) {
-        bid.setListingId(listingId);                    
-        return ResponseEntity.ok(service.placeBid(bid, user.getUsername()));
+        bid.setListingId(listingId);
+        return ResponseEntity.ok(
+            service.placeBid(bid, user.getUsername())
+        );
     }
 
-   
     @PostMapping("/{listingId}/award")
     public ResponseEntity<OrderResponse> awardBid(
             @PathVariable Long listingId,
             @Valid @RequestBody AwardBidRequest req,
             @AuthenticationPrincipal UserDetails user) {
-        OrderResponse order = service.awardBid(
-                listingId, req.getBidId(), user.getUsername());
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(
+            service.awardBid(listingId, req.getBidId(), user.getUsername())
+        );
     }
 }
