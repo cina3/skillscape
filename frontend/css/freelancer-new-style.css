@@ -11,6 +11,10 @@
     --brand-blue: #3A506B; 
     --text-muted: #6b7280; 
     --text-dark: #1f2937;
+    --file-upload-hover: #eef2ff;
+    --file-upload-active: #e0e7ff;
+    --success-color: #10b981;
+    --upload-animation-color: rgba(58, 80, 107, 0.2);
 }
 
 .new-listing-container {
@@ -160,35 +164,86 @@ input[name="price"] {
     border-radius: 8px;
     padding: 30px 20px;
     text-align: center;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     cursor: pointer;
     background-color: var(--input-bg-color);
     margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-upload-area:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, var(--file-upload-hover) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 0;
 }
 
 .file-upload-area:hover {
     border-color: var(--form-focus-color);
-    background-color: rgba(58, 80, 107, 0.02);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(58, 80, 107, 0.08);
 }
 
-.file-upload-area.drag-over {
-    border-color: var(--brand-blue);
-    background-color: rgba(58, 80, 107, 0.04);
+.file-upload-area:hover:before {
+    opacity: 1;
 }
 
 .file-upload-area p {
     margin: 8px 0;
     color: var(--text-dark);
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.file-upload-area:hover p {
+    transform: scale(1.03);
+}
+
+.file-upload-area.drag-over {
+    border-color: var(--brand-blue);
+    background-color: var(--file-upload-active);
+    transform: scale(1.02);
+    box-shadow: 0 0 0 3px rgba(58, 80, 107, 0.15);
 }
 
 .browse-files {
     color: var(--brand-blue);
     text-decoration: underline;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    position: relative;
 }
 
 .browse-files:hover {
     text-decoration: none;
+    color: #2e4257;
+}
+
+.browse-files:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--brand-blue);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease;
+}
+
+.browse-files:hover:after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
 }
 
 .file-upload-area.disabled {
@@ -218,17 +273,41 @@ input[name="price"] {
     display: flex;
     align-items: center;
     position: relative;
-    transition: box-shadow 0.2s ease;
+    transition: all 0.25s ease;
+    overflow: hidden;
+}
+
+.uploaded-file-item:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background-color: var(--brand-blue);
+    transform: scaleY(0);
+    transition: transform 0.25s ease;
 }
 
 .uploaded-file-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.09);
+    transform: translateY(-2px);
+    border-color: #c4c9d0;
+}
+
+.uploaded-file-item:hover:before {
+    transform: scaleY(1);
 }
 
 .file-icon {
     margin-right: 12px;
     color: var(--brand-blue);
     font-size: 1.1rem;
+    transition: transform 0.2s ease;
+}
+
+.uploaded-file-item:hover .file-icon {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .file-name {
@@ -237,6 +316,11 @@ input[name="price"] {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.uploaded-file-item:hover .file-name {
+    color: var(--brand-blue);
 }
 
 .file-preview { 
@@ -324,12 +408,30 @@ input[name="price"] {
     border-radius: 6px;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition: all 0.3s;
+    overflow: hidden;
+    position: relative;
+}
+
+.btn-upload:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.7s;
 }
 
 .btn-upload:hover {
     background-color: #2e4257;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.btn-upload:hover:after {
+    left: 100%;
 }
 
 .image-preview-container {
@@ -590,17 +692,24 @@ input[name="price"] {
 
 .gallery-thumb {
     background: white;
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     position: relative;
     min-height: 90px;
-    transition: transform 0.15s;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .gallery-thumb:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    z-index: 2;
+    border-color: rgba(58, 80, 107, 0.2);
+}
+
+.gallery-thumb:active {
+    transform: translateY(-2px) scale(0.99);
 }
 
 .gallery-thumb img {
@@ -608,29 +717,40 @@ input[name="price"] {
     height: 90px;
     object-fit: cover;
     display: block;
+    transition: transform 0.5s ease;
 }
 
-.gallery-thumb .file-size-badge {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    font-size: 0.75rem;
-    padding: 3px 0;
-    text-align: center;
+.gallery-thumb:hover img {
+    transform: scale(1.08);
+}
+
+.gallery-thumb.success .file-success {
+    opacity: 1;
+}
+
+.gallery-thumb.success .file-success i {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.gallery-thumb.success {
+    border-color: var(--success-color);
+    animation: successFadeIn 0.5s forwards;
+}
+
+.gallery-thumb.uploading .uploading-indicator {
+    width: 100%;
 }
 
 .remove-thumb {
     position: absolute;
     top: 5px;
     right: 5px;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
     color: white;
     border: none;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -638,29 +758,19 @@ input[name="price"] {
     cursor: pointer;
     font-size: 12px;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
+    transform: scale(0.8);
 }
 
 .gallery-thumb:hover .remove-thumb {
     opacity: 1;
+    transform: scale(1);
 }
 
-.gallery-thumb .file-icon-container {
-    height: 90px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-}
-
-.gallery-thumb .file-icon-container .file-ext {
-    background: var(--brand-blue);
-    color: white;
-    font-size: 0.7rem;
-    padding: 2px 8px;
-    border-radius: 3px;
-    text-transform: uppercase;
+.remove-thumb:hover {
+    background: rgba(220, 53, 69, 0.85);
+    transform: scale(1.15);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 @media (max-width: 600px) {
@@ -714,4 +824,129 @@ input[name="price"] {
 
 .uploaded-files .gallery-thumb {
   margin: 0;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes successFadeIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.file-upload-indicator {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 10px;
+    background: rgba(58, 80, 107, 0.7);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(2px);
+    z-index: 5;
+}
+
+.file-upload-area:hover .file-upload-indicator {
+    opacity: 1;
+}
+
+.file-upload-area.uploading {
+    border-color: var(--brand-blue);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 var(--upload-animation-color); }
+    70% { box-shadow: 0 0 0 10px rgba(58, 80, 107, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(58, 80, 107, 0); }
+}
+
+.file-success {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 185, 129, 0.1);
+    opacity: 0;
+    z-index: 10;
+    transition: opacity 0.4s;
+}
+
+.file-success i {
+    color: var(--success-color);
+    font-size: 2rem;
+    transform: scale(0.5);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s;
+}
+
+.file-upload-input-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.file-upload-input-container input[type="file"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: -1;
+}
+
+.file-drop-helper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(58, 80, 107, 0.2);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(3px);
+}
+
+.file-drop-helper.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.drop-target {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 2px dashed var(--brand-blue);
+    animation: float 2s infinite ease-in-out;
+}
+
+.drop-target i {
+    font-size: 3rem;
+    color: var(--brand-blue);
+    margin-bottom: 15px;
+}
+
+.drop-target p {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin: 0;
 }
