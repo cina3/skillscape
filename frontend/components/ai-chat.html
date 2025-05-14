@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chat Component</title>
+  <style>
+    :root {
+        --popup-border-radius: 20px; 
+    }
+    .ai-chat-popup {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 480px;
+      height: 580px;
+      background: white;
+      border-radius: var(--popup-border-radius);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      z-index: 1050;
+      display: none;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+      border: 1px solid rgba(39, 67, 94, 0.08);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    .ai-chat-popup.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .ai-chat-popup.minimized {
+      height: 60px;
+    }
+    
+    .ai-chat-popup.minimized .ai-chat-header {
+      border-bottom-left-radius: var(--popup-border-radius);
+      border-bottom-right-radius: var(--popup-border-radius);
+    }
+    
+    .ai-chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .ai-chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      background: linear-gradient(135deg, var(--brand-blue), #8b5cf6);
+      color: white;
+      border-top-left-radius: var(--popup-border-radius);
+      border-top-right-radius: var(--popup-border-radius);
+      position: relative;
+      z-index: 1;
+    }
+
+    .ai-chat-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 1.15rem;
+    }
+
+    .ai-chat-model-selector {
+      position: relative;
+      margin-left: auto;
+      margin-right: 10px;
+    }
+
+    .selected-model-display {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 7px 12px;
+      border-radius: 18px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 120px;
+      justify-content: space-between;
+    }
+
+    .selected-model-display:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+    
+    .selected-model-display .model-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100px;
+    }
+
+    .selected-model-display i {
+      transition: transform 0.2s ease;
+    }
+    
+    .ai-chat-model-selector.open .selected-model-display i {
+        transform: rotate(180deg);
+    }
+
+    .model-dropdown-list {
+      position: absolute;
+      top: calc(100% + 5px);
+      right: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+      width: max-content;
+      max-width: 250px;
+      overflow: hidden;
+      display: none;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .ai-chat-model-selector.open .model-dropdown-list {
+        display: block;
+        animation: fadeInDropdown 0.2s ease-out;
+    }
+
+    @keyframes fadeInDropdown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .model-option {
+      padding: 10px 15px;
+      font-size: 0.9rem;
+      color: #333;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .model-option:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .model-option.selected-in-dropdown {
+        background-color: var(--brand-blue-light);
+        color: var(--brand-blue);
+        font-weight: 500;
+    }
+    
+    .ai-chat-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .ai-chat-actions button {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255,255,255,0.25);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(3px);
+    }
+    
+    .ai-chat-actions button:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+    
+    .ai-chat-body {
+      flex-grow: 1;
+      padding: 15px 20px;
+      overflow-y: auto;
+      background-color: #f9fafb;
+    }
+    
+    .ai-chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .ai-message, .user-message {
+      display: flex;
+      gap: 12px;
+      max-width: 90%;
+      animation: fadeInUp 0.3s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .user-message {
+      flex-direction: row-reverse;
+      align-self: flex-end;
+    }
+    
+    .ai-avatar, .user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .ai-avatar {
+      background: linear-gradient(135deg, var(--brand-blue), #8b5cf6);
+      color: white;
+      box-shadow: 0 3px 10px rgba(39, 67, 94, 0.15);
+    }
+    
+    .user-avatar {
+      background: #f0f0f0;
+      color: #495057;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .ai-message-content, .user-message-content {
+      padding: 14px 18px;
+      border-radius: 20px;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .ai-message-content {
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(39, 67, 94, 0.05);
+      background: white;
+    }
+    
+    .user-message-content {
+      border-bottom-right-radius: 4px;
+      background: linear-gradient(135deg, var(--brand-blue), #8b5cf6);
+      color: white;
+    }
+    
+    .ai-message-content p, .user-message-content p {
+      margin: 0;
+      line-height: 1.5;
+      font-size: 1rem;
+      word-break: break-word; 
+      overflow-wrap: break-word; 
+      white-space: pre-wrap; 
+    }
+    
+    .ai-chat-input-container {
+      display: flex;
+      gap: 12px;
+      padding: 16px 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      background: white;
+    }
+    
+    .ai-chat-input {
+      flex-grow: 1;
+      padding: 14px 18px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 24px;
+      outline: none;
+      font-size: 1rem;
+      resize: none;
+      height: 52px;
+      max-height: 120px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    }
+    
+    .ai-chat-input:focus {
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(39, 67, 94, 0.1);
+    }
+    
+    .ai-chat-send {
+      background: linear-gradient(135deg, var(--brand-blue), #8b5cf6);
+      color: white;
+      border: none;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 12px rgba(39, 67, 94, 0.25);
+      flex-shrink: 0;
+    }
+    
+    .ai-chat-send:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(39, 67, 94, 0.35);
+    }
+    
+    .ai-chat-send:active {
+      transform: scale(0.95);
+    }
+    
+    .ai-chat-send i {
+      font-size: 1.2rem;
+    }
+    
+    .ai-typing {
+      display: flex;
+      gap: 6px;
+      padding: 14px 16px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(39, 67, 94, 0.05);
+      width: fit-content;
+      animation: fadeIn 0.3s ease-out;
+      margin-top: 5px;
+      border-bottom-left-radius: 4px;
+      align-items: center;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .ai-typing-dot {
+      width: 8px;
+      height: 8px;
+      background-color: rgba(39, 67, 94, 0.5);
+      border-radius: 50%;
+      animation: typingAnimation 1.5s infinite ease-in-out;
+    }
+    
+    .ai-typing-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+    
+    .ai-typing-dot:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+    
+    .ai-typing-dot:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+    
+    @keyframes typingAnimation {
+      0%, 100% { transform: translateY(0); opacity: 0.5; }
+      50% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    .ai-thinking-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 90%;
+      animation: fadeInUp 0.3s ease-out;
+      margin-bottom: 16px;
+    }
+
+    .ai-thinking-indicator-content {
+      padding: 14px 18px;
+      border-radius: 20px;
+      border-bottom-left-radius: 4px;
+      background: white;
+      border: 1px solid rgba(39, 67, 94, 0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      color: #555;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .thinking-wrapper {
+      display: flex;
+      align-items: center;
+      animation: pulse-thinking 2s infinite ease-in-out;
+      font-weight: 500;
+      color: var(--brand-blue, #27435E);
+      position: relative;
+    }
+    
+    .thinking-wrapper::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(39, 67, 94, 0), rgba(39, 67, 94, 0.3), rgba(39, 67, 94, 0));
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: pulse-line 2s infinite ease-in-out;
+    }
+    
+    @keyframes pulse-thinking {
+      0% { opacity: 0.7; transform: scale(0.97); }
+      50% { opacity: 1; transform: scale(1.03); }
+      100% { opacity: 0.7; transform: scale(0.97); }
+    }
+    
+    @keyframes pulse-line {
+      0% { opacity: 0.4; transform: scaleX(0.8); }
+      50% { opacity: 0.8; transform: scaleX(1.05); }
+      100% { opacity: 0.4; transform: scaleX(0.8); }
+    }
+    
+    .thinking-text, .thinking-dots, .thinking-dots span {
+      display: none;
+    }
+    
+    .ai-suggestions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    
+    .ai-suggestion {
+      background: white;
+      border: 1px solid rgba(39, 67, 94, 0.15);
+      border-radius: 24px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: var(--brand-blue);
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+    
+    .ai-suggestion:hover {
+      background: linear-gradient(135deg, var(--brand-blue), #8b5cf6);
+      color: white;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(39, 67, 94, 0.2);
+    }
+    
+    .ai-suggestion.selected {
+      transform: scale(0.95);
+      background: linear-gradient(135deg, var(--brand-blue), #8b5cf6);
+      color: white;
+    }
+    
+    .ai-message-content code {
+      background: rgba(39, 67, 94, 0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.92rem;
+    }
+    
+    @media (max-width: 576px) {
+      .ai-chat-popup {
+        width: calc(100% - 30px);
+        right: 15px;
+        left: 15px;
+        height: 60vh;
+        bottom: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <template id="ai-chat-template">
+    <div class="ai-chat-popup">
+      <div class="ai-chat-container">
+        <div class="ai-chat-header">
+          <div class="ai-chat-title">
+            <i class="fas fa-robot"></i>
+            <span>AI Assistant</span>
+          </div>
+          <div class="ai-chat-model-selector" id="modelSelector">
+            <button class="selected-model-display" id="selectedModelDisplay">
+              <span class="model-name">Gemini Flash</span> <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="model-dropdown-list" id="modelDropdownList">
+              <div class="model-option" data-model="google/gemini-2.0-flash-exp:free" data-display="Gemini Flash">Google Gemini Flash</div>
+              <div class="model-option" data-model="deepseek/deepseek-r1:free" data-display="DeepSeek R1">DeepSeek R1</div>
+              <div class="model-option" data-model="deepseek/deepseek-chat-v3-0324:free" data-display="DeepSeek V3">DeepSeek Chat V3</div>
+              <div class="model-option" data-model="qwen/qwen3-235b-a22b:free" data-display="Qwen3 (Reasoning)">Qwen3 (Reasoning)</div>
+              <div class="model-option" data-model="meta-llama/llama-4-maverick:free" data-display="Llama 4">Meta Llama 4 Maverick</div>
+            </div>
+          </div>
+          <div class="ai-chat-actions">
+            <button class="ai-chat-clear" title="Clear Chat"><i class="fas fa-eraser"></i></button>
+            <button class="ai-chat-minimize" title="Minimize"><i class="fas fa-minus"></i></button>
+            <button class="ai-chat-close" title="Close"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+        <div class="ai-chat-body">
+          <div class="ai-chat-messages">
+            <div class="ai-message">
+              <div class="ai-avatar">
+                <i class="fas fa-robot"></i>
+              </div>
+              <div class="ai-message-content">
+                <p>Hello! I'm your AI assistant. How can I help you explain your project requirements?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ai-chat-input-container">
+          <textarea class="ai-chat-input" placeholder="Type your message here..."></textarea>
+          <button class="ai-chat-send">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+  <script src="../js/ai.js"></script>
+  <script>
+    class AIChat {
+      constructor(options = {}) {
+        this.options = {
+          parent: document.body,
+          initialMessage: "Hello! I'm your AI assistant. How can I help you explain your project requirements?",
+          onClose: () => {},
+          onUserSend: (message) => {}, 
+          defaultModel: "google/gemini-2.0-flash-exp:free",
+          customInitialPromptKey: "CUSTOM_INIT_PROMPT_FOR_REQUIREMENTS",
+          ...options
+        };
+        
+        this.initialized = false;
+        this.component = null;
+        this.messagesContainer = null;
+        this.currentModel = this.options.defaultModel;
+        this.modelSelectorEl = null;
+        this.selectedModelDisplayEl = null;
+        this.modelDropdownListEl = null;
+        this.currentStreamedMessageParagraph = null;
+        this.currentMessageRawAccumulator = ""; 
+
+        this.escapeHTML = (str = '') => {
+          return str.toString()
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        };
+      }
+
+      init() {
+        if (this.initialized) return;
+        
+        const template = document.getElementById('ai-chat-template');
+        if (!template) {
+          console.error('AI Chat template not found');
+          return;
+        }
+        
+        this.component = template.content.cloneNode(true).querySelector('.ai-chat-popup');
+        this.options.parent.appendChild(this.component);
+        
+        this.messagesContainer = this.component.querySelector('.ai-chat-messages');
+        const closeBtn = this.component.querySelector('.ai-chat-close');
+        const minimizeBtn = this.component.querySelector('.ai-chat-minimize');
+        const sendBtn = this.component.querySelector('.ai-chat-send');
+        const inputField = this.component.querySelector('.ai-chat-input');
+        const clearChatBtn = this.component.querySelector('.ai-chat-clear');
+        
+        this.modelSelectorEl = this.component.querySelector('#modelSelector');
+        this.selectedModelDisplayEl = this.component.querySelector('#selectedModelDisplay');
+        this.modelDropdownListEl = this.component.querySelector('#modelDropdownList');
+
+        if (this.selectedModelDisplayEl && this.modelDropdownListEl) {
+          this.selectedModelDisplayEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.modelSelectorEl.classList.toggle('open');
+            this.modelDropdownListEl.style.display = this.modelSelectorEl.classList.contains('open') ? 'block' : 'none';
+          });
+
+          const modelOptions = this.modelDropdownListEl.querySelectorAll('.model-option');
+          modelOptions.forEach(option => {
+            option.addEventListener('click', () => {
+              this.currentModel = option.dataset.model;
+              this.updateSelectedModelDisplay(option.dataset.display);
+              this.modelSelectorEl.classList.remove('open');
+              this.modelDropdownListEl.style.display = 'none';
+              console.log("AI Model switched to:", this.currentModel);
+              modelOptions.forEach(opt => opt.classList.remove('selected-in-dropdown'));
+              option.classList.add('selected-in-dropdown');
+            });
+          });
+          
+          const initialOption = Array.from(modelOptions).find(opt => opt.dataset.model === this.currentModel);
+          if (initialOption) {
+            this.updateSelectedModelDisplay(initialOption.dataset.display);
+            initialOption.classList.add('selected-in-dropdown');
+          } else if (modelOptions.length > 0) {
+            this.currentModel = modelOptions[0].dataset.model;
+            this.updateSelectedModelDisplay(modelOptions[0].dataset.display);
+            modelOptions[0].classList.add('selected-in-dropdown');
+          }
+        }
+        
+        document.addEventListener('click', (e) => {
+            if (this.modelSelectorEl && !this.modelSelectorEl.contains(e.target) && this.modelSelectorEl.classList.contains('open')) {
+                this.modelSelectorEl.classList.remove('open');
+                this.modelDropdownListEl.style.display = 'none';
+            }
+        });
+
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            this.hide();
+            this.options.onClose();
+          });
+        }
+        
+        if (minimizeBtn) {
+          minimizeBtn.addEventListener('click', () => {
+            this.component.classList.toggle('minimized');
+            const icon = minimizeBtn.querySelector('i');
+            if (this.component.classList.contains('minimized')) {
+              icon.className = 'fas fa-expand';
+            } else {
+              icon.className = 'fas fa-minus';
+            }
+          });
+        }
+        
+        if (clearChatBtn) {
+          clearChatBtn.addEventListener('click', () => {
+            this.resetConversation();
+          });
+        }
+        
+        if (sendBtn && inputField) {
+          sendBtn.addEventListener('click', () => this.sendMessage());
+          
+          inputField.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              this.sendMessage();
+            }
+          });
+          
+          inputField.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+          });
+        }
+        
+        this.initialized = true;
+      }
+
+      updateSelectedModelDisplay(displayText) {
+        if (this.selectedModelDisplayEl) {
+          const nameSpan = this.selectedModelDisplayEl.querySelector('.model-name');
+          if (nameSpan) nameSpan.textContent = displayText;
+        }
+      }
+      
+      show(userMessage = null) {
+        if (!this.initialized) this.init();
+        this.component.classList.add('active');
+        
+        if (userMessage === this.options.customInitialPromptKey) {
+          const tailoredInitialPrompt = "Okay, let's draft your project requirements! What are you looking to get done, or what problem are you trying to solve?";
+          if (this.currentModel && this.currentModel.startsWith("deepseek/")) {
+            this.showThinkingIndicator();
+          } else {
+            this.showTypingIndicator();
+          }
+          if (window.AI_Module && typeof window.AI_Module.ask === 'function') {
+            window.AI_Module.ask(tailoredInitialPrompt, this.currentModel);
+          } else {
+            this.removeTypingIndicator();
+            this.removeThinkingIndicator();
+            this.addAIMessage("AI module is not available at the moment.");
+          }
+        } else if (userMessage) {
+          this.addUserMessage(userMessage);
+          if (this.currentModel && this.currentModel.startsWith("deepseek/")) {
+            this.showThinkingIndicator();
+          } else {
+            this.showTypingIndicator();
+          }
+          
+          if (window.AI_Module && typeof window.AI_Module.ask === 'function') {
+            window.AI_Module.ask(userMessage, this.currentModel);
+          } else {
+            this.removeTypingIndicator();
+            this.removeThinkingIndicator();
+            this.addAIMessage("AI module is not available at the moment.");
+          }
+        }
+      }
+      
+      hide() {
+        if (this.component) {
+          this.component.classList.remove('active');
+        }
+      }
+      
+      addUserMessage(message) {
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'user-message';
+        userMessageDiv.innerHTML = `
+          <div class="user-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="user-message-content">
+            <p>${this.escapeHTML(message)}</p>
+          </div>
+        `;
+        this.messagesContainer.appendChild(userMessageDiv);
+        this.scrollToBottom();
+      }
+      
+      addAIMessage(message, includeSuggestions = false) {
+        this.removeTypingIndicator(); 
+        this.removeThinkingIndicator();
+
+        let formattedMessageBody = this.formatAIMessageContent(message);
+
+        let messageHTML = `<p>${formattedMessageBody}</p>`;
+        
+        if (includeSuggestions) {
+          messageHTML += `
+            <div class="ai-suggestions">
+              <div class="ai-suggestion">Add project scope</div>
+              <div class="ai-suggestion">Clarify timeline</div>
+              <div class="ai-suggestion">Specify budget constraints</div>
+            </div>
+          `;
+        }
+        
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'ai-message';
+        aiMessageDiv.innerHTML = `
+          <div class="ai-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="ai-message-content">${messageHTML}</div>
+        `;
+        this.messagesContainer.appendChild(aiMessageDiv);
+        this.scrollToBottom();
+        return aiMessageDiv;
+      }
+
+      formatAIMessageContent(text) {
+        let processedText = text.trim();
+        
+        processedText = processedText.replace(/\*\*/g, '');
+        
+        processedText = processedText.replace(/^[\*\-]\s+/gm, '• ');
+        
+        processedText = processedText.replace(/^(\d+)\.\s+/gm, '$1. ');
+        
+        processedText = this.escapeHTML(processedText);
+        
+        processedText = processedText.replace(/\n\n+/g, '[PARAGRAPH]');
+        
+        processedText = processedText.replace(/\n/g, '<br>');
+        
+        processedText = processedText.replace(/\[PARAGRAPH\]/g, '<br><br>');
+        
+        return processedText;
+      }
+      
+      showTypingIndicator() {
+        this.removeThinkingIndicator();
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'ai-typing';
+        typingIndicator.innerHTML = `
+          <div class="ai-typing-dot"></div>
+          <div class="ai-typing-dot"></div>
+          <div class="ai-typing-dot"></div>
+        `;
+        this.messagesContainer.appendChild(typingIndicator);
+        this.scrollToBottom();
+      }
+      
+      removeTypingIndicator() {
+        const typingIndicator = this.messagesContainer.querySelector('.ai-typing');
+        if (typingIndicator) {
+          typingIndicator.remove();
+        }
+      }
+
+      showThinkingIndicator() {
+        this.removeTypingIndicator();
+        this.removeThinkingIndicator();
+
+        const thinkingIndicatorDiv = document.createElement('div');
+        thinkingIndicatorDiv.className = 'ai-thinking-indicator';
+        
+        thinkingIndicatorDiv.innerHTML = `
+          <div class="ai-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="ai-thinking-indicator-content">
+            <div class="thinking-wrapper">Thinking...</div>
+          </div>
+        `;
+        
+        this.messagesContainer.appendChild(thinkingIndicatorDiv);
+        this.scrollToBottom();
+      }
+
+      removeThinkingIndicator() {
+        const thinkingIndicator = this.messagesContainer.querySelector('.ai-thinking-indicator');
+        if (thinkingIndicator) {
+          thinkingIndicator.remove();
+        }
+      }
+      
+      sendMessage() {
+        const inputField = this.component.querySelector('.ai-chat-input');
+        const message = inputField?.value?.trim();
+        
+        if (!message) return;
+
+        if (typeof this.options.onUserSend === 'function') {
+          this.options.onUserSend(message);
+        }
+        
+        this.addUserMessage(message);
+        inputField.value = '';
+        inputField.style.height = 'auto';
+        
+        if (this.currentModel && this.currentModel.startsWith("deepseek/")) {
+          this.showThinkingIndicator();
+        } else {
+          this.showTypingIndicator();
+        }
+        
+        if (window.AI_Module && typeof window.AI_Module.ask === 'function') {
+          window.AI_Module.ask(message, this.currentModel);
+        } else {
+          this.removeTypingIndicator();
+          this.removeThinkingIndicator();
+          this.addAIMessage("Sorry, I'm unable to process your request at the moment (AI module not found).");
+        }
+      }
+
+      createStreamMessageBubble() {
+        this.removeTypingIndicator();
+        this.removeThinkingIndicator();
+        this.currentMessageRawAccumulator = ""; 
+
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'ai-message';
+        
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'ai-avatar';
+        avatarDiv.innerHTML = '<i class="fas fa-robot"></i>';
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'ai-message-content';
+        
+        const pElement = document.createElement('p');
+        contentDiv.appendChild(pElement);
+        
+        aiMessageDiv.appendChild(avatarDiv);
+        aiMessageDiv.appendChild(contentDiv);
+        
+        this.messagesContainer.appendChild(aiMessageDiv);
+        this.scrollToBottom();
+        
+        this.currentStreamedMessageParagraph = pElement;
+        return pElement;
+      }
+
+      appendToStreamMessage(token) {
+        if (this.currentStreamedMessageParagraph) {
+          this.currentMessageRawAccumulator += token;
+          this.currentStreamedMessageParagraph.innerHTML = this.formatAIMessageContent(this.currentMessageRawAccumulator);
+          this.scrollToBottom();
+        }
+      }
+
+      finalizeStreamMessage(fullText) {
+         if (this.currentStreamedMessageParagraph) {
+            this.currentStreamedMessageParagraph.innerHTML = this.formatAIMessageContent(fullText);
+            this.currentStreamedMessageParagraph = null;
+            this.scrollToBottom();
+        }
+        this.currentMessageRawAccumulator = "";
+      }
+      
+      scrollToBottom() {
+        if (this.messagesContainer) {
+          this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        }
+      }
+      
+      updateTextarea(text) {
+        const textarea = document.getElementById('orderDescription');
+        if (textarea) {
+          textarea.value = text;
+          textarea.classList.add('flash-update');
+          setTimeout(() => {
+            textarea.classList.remove('flash-update');
+          }, 1000);
+        }
+      }
+      
+      setupSuggestionListeners() {
+        const suggestions = this.component.querySelectorAll('.ai-suggestion');
+        suggestions.forEach(suggestion => {
+          suggestion.addEventListener('click', () => {
+            const text = suggestion.textContent;
+            suggestion.classList.add('selected');
+            
+            this.showTypingIndicator();
+            
+            setTimeout(() => {
+              this.removeTypingIndicator();
+              
+              let response = "";
+              switch(text) {
+                case "Add project scope":
+                  response = "To define your project scope well, include:<br><br>• <strong>Primary goal</strong>: What problem are you solving?<br>• <strong>Deliverables</strong>: List specific items you expect<br>• <strong>Features</strong>: Functionality you need<br>• <strong>Exclusions</strong>: What's NOT included<br><br>Would you like me to help you draft a scope section for your requirements?";
+                  break;
+                case "Clarify timeline":
+                  response = "Clear timeline expectations help everyone stay on track. Consider including:<br><br>• <strong>Start date</strong>: When you need work to begin<br>• <strong>Milestones</strong>: Key checkpoints for review<br>• <strong>Final deadline</strong>: When you need everything completed<br>• <strong>Priorities</strong>: Which parts are most urgent<br><br>What timeline did you have in mind for this project?";
+                  break;
+                case "Specify budget constraints":
+                  response = "Being upfront about budget helps ensure proposals match your expectations. Consider:<br><br>• <strong>Budget range</strong>: Minimum and maximum<br>• <strong>Payment structure</strong>: Milestone-based or upon completion<br>• <strong>Additional costs</strong>: Are you open to paying for extras?<br><br>Would you like to specify a budget in your requirements?";
+                  break;
+                default:
+                  response = "Let's focus on adding that information to your requirements. What specific details would you like help writing?";
+              }
+              
+              this.addAIMessage(response);
+              
+              setTimeout(() => {
+                suggestion.classList.remove('selected');
+              }, 300);
+            }, 1500);
+          });
+        });
+      }
+      
+      resetConversation() {
+        if (this.messagesContainer) {
+          this.messagesContainer.innerHTML = '';
+          this.addAIMessage(this.options.initialMessage);
+        }
+        const inputField = this.component.querySelector('.ai-chat-input');
+        if (inputField) inputField.value = '';
+        console.log("AI Chat: Conversation reset.");
+      }
+    }
+
+    window.AIChat = AIChat;
+  </script>
+</body>
+</html>

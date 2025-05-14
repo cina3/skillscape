@@ -9,7 +9,79 @@ document.addEventListener('DOMContentLoaded', () => {
   const ORDERS_ENDPOINT = `${API_BASE_URL}/orders`;
   const TOKEN           = localStorage.getItem('authToken') || localStorage.getItem('token');
   let orderButtonClickHandler = null; 
-  let orderSpecificStylesInjected = false; 
+  let orderSpecificStylesInjected = false; c
+  window.aiChatInstance = null; 
+
+  window.AITools = {
+    displayAIMessage: function(text) {
+      if (window.aiChatInstance && typeof window.aiChatInstance.addAIMessage === 'function') {
+        window.aiChatInstance.removeTypingIndicator?.(); 
+        window.aiChatInstance.removeThinkingIndicator?.();
+        window.aiChatInstance.show(); 
+        window.aiChatInstance.addAIMessage(text);
+      } else {
+        console.warn('AI Chat instance or addAIMessage method not available.');
+      }
+    },
+    simulateFileUpload: function(fileName) {
+      const list = document.getElementById('uploadedFiles');
+      if (!list) {
+        console.warn('Uploaded files container (uploadedFiles) not found.');
+        return;
+      }
+      if (list.children.length >= 5) {
+        errorMessage('Maximum 5 files allowed for simulation.');
+        return;
+      }
+
+      const size = Math.floor(Math.random() * 5120) + 1; 
+      const sizeStr = size < 1024 
+        ? `${size} B` 
+        : `${(size / 1024).toFixed(1)} KB`;
+
+      const div = document.createElement('div');
+      div.className = 'uploaded-file';
+      div.dataset.filename = fileName;
+      div.innerHTML = `
+        <i class="fas fa-file-alt"></i>
+        <span>${escapeHTML(fileName)}</span>
+        <span class="file-size">${sizeStr}</span>
+        <button class="remove-file" title="Remove file"><i class="fas fa-times"></i></button>
+      `;
+      
+      div.querySelector('.remove-file').addEventListener('click', () => div.remove());
+      list.appendChild(div);
+      console.log(`AITools: Simulated upload of ${fileName} (${sizeStr})`);
+    },
+    updateRequirementsText: function(text) {
+      const textarea = document.getElementById('orderDescription');
+      if (textarea) {
+        let cleanedText = text.replace(/\*\*/g, '');
+        
+        cleanedText = cleanedText.replace(/^[\*\-\+\•]\s*/gm, ''); 
+        
+        cleanedText = cleanedText.replace(/\n{3,}/g, "\n\n");
+        
+        cleanedText = cleanedText.trim();
+          
+        textarea.value = cleanedText; 
+        textarea.dispatchEvent(new Event('input')); 
+        textarea.classList.add('flash-update');
+        
+        textarea.style.borderColor = "var(--brand-blue)";
+        setTimeout(() => {
+          textarea.classList.remove('flash-update');
+          textarea.style.borderColor = "";
+        }, 1500);
+        
+        console.log(`AITools: Updated requirements text to: "${cleanedText}"`);
+      } else {
+        console.warn('Order description textarea (orderDescription) not found.');
+      }
+    }
+  };
+
+  loadAIChatComponent();
 
   if (closeBtn) closeBtn.addEventListener('click', closeGigModal);
   if (modal) {
@@ -123,6 +195,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function loadAIChatComponent() {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    
+    iframe.onload = function() {
+      try {
+        const template = iframe.contentDocument.getElementById('ai-chat-template');
+        if (template) {
+          const importedNode = document.importNode(template, true);
+          document.body.appendChild(importedNode);
+          
+          const scriptContent = Array.from(iframe.contentDocument.querySelectorAll('script'))
+            .map(script => script.textContent)
+            .join('\n');
+          
+          const script = document.createElement('script');
+          script.textContent = scriptContent;
+          document.body.appendChild(script);
+          
+          const styleContent = Array.from(iframe.contentDocument.querySelectorAll('style'))
+            .map(style => style.textContent)
+            .join('\n');
+          
+          const style = document.createElement('style');
+          style.textContent = styleContent;
+          document.head.appendChild(style);
+          
+          console.log('AI Chat component loaded successfully');
+          
+          if (typeof AIChat === 'function') {
+            window.aiChatInstance = new AIChat({ 
+              parent: document.body,
+              onClose: function() {},
+              onUserSend: function(message) {
+                console.log("AI Chat: User sending message - ", message);
+              }
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error importing AI Chat component:', error);
+      } finally {
+        document.body.removeChild(iframe);
+      }
+    };
+    
+    iframe.src = '../components/ai-chat.html';
+  }
+
   function toggleOrderMode(showOrderForm = true) {
     if (!modal) return;
     const detailsCol = modal.querySelector('.gig-details-column');
@@ -176,6 +298,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="form-group" style="margin-bottom:30px;">
             <label for="orderDescription" style="display:block;font-size:1.05rem;font-weight:500;margin-bottom:10px;color:var(--text-dark);">Project Requirements</label>
             <textarea id="orderDescription" rows="5" placeholder="Describe your project requirements in detail..." style="width:100%;padding:15px;border-radius:12px;border:1px solid var(--border-color);background-color:white;font-size:1rem;box-shadow:0 2px 6px rgba(0,0,0,0.05);transition:all 0.3s;resize:vertical;min-height:120px;"></textarea>
+            <div class="ai-button-wrapper" style="display:flex;justify-content:flex-end;margin-top:12px;margin-bottom:8px;gap:12px;">
+              <button type="button" id="explainWithAI" class="explain-with-ai-button">
+                <i class="fas fa-robot ai-icon"></i>
+                <span>Explain with AI</span>
+                <div class="shine-effect"></div>
+              </button>
+            </div>
             <p style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;">Be specific about what you need for best results.</p>
           </div>
           
@@ -287,6 +416,88 @@ document.addEventListener('DOMContentLoaded', () => {
             @keyframes successPulse { 0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); } 
                                     70% { box-shadow: 0 0 0 15px rgba(76, 175, 80, 0); } 
                                     100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); } }
+            
+            .ai-button-wrapper {
+              gap: 15px;
+              margin-top: 18px;
+            }
+            
+            .explain-with-ai-button {
+              position: relative;
+              padding: 12px 22px;
+              border: none;
+              border-radius: 12px;
+              font-weight: 600;
+              font-size: 1rem;
+              cursor: pointer;
+              overflow: hidden;
+              transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              letter-spacing: 0.3px;
+              background: linear-gradient(135deg, var(--brand-blue), #8b5cf6);
+              color: white;
+              box-shadow: 0 8px 20px rgba(39, 67, 94, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+              text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+            }
+            
+            .explain-with-ai-button:hover {
+              transform: translateY(-4px) scale(1.02);
+              box-shadow: 0 12px 24px rgba(39, 67, 94, 0.5), inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+              background: linear-gradient(135deg, #2b5079 10%, #7c3aed 100%);
+              letter-spacing: 0.4px;
+            }
+            
+            .explain-with-ai-button:active {
+              transform: translateY(0) scale(0.98);
+              transition-duration: 0.1s;
+            }
+            
+            .explain-with-ai-button .ai-icon {
+              font-size: 1.25rem;
+              transform-origin: center;
+              animation: pulse 2s infinite;
+            }
+            
+            .shine-effect {
+              position: absolute;
+              top: 0;
+              left: -100%;
+              width: 60%;
+              height: 100%;
+              background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.4) 50%,
+                rgba(255, 255, 255, 0) 100%
+              );
+              transform: skewX(-25deg);
+              animation: shine 6s infinite;
+            }
+            
+            @keyframes shine {
+              0% { left: -100%; }
+              15% { left: 200%; }
+              100% { left: 200%; }
+            }
+            
+            @keyframes pulse {
+              0% { opacity: 0.8; transform: scale(1); }
+              50% { opacity: 1; transform: scale(1.1); }
+              100% { opacity: 0.8; transform: scale(1); }
+            }
+            
+            @keyframes flashTextarea {
+              0% { box-shadow: 0 0 0 0 rgba(39, 67, 94, 0.7); }
+              70% { box-shadow: 0 0 0 10px rgba(39, 67, 94, 0); }
+              100% { box-shadow: 0 0 0 0 rgba(39, 67, 94, 0); }
+            }
+            
+            .flash-update {
+              animation: flashTextarea 1s ease-out;
+              border-color: var(--brand-blue) !important;
+            }
           </style>
         `);
         orderSpecificStylesInjected = true;
@@ -497,8 +708,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
+
+    const aiButton = document.getElementById('explainWithAI');
+    if (aiButton) {
+      aiButton.addEventListener('click', function() {
+        const textarea = document.getElementById('orderDescription');
+        
+        if (textarea) {
+          const currentText = textarea.value.trim();
+          
+          if (!window.aiChatInstance) { 
+            if (typeof AIChat === 'function') {
+              window.aiChatInstance = new AIChat({ 
+                parent: document.querySelector('.gig-modal') || document.body,
+                onClose: function() { },
+                onUserSend: function(message) {
+                  console.log("User sent message:", message);
+                }
+              });
+            } else {
+              console.error('AIChat class not available.');
+              return;
+            }
+          }
+          
+          window.aiChatInstance.show();
+          
+          if (currentText) {
+            window.aiChatInstance.addAIMessage(
+              "I see you've already started writing requirements. You can copy them here or ask me to help you elaborate on them."
+            );
+          }
+        }
+      });
+    }
   }
-  
+
   function successMessage(message) {
     if (typeof window.showSuccessMessage === 'function') {
       window.showSuccessMessage(message);
@@ -669,4 +914,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const emptyStars = '☆'.repeat(5 - roundedScore);
     container.innerHTML = fullStars + emptyStars;
   }
+
+  window.updateAIChatUI = function(message) {
+    if (window.AITools && typeof window.AITools.displayAIMessage === 'function') {
+      window.AITools.displayAIMessage(message);
+    } else {
+      console.warn('AITools.displayAIMessage not available for updateAIChatUI.');
+    }
+  };
+
+  window.handleFileUpload = handleFileUpload;
 });
