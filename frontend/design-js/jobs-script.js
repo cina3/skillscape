@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
             createdAt: 'May 15, 2025',
             updatedAt: 'May 18, 2025',
             status: 'active',
+            description: 'Create a modern and responsive landing page for a new SaaS product. Key features include a hero section, feature list, pricing table, and a contact form. Design should be clean and professional.',
             languages: 'JavaScript, HTML, CSS',
             skills: ['HTML5', 'CSS3', 'JavaScript', 'Responsive Design', 'Bootstrap']
         },
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             createdAt: 'May 20, 2025',
             updatedAt: 'May 20, 2025',
             status: 'active',
+            description: 'Integrate Stripe payment gateway and a custom shipping provider API into an existing Node.js e-commerce platform. Ensure robust error handling and logging.',
             languages: 'JavaScript, Node.js, PHP',
             skills: ['API Integration', 'Node.js', 'Express', 'MongoDB', 'Payment Gateway']
         },
@@ -57,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             createdAt: 'May 18, 2025', 
             updatedAt: 'May 19, 2025',
             status: 'completed',
+            description: 'Design a unique and memorable logo for a new tech startup in the AI space. The logo should convey innovation and intelligence. Provide vector files and a style guide.',
             languages: 'Illustrator, Photoshop',
             skills: ['Logo Design', 'Branding', 'Vector Art', 'Typography', 'Color Theory']
         },
@@ -71,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             createdAt: 'May 12, 2025',
             updatedAt: 'May 17, 2025',
             status: 'pending',
+            description: 'Design the UI/UX for a new mobile application (iOS and Android). Project includes wireframing, prototyping, and final high-fidelity mockups. Focus on user-friendliness and modern aesthetics.',
             languages: 'Figma, Sketch, Adobe XD',
             skills: ['UI Design', 'UX Design', 'Wireframing', 'Prototyping', 'User Research']
         },
@@ -85,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             createdAt: 'May 22, 2025',
             updatedAt: 'May 22, 2025',
             status: 'cancelled',
+            description: 'Write 5 high-quality blog posts (1000-1500 words each) on topics related to digital marketing and SEO. Content should be well-researched, engaging, and optimized for search engines.',
             languages: 'English',
             skills: ['Content Writing', 'SEO', 'Blogging', 'Copywriting', 'Editing']
         }
@@ -128,8 +133,10 @@ function renderJobs(jobs) {
         jobCard.dataset.id = job.id;
         
         const statusIcon = getStatusIcon(job.status);
+        const statusText = capitalizeFirstLetter(job.status.replace('_', ' '));
         
         jobCard.innerHTML = `
+            <div class="status-flag ${job.status}"><i class="${getStatusFlagIcon(job.status)}"></i> ${statusText}</div>
             <div class="job-card-left">
                 <div class="job-image" style="background-image: url('${job.image}')">
                     <div class="job-buyer">From: ${job.buyer}</div>
@@ -188,6 +195,25 @@ function getStatusIcon(status) {
     }
 }
 
+function getStatusFlagIcon(status) {
+    switch (status) {
+        case 'active':
+            return 'fas fa-bolt';
+        case 'in_progress':
+            return 'fas fa-spinner fa-spin';
+        case 'completed':
+            return 'fas fa-check-circle';
+        case 'pending':
+            return 'fas fa-clock';
+        case 'delivered':
+            return 'fas fa-truck';
+        case 'cancelled':
+            return 'fas fa-ban';
+        default:
+            return 'fas fa-circle';
+    }
+}
+
 function openJobModal(job) {
     const modal = document.getElementById('jobDetailsModal');
     
@@ -199,6 +225,8 @@ function openJobModal(job) {
     document.getElementById('modalUpdatedAt').textContent = job.updatedAt;
     document.getElementById('modalDueDate').textContent = job.dueDate;
     document.getElementById('modalLanguages').textContent = job.languages;
+
+    document.getElementById('modalDescription').textContent = job.description || 'No description provided.';
     
     const statusElement = document.getElementById('modalStatus');
     const statusLower = job.status.toLowerCase();
@@ -346,9 +374,11 @@ function handleFiles(files) {
         else if (file.type.includes('word')) fileIcon = 'fa-file-word';
         else if (file.type.includes('zip')) fileIcon = 'fa-file-archive';
         
+        const fileLocationDisplay = `file:///${file.name}`;
+
         fileItem.innerHTML = `
             <i class="fas ${fileIcon}"></i>
-            <span class="uploaded-file-name">${file.name}</span>
+            <span class="uploaded-file-name" title="${fileLocationDisplay}">${fileLocationDisplay}</span>
             <button class="remove-file-btn"><i class="fas fa-times"></i></button>
         `;
         
@@ -378,7 +408,7 @@ function initializeMenu() {
         menuItems.forEach(item => {
             if (item.getAttribute('href') === 'jobs.html') {
                 item.classList.add('active-menu-item');
-                item.innerHTML += ' <span class="nav-dot"></span>';
+                item.innerHTML = `<span class="nav-dot"></span> ${item.textContent}`;
             }
         });
     }

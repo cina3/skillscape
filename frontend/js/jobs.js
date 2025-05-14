@@ -243,6 +243,7 @@ function initModals() {
             if (document.getElementById('jobDetailsModal').classList.contains('visible') && currentJob && currentJob.id === newlyMappedJob.id) {
               openJobModal(currentJob);
             }
+            alert(`Job progress successfully updated to ${newlyMappedJob.progress}%.`);
 
           })
           .catch(err => {
@@ -262,6 +263,7 @@ function initModals() {
                 if (document.getElementById('jobDetailsModal').classList.contains('visible') && currentJob && currentJob.id === newlyMappedJob.id) {
                     openJobModal(currentJob);
                 }
+                alert(`Job progress successfully updated to ${newlyMappedJob.progress}%.`);
             } else {
                  console.error("No data from PATCH response and verification failed. UI may be stale.");
             }
@@ -335,17 +337,26 @@ function openJobModal(job) {
 
   document.getElementById('modalJobTitle').textContent = job.title;
   document.getElementById('modalOrderID').textContent = job.id;
-  document.getElementById('modalBuyer').textContent = job.buyer;
   document.getElementById('modalPrice').textContent = job.price;
   document.getElementById('modalCreatedAt').textContent = job.createdAt;
   document.getElementById('modalUpdatedAt').textContent = job.updatedAt;
-  if (document.getElementById('modalGigID')) {
-    document.getElementById('modalGigID').textContent = job.gigId;
+  
+  const modalGigIDElement = document.getElementById('modalGigID');
+  if (modalGigIDElement) {
+    modalGigIDElement.textContent = job.gigId;
   }
+  
   document.getElementById('modalDescription').textContent = job.description || 'No requirements provided.';
 
+  const modalBuyerInfoItem = document.getElementById('modalBuyer').closest('.info-item');
+  if (modalBuyerInfoItem) {
+    modalBuyerInfoItem.style.display = 'none';
+  }
+
   const modalStatus = document.getElementById('modalStatus');
-  const statusText = job.status.charAt(0).toUpperCase() + job.status.slice(1).replace('_', ' ');
+  let statusText = job.status.replace(/_/g, ' '); 
+  statusText = statusText.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  
   modalStatus.className = `info-value status-indicator ${job.status.toLowerCase()}`;
   modalStatus.innerHTML = `<i class="fas ${getStatusIconClass(job.status)}"></i> ${statusText}`;
 
@@ -392,8 +403,11 @@ function openJobModal(job) {
   const btnA = document.getElementById('getTheJobBtn');
   const btnIP = document.querySelector('.status-buttons [data-status="in_progress"]');
   const btnC = document.querySelector('.status-buttons [data-status="cancelled"]');
-  const slider = document.getElementById('progressSlider');
+  const sliderElement = document.getElementById('progressSlider'); 
   const upBtn = document.getElementById('updateProgressBtn');
+  const deliverWorkBtn = document.getElementById('deliverWorkBtn'); 
+  const progressSliderContainer = document.querySelector('.progress-slider-container'); 
+  const completionProgressHeader = document.querySelector('.status-controls-section h4'); 
 
   const dueDateModalElement = document.getElementById('modalDueDate');
   if (dueDateModalElement && dueDateModalElement.parentElement.classList.contains('info-item')) {
@@ -403,28 +417,51 @@ function openJobModal(job) {
   sc.style.display = 'block';
   oa.style.display = 'flex';
   [btnA, btnIP, btnC].forEach(b => b && (b.style.display = 'none'));
-  slider.style.display = 'block';
+  sliderElement.style.display = 'block'; 
   upBtn.style.display = 'inline-block';
+  deliverWorkBtn.style.display = 'flex'; 
+  if (progressSliderContainer) progressSliderContainer.style.display = 'flex'; 
+  if (completionProgressHeader) completionProgressHeader.style.display = 'block'; 
+
+  btnA.classList.remove('accept-job-style'); 
 
   if (job.status === 'pending') {
     btnA.textContent = 'Accept Job';
     btnA.style.display = 'inline-flex';
+    btnA.classList.add('accept-job-style'); 
     btnC.style.display = 'inline-flex';
-    slider.style.display = 'none';
+    sliderElement.style.display = 'none'; 
     upBtn.style.display = 'none';
+    deliverWorkBtn.style.display = 'none'; 
+    if (progressSliderContainer) progressSliderContainer.style.display = 'none'; 
+    if (completionProgressHeader) completionProgressHeader.style.display = 'none'; 
   } else if (job.status === 'in_progress') {
-    btnA.textContent = 'Mark Delivered';
-    btnA.style.display = 'inline-flex';
+    btnA.style.display = 'none'; 
     btnC.style.display = 'inline-flex';
   } else if (job.status === 'delivered') {
     btnIP.textContent = 'Reopen Job';
     btnIP.style.display = 'inline-flex';
     btnC.style.display = 'inline-flex';
-    slider.style.display = 'none';
+    sliderElement.style.display = 'none'; 
     upBtn.style.display = 'none';
+    deliverWorkBtn.style.display = 'none'; 
+    if (progressSliderContainer) progressSliderContainer.style.display = 'none'; 
+    if (completionProgressHeader) completionProgressHeader.style.display = 'none'; 
   } else if (job.status === 'cancelled') {
     sc.style.display = 'none';
-    oa.style.display = 'none';
+    oa.style.display = 'none'; 
+    sliderElement.style.display = 'none'; 
+    upBtn.style.display = 'none';
+    if (progressSliderContainer) progressSliderContainer.style.display = 'none';
+    if (completionProgressHeader) completionProgressHeader.style.display = 'none'; 
+  } else {
+    if (job.status === 'completed') {
+        sliderElement.style.display = 'none';
+        upBtn.style.display = 'none';
+        deliverWorkBtn.style.display = 'none';
+        if (progressSliderContainer) progressSliderContainer.style.display = 'none';
+        if (completionProgressHeader) completionProgressHeader.style.display = 'none'; 
+    }
   }
 
   document.getElementById('jobDetailsModal').classList.add('visible');
@@ -461,7 +498,9 @@ function changeStatusAndRefresh(newStatus) {
             } else {
                 closeAllModals();
             }
-            alert(`Job status successfully changed to ${upperNewStatus}.`);
+            let displayStatusAlert = upperNewStatus.toLowerCase().replace(/_/g, ' ');
+            displayStatusAlert = displayStatusAlert.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            alert(`Job status has been successfully updated to '${displayStatusAlert}'.`);
         }, 500);
     }).catch(err => {
         console.error(`Failed to change status to ${upperNewStatus}`, err);
