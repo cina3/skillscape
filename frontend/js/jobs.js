@@ -79,7 +79,7 @@ function mapApiOrderToJobFormat(dataBundle) {
 
 async function fetchJobs() {
   try {
-    const orders = await apiFetch('http://localhost:8080/api/orders/seller');
+    const orders = await apiFetch('http://3.75.88.34:8080/api/orders/seller');
 
     const jobsWithDetails = await Promise.all(orders.map(async order => {
       let gigDetails = null;
@@ -190,7 +190,7 @@ function initModals() {
       const percentageValue = slider.value;
 
       apiFetch(
-        `http://localhost:8080/api/orders/${currentJob.id}/percentage`,
+        `http://3.75.88.34:8080/api/orders/${currentJob.id}/percentage`,
         { 
           method: 'PATCH',
           body: parseInt(percentageValue, 10)
@@ -204,7 +204,7 @@ function initModals() {
             console.log(`Progress updated for job ID ${orderIdToVerify}. Initial PATCH response percentage: ${updatedOrderFromServer.percentage}`);
         }
         
-        apiFetch(`http://localhost:8080/api/orders/${orderIdToVerify}`)
+        apiFetch(`http://3.75.88.34:8080/api/orders/${orderIdToVerify}`)
           .then(verifiedOrder => {
             let newlyMappedJob;
             if (verifiedOrder) {
@@ -475,7 +475,7 @@ function changeStatus(newStatus) {
   if (!currentJob) return Promise.reject(new Error("No current job selected"));
 
   return apiFetch(
-    `http://localhost:8080/api/orders/${currentJob.id}/status?status=${newStatus.toUpperCase()}`,
+    `http://3.75.88.34:8080/api/orders/${currentJob.id}/status?status=${newStatus.toUpperCase()}`,
     { method: 'PATCH' }
   ).then(() => {
     fetchJobs();

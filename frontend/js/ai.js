@@ -1,4 +1,4 @@
-let API_URL_BASE = "http://localhost:5001"; 
+let API_URL_BASE = "http://3.75.88.34:5001"; 
 
 const AI_Module = {
   setApiUrl(newBaseUrl) {
@@ -195,8 +195,8 @@ window.testAIRequest = function(prompt = "Hello, can you help me explain my proj
 };
 
 window.setAIPort = function(port = 5001) { 
-  AI_Module.setApiUrl(`http://localhost:${port}`);
-  console.log(`AI API Base URL set to: http://localhost:${port}`);
+  AI_Module.setApiUrl(`http://3.75.88.34:${port}`);
+  console.log(`AI API Base URL set to: http://3.75.88.34:${port}`);
   return "You can now test the AI with this port using testAIRequest()";
 };
 

@@ -61,7 +61,7 @@ function apiFetch(path, opts = {}) {
 
 async function fetchLatestListings() {
   try {
-    const listings = await apiFetch('http://localhost:8080/api/listings');
+    const listings = await apiFetch('http://3.75.88.34:8080/api/listings');
     const activeListings = listings.filter(l => l.status === 'ACTIVE');
     renderLatestListings(activeListings.slice(0, 5));
   } catch (e) {

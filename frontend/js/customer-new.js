@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ok  = typeof successMessage === 'function' ? successMessage : m => alert(m);
   const bad = typeof errorMessage   === 'function' ? errorMessage   : m => alert(`❌ ${m}`);
 
-  const BASE  = 'http://localhost:8080/api';
+  const BASE  = 'http://3.75.88.34:8080/api';
   const TOKEN = localStorage.getItem('authToken') || localStorage.getItem('token');
 
   const mapCategory = v => ({

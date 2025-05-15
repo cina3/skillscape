@@ -91,7 +91,7 @@ function initializeRecommendedSection() {
         return;
     }
 
-    const apiUrl = 'http://localhost:8080/api/gigs?status=ACTIVE&size=6&sort=averageRating,desc&page=0'; 
+    const apiUrl = 'http://3.75.88.34:8080/api/gigs?status=ACTIVE&size=6&sort=averageRating,desc&page=0'; 
 
     loadRecommendedItems(apiUrl, recommendedListElement);
 }
