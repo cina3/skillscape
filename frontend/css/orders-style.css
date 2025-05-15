@@ -983,3 +983,65 @@
         flex-direction: column;
     }
 }
+
+/* Additional styles for order completion and review */
+.complete-order-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.complete-order-btn:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leave-rating-btn.submitted {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.leave-rating-btn:not(.submitted):hover {
+    background-color: #f8f9fa;
+    color: #ffc107;
+}
+
+.rating-stars-input .star-item.hover {
+    color: #ffc107;
+    transform: scale(1.1);
+}
+
+.review-submitted-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    margin-left: 10px;
+}
+
+.flash-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    animation: fadeInOut 3s forwards;
+}
+
+.flash-message.error {
+    background-color: #dc3545;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-20px); }
+    15% { opacity: 1; transform: translateY(0); }
+    85% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
+}

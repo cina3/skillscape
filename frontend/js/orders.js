@@ -185,36 +185,59 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     }
 
+    async function updateOrderStatus(orderId, status) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status?status=${status}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to update order status: ${response.statusText}`);
+            }
+            
+            const updatedOrder = await response.json();
+            
+            const index = allFetchedOrders.findIndex(order => order.id === orderId);
+            if (index !== -1) {
+                allFetchedOrders[index] = updatedOrder;
+            }
+            
+            return updatedOrder;
+        } catch (error) {
+            console.error('Error updating order status:', error);
+            throw error;
+        }
+    }
+
     function populateOrderDetailsModal(order) {
-        console.log('Populating modal with order:', order); // Debug full order object
+        console.log('Populating modal with order:', order);
 
         currentOrderForModal = order;
         const modal = orderDetailsModal;
         const statusInfo = getStatusInfo(order.status);
 
-        // Header ve status bilgilerini güncelle
         modal.querySelector('.modal-header h2').textContent = `Order ID: ${escapeHTML(order.id)}`;
         modal.querySelector('.status-indicator').className = `info-value status-indicator ${statusInfo.class}`;
         modal.querySelector('.status-indicator').innerHTML = `<i class="${statusInfo.icon}"></i> ${statusInfo.text}`;
         
-        // Sipariş detaylarını güncelle
-        if (order.gigTitle) { // Changed from order.title to order.gigTitle
+        if (order.gigTitle) {
             modal.querySelector('.modal-header h3').textContent = escapeHTML(order.gigTitle);
         }
 
-        // Tarihleri güncelle
         const modalOrderDateEl = modal.querySelector('#modalOrderDate');
         if (modalOrderDateEl) {
             modalOrderDateEl.textContent = formatDate(order.createdAt);
         }
         
-        // Satıcı bilgilerini güncelle
         const modalProviderNameEl = modal.querySelector('#modalProviderName');
         if (modalProviderNameEl) {
             modalProviderNameEl.textContent = order.sellerName || `Seller ID: ${escapeHTML(order.sellerId)}`;
         }
         
-        // Teslim tarihini güncelle
         const modalExpectedDeliveryEl = modal.querySelector('#modalExpectedDelivery');
         if (modalExpectedDeliveryEl) {
             let deliveryDate;
@@ -229,13 +252,11 @@ document.addEventListener('DOMContentLoaded', () => {
             modalExpectedDeliveryEl.textContent = deliveryDate ? formatDate(deliveryDate) : 'N/A';
         }
         
-        // Fiyat bilgisini güncelle
         const modalTotalCostEl = modal.querySelector('#modalTotalCost');
         if (modalTotalCostEl) {
             modalTotalCostEl.textContent = `$${parseFloat(order.orderPrice).toFixed(2)}`;
         }
         
-        // Kategori bilgisini güncelle
         const modalCategoryEl = modal.querySelector('#modalCategory');
         if (modalCategoryEl) {
             const categoryMapping = {
@@ -256,13 +277,11 @@ document.addEventListener('DOMContentLoaded', () => {
             modalCategoryEl.textContent = displayCategory;
         }
 
-        // İstekleri/gereksinimleri güncelle
         const requestContent = modal.querySelector('.request-content p');
         if (requestContent) {
             requestContent.textContent = escapeHTML(order.requirements || 'No requirements specified.');
         }
 
-        // Dosyaları güncelle
         const filesList = modal.querySelector('.files-list');
         filesList.innerHTML = '';
         if (order.uploadUrls && order.uploadUrls.length > 0) {
@@ -282,11 +301,60 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             filesList.innerHTML = '<p>No files attached.</p>';
         }
-        
+
+        const actionSection = modal.querySelector('.order-actions-section');
+        if (actionSection) {
+            actionSection.innerHTML = '';
+
+            const messageButton = document.createElement('button');
+            messageButton.className = 'primary-action-btn';
+            messageButton.innerHTML = '<i class="fas fa-comment"></i> Send Message';
+            actionSection.appendChild(messageButton);
+
+            if (order.status === 'DELIVERED') {
+                const completeButton = document.createElement('button');
+                completeButton.className = 'secondary-action-btn complete-order-btn';
+                completeButton.innerHTML = '<i class="fas fa-check-circle"></i> Complete Order';
+                completeButton.addEventListener('click', async () => {
+                    try {
+                        if (confirm('Are you sure you want to mark this order as completed? This action cannot be undone.')) {
+                            completeButton.disabled = true;
+                            completeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                            
+                            const updatedOrder = await updateOrderStatus(order.id, 'COMPLETED');
+                            
+                            alert('Order marked as completed!');
+                            
+                            completeButton.remove();
+                            
+                            const reviewButton = document.createElement('button');
+                            reviewButton.className = 'secondary-action-btn leave-rating-btn';
+                            reviewButton.innerHTML = '<i class="fas fa-star"></i> Leave a Review';
+                            reviewButton.addEventListener('click', () => {
+                                populateRatingModal(updatedOrder);
+                            });
+                            actionSection.appendChild(reviewButton);
+                            
+                            const newStatusInfo = getStatusInfo('COMPLETED');
+                            modal.querySelector('.status-indicator').textContent = newStatusInfo.text;
+                            modal.querySelector('.status-indicator').className = 'info-value status-indicator ' + newStatusInfo.class;
+                            
+                            currentOrderForModal = updatedOrder;
+                        }
+                    } catch (error) {
+                        console.error('Error completing order:', error);
+                        alert('Failed to complete the order. Please try again.');
+                        completeButton.disabled = false;
+                        completeButton.innerHTML = '<i class="fas fa-check-circle"></i> Complete Order';
+                    }
+                });
+                actionSection.appendChild(completeButton);
+            }
+        }
+
         openModal(modal);
     }
 
-    // Dosya uzantısına göre icon belirleme yardımcı fonksiyonu
     function getFileIconClass(fileName) {
         if (/\.(jpe?g|png|gif)$/i.test(fileName)) return 'fa-file-image';
         if (/\.(pdf)$/i.test(fileName)) return 'fa-file-pdf';
@@ -354,38 +422,70 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (submitRatingBtn) {
-        submitRatingBtn.addEventListener('click', async () => {
-            if (!currentOrderForModal || selectedRating === 0) {
-                alert('Please select a rating.');
+        submitRatingBtn.addEventListener('click', async function() {
+            if (!currentOrderForModal) {
+                console.error('No order selected for rating');
                 return;
             }
-            const comment = ratingModal.querySelector('#ratingComment').value;
-            console.log(`Submitting rating for order ${currentOrderForModal.id}: ${selectedRating} stars, Comment: ${comment}`);
+            
+            const commentText = document.getElementById('ratingComment').value;
             
             try {
+                let userId;
+                
+                const currentUserStr = localStorage.getItem('currentUser');
+                if (currentUserStr) {
+                    try {
+                        const currentUser = JSON.parse(currentUserStr);
+                        if (currentUser && currentUser.id) {
+                            userId = currentUser.id;
+                            console.log("Using ID from currentUser in localStorage:", userId);
+                        }
+                    } catch (e) {
+                        console.warn('Could not parse currentUser from localStorage:', e);
+                    }
+                }
+                
+                if (!userId && currentOrderForModal.buyerId) {
+                    userId = currentOrderForModal.buyerId;
+                }
+                
+                if (!userId) {
+                    showErrorMessage('Could not determine your user ID for review submission.');
+                    return;
+                }
+                
                 const response = await fetch(`${API_BASE_URL}/reviews`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${TOKEN}`
+                        'Authorization': `Bearer ${TOKEN}`,
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        userId: userId,
                         gigId: currentOrderForModal.gigId,
-                        orderId: currentOrderForModal.id,
                         score: selectedRating,
-                        comment: comment
+                        comment: commentText
                     })
                 });
+                
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `Failed to submit review: ${response.status}`);
+                    throw new Error(`Failed to submit review: ${response.statusText}`);
                 }
-                alert('Rating submitted successfully!');
+                
+                showSuccessMessage('Thank you for your review!');
                 closeModal(ratingModal);
-                loadOrders();
+                
+                const reviewButton = document.querySelector('.leave-rating-btn');
+                if (reviewButton) {
+                    reviewButton.textContent = 'Review Submitted';
+                    reviewButton.disabled = true;
+                    reviewButton.classList.add('submitted');
+                }
+                
             } catch (error) {
-                console.error('Error submitting rating:', error);
-                alert(`Error: ${error.message}`);
+                console.error('Error submitting review:', error);
+                showErrorMessage('Failed to submit review. Please try again.');
             }
         });
     }
@@ -466,7 +566,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const orders = await response.json();
             
-            // Fetch gig details for each order
             allFetchedOrders = await Promise.all(orders.map(async order => {
                 if (order.gigId) {
                     try {
