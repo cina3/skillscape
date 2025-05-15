@@ -583,6 +583,215 @@
                 font-size: 0.85rem;
             }
         }
+
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .profile-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .profile-modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            border-radius: 16px;
+            overflow-y: auto;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.4s ease;
+            position: relative;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .profile-modal-header {
+            padding: 20px 20px 0;
+            text-align: right;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.2s ease;
+        }
+        
+        .close-modal:hover {
+            color: var(--brand-blue);
+        }
+        
+        .profile-modal-body {
+            padding: 0 30px 30px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 20px;
+            border: 3px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-info h2 {
+            font-size: 1.6rem;
+            margin: 0 0 5px;
+            color: var(--text-dark);
+        }
+        
+        .profile-title {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 10px;
+        }
+        
+        .profile-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .profile-rating i {
+            color: #ffc107;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: var(--bg-light-grey);
+            border-radius: 12px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--brand-blue);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .profile-section {
+            margin-top: 25px;
+        }
+        
+        .profile-section h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+        
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .skill-tag {
+            background-color: rgba(39, 67, 94, 0.1);
+            color: var(--brand-blue);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .profile-footer {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .profile-contact-btn, .profile-portfolio-btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-contact-btn {
+            background: linear-gradient(135deg, var(--brand-blue) 0%, var(--button-blue) 100%);
+            color: white;
+            border: none;
+            flex: 1;
+        }
+        
+        .profile-contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 67, 94, 0.25);
+        }
+        
+        .profile-portfolio-btn {
+            background-color: white;
+            border: 1px solid var(--brand-blue);
+            color: var(--brand-blue);
+        }
+        
+        .profile-portfolio-btn:hover {
+            background-color: rgba(39, 67, 94, 0.05);
+        }
+        
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin: 0 0 15px;
+            }
+            
+            .profile-footer {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
@@ -653,11 +862,11 @@
                 </div>
                 <div class="category-items">
                     <div class="item-card">
-                        <img src="https://source.unsplash.com/random/600x400/?website" alt="Web Design Project" class="item-card__image">
+                        <img src="assets/temp.png" alt="Web Design Project" class="item-card__image">
                         <div class="item-card__content">
                             <div class="item-card__user">
                                 <div class="item-card__avatar">
-                                    <img src="https://source.unsplash.com/random/100x100/?face" alt="User">
+                                    <img src="assets/temp.png" alt="User">
                                 </div>
                                 <div class="item-card__username">@webdesigner</div>
                             </div>
@@ -671,11 +880,11 @@
                         </div>
                     </div>
                     <div class="item-card">
-                        <img src="https://source.unsplash.com/random/600x400/?app" alt="App Development" class="item-card__image">
+                        <img src="assets/temp.png" alt="App Development" class="item-card__image">
                         <div class="item-card__content">
                             <div class="item-card__user">
                                 <div class="item-card__avatar">
-                                    <img src="https://source.unsplash.com/random/100x100/?man" alt="User">
+                                    <img src="assets/temp.png" alt="User">
                                 </div>
                                 <div class="item-card__username">@appdeveloper</div>
                             </div>
@@ -689,11 +898,11 @@
                         </div>
                     </div>
                     <div class="item-card">
-                        <img src="https://source.unsplash.com/random/600x400/?design" alt="Logo Design" class="item-card__image">
+                        <img src="assets/temp.png" alt="Logo Design" class="item-card__image">
                         <div class="item-card__content">
                             <div class="item-card__user">
                                 <div class="item-card__avatar">
-                                    <img src="https://source.unsplash.com/random/100x100/?woman" alt="User">
+                                    <img src="assets/temp.png" alt="User">
                                 </div>
                                 <div class="item-card__username">@logodesigner</div>
                             </div>
@@ -716,11 +925,11 @@
                 </div>
                 <div class="category-items">
                     <div class="item-card">
-                        <img src="https://source.unsplash.com/random/600x400/?writing" alt="Content Writing" class="item-card__image">
+                        <img src="assets/temp.png" alt="Content Writing" class="item-card__image">
                         <div class="item-card__content">
                             <div class="item-card__user">
                                 <div class="item-card__avatar">
-                                    <img src="https://source.unsplash.com/random/100x100/?writer" alt="User">
+                                    <img src="assets/temp.png" alt="User">
                                 </div>
                                 <div class="item-card__username">@contentwriter</div>
                             </div>
@@ -734,11 +943,11 @@
                         </div>
                     </div>
                     <div class="item-card">
-                        <img src="https://source.unsplash.com/random/600x400/?video" alt="Video Editing" class="item-card__image">
+                        <img src="assets/temp.png" alt="Video Editing" class="item-card__image">
                         <div class="item-card__content">
                             <div class="item-card__user">
                                 <div class="item-card__avatar">
-                                    <img src="https://source.unsplash.com/random/100x100/?videoeditor" alt="User">
+                                    <img src="assets/temp.png" alt="User">
                                 </div>
                                 <div class="item-card__username">@videoeditor</div>
                             </div>
@@ -752,11 +961,11 @@
                         </div>
                     </div>
                     <div class="item-card">
-                        <img src="https://source.unsplash.com/random/600x400/?translation" alt="Translation" class="item-card__image">
+                        <img src="assets/temp.png" alt="Translation" class="item-card__image">
                         <div class="item-card__content">
                             <div class="item-card__user">
                                 <div class="item-card__avatar">
-                                    <img src="https://source.unsplash.com/random/100x100/?translator" alt="User">
+                                    <img src="assets/temp.png" alt="User">
                                 </div>
                                 <div class="item-card__username">@translator</div>
                             </div>
@@ -780,7 +989,7 @@
                 <div class="category-items">
                     <div class="item-card">
                         <div class="user-card">
-                            <img src="https://source.unsplash.com/random/300x300/?developer" alt="Web Developer" class="user-card__image">
+                            <img src="assets/temp.png" alt="Web Developer" class="user-card__image">
                             <div class="item-card__content">
                                 <h4 class="user-card__name">John Smith</h4>
                                 <div class="user-card__title">Senior Web Developer</div>
@@ -802,7 +1011,7 @@
                     </div>
                     <div class="item-card">
                         <div class="user-card">
-                            <img src="https://source.unsplash.com/random/300x300/?designer" alt="Graphic Designer" class="user-card__image">
+                            <img src="assets/temp.png" alt="Graphic Designer" class="user-card__image">
                             <div class="item-card__content">
                                 <h4 class="user-card__name">Sarah Johnson</h4>
                                 <div class="user-card__title">Graphic Designer</div>
@@ -824,7 +1033,7 @@
                     </div>
                     <div class="item-card">
                         <div class="user-card">
-                            <img src="https://source.unsplash.com/random/300x300/?writer" alt="Content Writer" class="user-card__image">
+                            <img src="assets/temp.png" alt="Content Writer" class="user-card__image">
                             <div class="item-card__content">
                                 <h4 class="user-card__name">Michael Brown</h4>
                                 <div class="user-card__title">Content Writer</div>
@@ -902,6 +1111,62 @@
         </a>
     </div>
 
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-content">
+            <div class="profile-modal-header">
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="profile-modal-body">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img id="modal-avatar" src="assets/temp.png" alt="Freelancer">
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="modal-name">Freelancer Name</h2>
+                        <p id="modal-title" class="profile-title">Professional Title</p>
+                        <div class="profile-rating">
+                            <i class="fas fa-star"></i>
+                            <span id="modal-rating">4.9</span>
+                            <span id="modal-reviews">(125 reviews)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="modal-projects">87</div>
+                        <div class="stat-label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="modal-experience">4y+</div>
+                        <div class="stat-label">Experience</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="modal-rate">$45</div>
+                        <div class="stat-label">Hourly Rate</div>
+                    </div>
+                </div>
+                <div class="profile-section">
+                    <h3>About</h3>
+                    <p id="modal-about">Experienced freelancer with a passion for delivering high-quality work. Specialized in web development, app design, and database architecture.</p>
+                </div>
+                <div class="profile-section">
+                    <h3>Skills</h3>
+                    <div class="skill-tags" id="modal-skills">
+                        <span class="skill-tag">HTML/CSS</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">UI/UX Design</span>
+                    </div>
+                </div>
+                <div class="profile-footer">
+                    <button class="profile-contact-btn">Contact</button>
+                    <button class="profile-portfolio-btn">View Portfolio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchForm = document.getElementById('searchForm');
@@ -912,6 +1177,81 @@
             const menuIcon = document.getElementById('menuIcon');
             const quickMenu = document.getElementById('quickMenu');
             const suggestionButtons = document.querySelectorAll('.suggestion-button');
+            const profileModal = document.getElementById('profileModal');
+            const closeModalBtn = document.querySelector('.close-modal');
+            
+            function setupFreelancerCardListeners() {
+                const freelancerCards = document.querySelectorAll('#users-section .item-card');
+                freelancerCards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        const name = this.querySelector('.user-card__name').textContent;
+                        const title = this.querySelector('.user-card__title').textContent;
+                        const rating = this.querySelector('.item-card__rating').textContent;
+                        const avatar = this.querySelector('.user-card__image').src;
+                        const projects = this.querySelector('.user-card__stat:first-child .user-card__value').textContent;
+                        const experience = this.querySelector('.user-card__stat:last-child .user-card__value').textContent;
+                        
+                        document.getElementById('modal-name').textContent = name;
+                        document.getElementById('modal-title').textContent = title;
+                        document.getElementById('modal-rating').textContent = rating.split(' ')[1];
+                        document.getElementById('modal-reviews').textContent = rating.split(' ')[2];
+                        document.getElementById('modal-avatar').src = avatar;
+                        document.getElementById('modal-projects').textContent = projects;
+                        document.getElementById('modal-experience').textContent = experience;
+                        document.getElementById('modal-rate').textContent = '$' + (Math.floor(Math.random() * 50) + 20);
+                        
+                        setupRandomSkills(title);
+                        
+                        profileModal.classList.add('show');
+                        document.body.style.overflow = 'hidden'; 
+                    });
+                });
+            }
+            
+            function setupRandomSkills(title) {
+                const skillsContainer = document.getElementById('modal-skills');
+                skillsContainer.innerHTML = '';
+                
+                let possibleSkills = [];
+                
+                if (title.toLowerCase().includes('web')) {
+                    possibleSkills = ['HTML/CSS', 'JavaScript', 'React', 'Angular', 'Vue.js', 'PHP', 'WordPress', 'Node.js', 'MongoDB', 'SQL'];
+                } else if (title.toLowerCase().includes('design')) {
+                    possibleSkills = ['Photoshop', 'Illustrator', 'Figma', 'UI/UX', 'Sketch', 'InDesign', 'Typography', 'Branding', 'Logo Design', 'Motion Graphics'];
+                } else if (title.toLowerCase().includes('content') || title.toLowerCase().includes('writ')) {
+                    possibleSkills = ['Blog Writing', 'Copywriting', 'SEO', 'Content Strategy', 'Editing', 'Proofreading', 'Technical Writing', 'Creative Writing', 'Research', 'Social Media'];
+                } else {
+                    possibleSkills = ['Team Management', 'Project Planning', 'Communication', 'Problem Solving', 'Time Management', 'Creativity', 'Adaptability', 'Attention to Detail', 'Technical Skills', 'Customer Service'];
+                }
+                
+                const numSkills = Math.floor(Math.random() * 4) + 3;
+                const selectedSkills = [];
+                
+                while (selectedSkills.length < numSkills && possibleSkills.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * possibleSkills.length);
+                    selectedSkills.push(possibleSkills[randomIndex]);
+                    possibleSkills.splice(randomIndex, 1);
+                }
+                
+                selectedSkills.forEach(skill => {
+                    const skillTag = document.createElement('span');
+                    skillTag.className = 'skill-tag';
+                    skillTag.textContent = skill;
+                    skillsContainer.appendChild(skillTag);
+                });
+            }
+            
+            closeModalBtn.addEventListener('click', function() {
+                profileModal.classList.remove('show');
+                document.body.style.overflow = ''; 
+            });
+            
+            profileModal.addEventListener('click', function(e) {
+                if (e.target === profileModal) {
+                    profileModal.classList.remove('show');
+                    document.body.style.overflow = ''; 
+                }
+            });
             
             searchForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -961,7 +1301,17 @@
                 resultsContainer.style.display = 'block';
                 emptyState.style.display = 'none';
                 
+                setTimeout(setupFreelancerCardListeners, 100);
             }
+            
+          
+            
+            if (queryParam && queryParam.trim() !== '') {
+                searchInput.value = queryParam;
+                performSearch(queryParam);
+            }
+            
+            setupFreelancerCardListeners();
         });
     </script>
 </body>
