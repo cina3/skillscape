@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.innerHTML = `
       <div class="listing-card-left">
-        <div class="listing-image" style="background-image:url(${l.coverImageUrl || '../assets/temp.png'})"></div>
+        <div class="listing-image" style="background-image:url(${'../assets/temp.png'})"></div>
       </div>
       <div class="listing-card-center">
         <span class="listing-status ${statusLower}">${statusDisplay}</span>

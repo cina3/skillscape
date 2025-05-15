@@ -881,7 +881,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (providerNameEl) providerNameEl.textContent = gig.userDisplayName || 'Unknown Seller';
     if (gigPriceEl) gigPriceEl.textContent = `$${Number(gig.price || 0).toFixed(2)}`;
     if (priceUnitEl) priceUnitEl.textContent = gig.perHourPricing ? '/ hour' : '/ each';
-    if (gigCoverImageEl) gigCoverImageEl.src = gig.coverImageUrl || '../assets/temp.png';
+    if (gigCoverImageEl) gigCoverImageEl.src = '../assets/temp.png';
     if (providerAvatarEl) providerAvatarEl.src = gig.providerAvatarUrl || '../assets/temp.png';
 
     const initialRating = parseFloat(gig.rating || 0);

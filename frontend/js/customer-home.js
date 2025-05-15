@@ -30,7 +30,7 @@ function createRecommendedItemCard(item) {
     const card = document.createElement('div');
     card.className = 'recommended-item';
 
-    const imageUrl = item.coverImageUrl || item.imageUrl || '../assets/temp.png';
+    const imageUrl = '../assets/temp.png';
     const title = item.title || 'Untitled Gig';
     const sellerName = item.user ? item.user.username : (item.sellerName || 'N/A');
     const rating = item.averageRating || item.rating;

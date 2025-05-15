@@ -19,16 +19,16 @@
                     <a href="browse.html?category=engineering" class="submenu-category-item" style="background-image: url('../assets/browse/engineer.png');">           
                         <span>Engineering</span>
                     </a>
-                    <a href="browse.html?category=artdesign" class="submenu-category-item" style="background-image: url('../assets/browse/art.png');">
+                    <a href="browse.html?category=art-design" class="submenu-category-item" style="background-image: url('../assets/browse/art.png');">
                         <span>Art & Design</span>
                     </a>
                     <a href="browse.html?category=music" class="submenu-category-item" style="background-image: url('../assets/browse/music.png');">
                         <span>Music</span>
                     </a>
-                    <a href="browse.html?category=videoediting" class="submenu-category-item" style="background-image: url('../assets/browse/video.png');">
+                    <a href="browse.html?category=video-editing" class="submenu-category-item" style="background-image: url('../assets/browse/video.png');">
                         <span>Video Editing</span>
                     </a>
-                    <a href="browse.html?category=itsoftware" class="submenu-category-item" style="background-image: url('../assets/browse/software.png');">
+                    <a href="browse.html?category=it-software" class="submenu-category-item" style="background-image: url('../assets/browse/software.png');">
                         <span>IT & Software</span>
                     </a>
                  
@@ -43,8 +43,8 @@
     </nav>
     <div class="menu-section">
         <ul>
-            <li><a href="#" onclick="showInbox(event)"><i class="fas fa-inbox"></i>Inbox</a></li>
-            <li><a href="#"><i class="fas fa-cog"></i>Settings</a></li>
+            <li><a href="#" onclick="showInbox(); return false;"><i class="fas fa-inbox"></i>Inbox</a></li>
+            <li><a href="#" onclick="showSettings(); return false;"><i class="fas fa-cog"></i>Settings</a></li>
             <li><a href="../customer/home.html"><i class="fas fa-exchange-alt"></i>Switch to Customer</a></li>
         </ul>
     </div>
@@ -59,3 +59,219 @@
         </div>
     </div>
 </div>
+
+<div class="modal-overlay" id="settingsModal" style="display: none;">
+    <div class="modal-container settings-modal">
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <button class="modal-close-btn" onclick="closeSettingsModal()">×</button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="settings-options">
+                <div class="settings-section">
+                    <h3>Account</h3>
+                    <a href="../search.html" class="settings-option">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="#" class="settings-option" id="changePasswordOption">
+                        <i class="fas fa-key"></i>
+                        <span>Change Password</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="#" class="settings-option danger" id="deleteAccountOption">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Delete Account</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="passwordModal" style="display: none;">
+    <div class="modal-container password-modal">
+        <div class="modal-header">
+            <h2>Change Password</h2>
+            <button class="modal-close-btn" onclick="closePasswordModal()">×</button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="change-password-form">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" placeholder="Current Password">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" placeholder="New Password">
+                </div>
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Confirm New Password">
+                </div>
+                <button class="change-password-btn" onclick="changePassword()">Change Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    overflow: hidden;
+}
+
+.modal-container {
+    width: 90%;
+    max-width: 450px;
+    max-height: 85vh;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow-y: auto;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.settings-section {
+    margin-bottom: 10px;
+}
+
+.settings-section h3 {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 10px 0;
+    padding-left: 5px;
+}
+
+.settings-option {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.settings-option i:first-child {
+    margin-right: 15px;
+    color: var(--brand-blue, #27435E);
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.settings-option span {
+    flex-grow: 1;
+}
+
+.settings-option i:last-child {
+    color: #999;
+}
+
+.settings-option:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.settings-option.danger {
+    color: #dc3545;
+}
+
+.settings-option.danger i:first-child {
+    color: #dc3545;
+}
+
+.change-password-form .form-group {
+    margin-bottom: 15px;
+}
+
+.change-password-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.change-password-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.change-password-btn {
+    width: 100%;
+    background: var(--brand-blue, #27435E);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.change-password-btn:hover {
+    background: #1e3a56;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>

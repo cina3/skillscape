@@ -32,9 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createGigCard(gig, averageRating, reviewCount) {
         const priceSuffix          = gig.perHourPricing ? '/ hour' : '/ each';
         const priceTypeDescription = gig.priceFixed     ? 'Fixed Price' : 'Negotiable';
-        const coverImage           = gig.coverImageUrl
-                                      ? escapeHTML(gig.coverImageUrl)
-                                      : '../assets/temp.png';
+        const coverImage           = '../assets/temp.png';
 
         return `
             <div class="listing-card" data-gig-id="${gig.id}">

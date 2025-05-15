@@ -163,7 +163,7 @@ function renderListings(listings) {
     card.className = 'listing-card';
     card.innerHTML = `
       <div class="listing-image">
-          <img src="${listing.coverImageUrl || '../assets/temp.png'}" alt="${safeTitle}">
+          <img src="${'../assets/temp.png'}" alt="${safeTitle}">
           ${listing.isFeatured ? '<div class="featured-badge">Featured</div>' : ''}
       </div>
       <div class="card-content">
@@ -207,7 +207,7 @@ function openProjectDetailModal(listing) {
       safeDescription = 'Project details will be discussed after initial contact.';
     }
 
-    gigCoverImage.src = listing.coverImageUrl || '../assets/temp.png';
+    gigCoverImage.src = '../assets/temp.png';
     gigTitle.textContent = safeTitle;
     gigDescription.textContent = safeDescription;
     

@@ -7,7 +7,7 @@ function listingCard(l) {
 
     card.innerHTML = `
       <div class="item-image">
-        <img src="${l.coverImageUrl || '../assets/temp.png'}" alt="${escapeHtml(titleToDisplay)}">
+        <img src="${'../assets/temp.png'}" alt="${escapeHtml(titleToDisplay)}">
       </div>
       <div class="item-details">
         <h3 class="item-title">${escapeHtml(titleToDisplay)}</h3>
