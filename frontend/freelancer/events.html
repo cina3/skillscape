@@ -4,8 +4,233 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Events - SkillScape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/customer-shared-style.css">
+    <link rel="stylesheet" href="../css/event-style.css">
 </head>
 <body>
+    <div id="header-placeholder"></div>
+    <div id="hamburger-menu-placeholder"></div>
     
+    <main class="event-container">
+        <div class="events-header">
+            <h1>Events</h1>
+            <div class="events-filter">
+                <span class="filter-label">Filter by:</span>
+                <div class="filter-options">
+                    <button class="filter-option active">All Events</button>
+                    <button class="filter-option">Programming</button>
+                    <button class="filter-option">Design</button>
+                    <button class="filter-option">Business</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="featured-event">
+            <div class="featured-event-media" style="background-image: url('../assets/browse/web.png')">
+                <div class="featured-badge">FEATURED</div>
+            </div>
+            <div class="featured-event-content">
+                <div class="featured-event-header">
+                    <h2>Web Design Competition 2025</h2>
+                    <span class="event-host">Hosted by SkillScape</span>
+                </div>
+                <p class="featured-event-description">Submit your best responsive web design for a chance to win 1500 SkillCoins and a Premium membership for 1 year! This competition challenges you to create a modern, accessible website following this year's theme: "Digital Wellness".</p>
+                <div class="featured-event-footer">
+                    <div class="event-stats">
+                        <div class="event-stat">
+                            <i class="fas fa-trophy"></i>
+                            <span>1500 SkillCoins Prize</span>
+                        </div>
+                        <div class="event-stat">
+                            <i class="fas fa-users"></i>
+                            <span>126 Participants</span>
+                        </div>
+                        <div class="event-stat">
+                            <i class="fas fa-clock"></i>
+                            <span>7 days remaining</span>
+                        </div>
+                    </div>
+                    <a href="#" class="event-cta-btn" data-event-id="web-design-2025">Enter Competition</a>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Current Competitions</h2>
+        <div class="events-list">
+            <div class="event-card" data-event-id="cpp-competition">
+                <div class="event-code-bg">
+                    <pre>
+60  }
+61  {
+62  C++ Programming Competition
+63    TEST(BitCast, Bool) {
+64      static const bool bool_list[] = { false, true };
+65      TestMarshal<bool>(bool_list, ABSL_ARRAYSIZE(bool_list));
+66  }
+67  by SkillScape
+68    TEST(BitCast, Int32) {</pre>
+                </div>
+                <div class="event-info">
+                    <div class="event-title">C++ Programming Competition</div>
+                    <div class="event-details">
+                        <div class="event-prize">900 SkillCoins Prize</div>
+                        <div class="event-submissions">45 Submitted</div>
+                        <div class="event-time">4 days remaining</div>
+                    </div>
+                    <a href="#" class="event-view-btn" data-event-id="cpp-competition">View <i class="fas fa-chevron-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="event-card" data-event-id="video-editing">
+                <div class="event-media-bg" style="background-image: url('../assets/browse/video.png')">
+                </div>
+                <div class="event-info">
+                    <div class="event-title">Video Editing Competition</div>
+                    <div class="event-details">
+                        <div class="event-prize">900 SkillCoins Prize</div>
+                        <div class="event-submissions">77 Submitted</div>
+                        <div class="event-time">1 day remaining</div>
+                    </div>
+                    <a href="#" class="event-view-btn" data-event-id="video-editing">View <i class="fas fa-chevron-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="event-card" data-event-id="ai-challenge">
+                <div class="event-media-bg" style="background-image: url('../assets/browse/software.png')">
+                    <div class="event-overlay-text">AI</div>
+                </div>
+                <div class="event-info">
+                    <div class="event-title">AI Challenge: Image Recognition</div>
+                    <div class="event-details">
+                        <div class="event-prize">1200 SkillCoins Prize</div>
+                        <div class="event-submissions">32 Submitted</div>
+                        <div class="event-time">10 days remaining</div>
+                    </div>
+                    <a href="#" class="event-view-btn" data-event-id="ai-challenge">View <i class="fas fa-chevron-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="event-card" data-event-id="music-production">
+                <div class="event-media-bg" style="background-image: url('../assets/browse/music.png')">
+                    <div class="event-overlay-text">MUSIC</div>
+                </div>
+                <div class="event-info">
+                    <div class="event-title">Music Production Challenge</div>
+                    <div class="event-details">
+                        <div class="event-prize">750 SkillCoins Prize</div>
+                        <div class="event-submissions">64 Submitted</div>
+                        <div class="event-time">5 days remaining</div>
+                    </div>
+                    <a href="#" class="event-view-btn" data-event-id="music-production">View <i class="fas fa-chevron-right"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Upcoming Events</h2>
+        <div class="events-list">
+            <div class="event-card future-event" data-event-id="logo-design">
+                <div class="event-media-bg" style="background-image: url('../assets/browse/art.png')">
+                    <div class="event-overlay-text">DESIGN</div>
+                </div>
+                <div class="event-info">
+                    <div class="event-title">Logo Design Challenge</div>
+                    <div class="event-details">
+                        <div class="event-prize">800 SkillCoins Prize</div>
+                        <div class="event-submissions">Begins in 3 days</div>
+                    </div>
+                    <a href="#" class="event-notify-btn" data-event-id="logo-design">Notify Me <i class="fas fa-bell"></i></a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div id="eventModal" class="event-modal">
+        <div class="event-modal-content">
+            <div class="event-modal-header">
+                <h2 id="modalEventTitle">Event Details</h2>
+                <button class="event-modal-close">&times;</button>
+            </div>
+            <div class="event-modal-body">
+                <div class="event-modal-banner" id="modalEventBanner">
+                    <div class="event-modal-badge" id="modalEventBadge">ACTIVE</div>
+                </div>
+                <div class="event-modal-info">
+                    <div class="event-modal-main">
+                        <div class="event-modal-section">
+                            <h3>About This Competition</h3>
+                            <p id="modalEventDescription">Loading event details...</p>
+                        </div>
+                        
+                        <div class="event-modal-section">
+                            <h3>Rules and Guidelines</h3>
+                            <ul id="modalEventRules" class="event-rules-list">
+                                <li>Loading rules...</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="event-modal-section">
+                            <h3>Judging Criteria</h3>
+                            <div class="criteria-grid" id="modalEventCriteria">
+                                <div class="criteria-item">
+                                    <div class="criteria-name">Technical Excellence</div>
+                                    <div class="criteria-weight">40%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="event-modal-sidebar">
+                        <div class="sidebar-section">
+                            <h4>Event Details</h4>
+                            <div class="sidebar-detail">
+                                <span class="detail-label">Host:</span>
+                                <span class="detail-value" id="modalEventHost">SkillScape</span>
+                            </div>
+                            <div class="sidebar-detail">
+                                <span class="detail-label">Prize Pool:</span>
+                                <span class="detail-value" id="modalEventPrize">900 SkillCoins</span>
+                            </div>
+                            <div class="sidebar-detail">
+                                <span class="detail-label">Start Date:</span>
+                                <span class="detail-value" id="modalEventStart">July 15, 2025</span>
+                            </div>
+                            <div class="sidebar-detail">
+                                <span class="detail-label">End Date:</span>
+                                <span class="detail-value" id="modalEventEnd">July 25, 2025</span>
+                            </div>
+                            <div class="sidebar-detail">
+                                <span class="detail-label">Submissions:</span>
+                                <span class="detail-value" id="modalEventSubmissions">45</span>
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar-action">
+                            <button class="event-action-btn" id="modalEventAction">Enter Competition</button>
+                        </div>
+                        
+                        <div class="sidebar-section">
+                            <h4>Top Participants</h4>
+                            <div class="participant-list" id="modalEventParticipants">
+                                <div class="participant-item">
+                                    <img src="../assets/temp.png" alt="User" class="participant-avatar">
+                                    <span class="participant-name">codemaster42</span>
+                                    <span class="participant-badge"><i class="fas fa-medal"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>© 2025 SkillScape. All rights reserved.</p>
+    </footer>
+
+    <script src="../design-js/freelancer-shared-script.js"></script>
+    <script src="../design-js/events-script.js"></script>
 </body>
 </html>
