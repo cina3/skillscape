@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - SkillScape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/customer-shared-style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #edf0f5 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .search-header {
+            background-color: var(--bg-light-grey);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(240,240,240,1) 0%, rgba(248,248,248,1) 100%);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-header-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: var(--header-padding);
+            height: 100%;
+            position: relative;
+        }
+
+        .search-logo {
+            position: absolute;
+            left: 32px;
+            font-size: var(--logo-font-size);
+            font-weight: 800;
+            color: var(--text-dark);
+            cursor: pointer;
+            letter-spacing: -0.02em;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        
+        .search-logo:hover {
+            color: var(--brand-blue);
+            transform: scale(1.03);
+        }
+        
+        .search-menu-icon {
+            position: absolute;
+            right: 32px;
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 10px;
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+        }
+        
+        .search-menu-icon:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: rotate(10deg);
+            color: var(--brand-blue);
+        }
+
+        .main-content {
+            padding: 40px 20px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .hero-search {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 60px 0;
+            position: relative;
+        }
+        
+        .hero-search h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--brand-blue);
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #27435E, #3A506B);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradientShift 8s infinite alternate;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        
+        .search-form {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .main-search-input {
+            width: 100%;
+            height: 70px;
+            border-radius: 35px;
+            border: 2px solid rgba(39, 67, 94, 0.2);
+            background-color: white;
+            padding: 10px 80px 10px 30px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+        
+        .main-search-input:focus {
+            outline: none;
+            border-color: var(--brand-blue);
+            box-shadow: 0 10px 35px rgba(39, 67, 94, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .search-submit {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: linear-gradient(135deg, var(--brand-blue) 0%, var(--button-blue) 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(39, 67, 94, 0.2);
+            font-size: 1.2rem;
+        }
+        
+        .search-submit:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(39, 67, 94, 0.3);
+            background: linear-gradient(135deg, var(--button-blue) 0%, var(--brand-blue) 100%);
+        }
+
+        .suggestions-container {
+            position: relative;
+            max-width: 900px;
+            margin: 40px auto 0;
+            height: 120px; 
+            overflow: hidden;
+        }
+
+        .suggestions-row {
+            position: relative;
+            display: flex;
+            height: 50px;
+            margin: 10px 0;
+            white-space: nowrap;
+            mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+        }
+        
+        .suggestions-row-reverse {
+            direction: rtl;
+        }
+
+        .suggestions-track {
+            display: flex;
+            gap: 12px;
+            position: absolute;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            animation-duration: 50s; 
+            width: fit-content;
+            padding-left: 12px;
+        }
+
+        .row-1 .suggestions-track {
+            animation-name: moveLeftToRight;
+        }
+
+        .row-2 .suggestions-track {
+            animation-name: moveRightToLeft;
+        }
+
+        @keyframes moveLeftToRight {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes moveRightToLeft {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .suggestion-button {
+            padding: 12px 24px;
+            border-radius: 25px;
+            background-color: white;
+            border: 1px solid rgba(39, 67, 94, 0.15);
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .suggestion-button i {
+            color: var(--brand-blue);
+        }
+
+        .suggestion-button:hover {
+            background-color: rgba(39, 67, 94, 0.05);
+            border-color: var(--brand-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 67, 94, 0.1);
+        }
+
+        .search-results {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .search-results-header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-results-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .search-query {
+            font-weight: 600;
+            color: var(--brand-blue);
+        }
+
+        .category-section {
+            margin-bottom: 60px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .category-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--brand-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-title i {
+            font-size: 1.2rem;
+        }
+
+        .view-all {
+            color: var(--button-blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .view-all:hover {
+            color: var(--brand-blue);
+        }
+
+        .category-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background-color: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-card__image {
+            height: 180px;
+            width: 100%;
+            object-fit: cover;
+            background-color: var(--card-bg);
+        }
+
+        .user-card__image {
+            height: 120px;
+            width: 120px;
+            border-radius: 50%;
+            margin: 20px auto;
+            object-fit: cover;
+            background-color: var(--card-bg);
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .item-card__content {
+            padding: 20px;
+        }
+
+        .item-card__user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .item-card__avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            overflow: hidden;
+        }
+
+        .item-card__avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-card__username {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .item-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .item-card__footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .item-card__price {
+            font-weight: 700;
+            color: var(--brand-blue);
+        }
+
+        .item-card__rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .item-card__rating i {
+            color: #ffc107;
+        }
+
+        .category-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .category-card__icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-blue), var(--button-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .item-card:hover .category-card__icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .category-card__title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .category-card__count {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .user-card {
+            text-align: center;
+        }
+
+        .user-card__name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .user-card__title {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .user-card__stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .user-card__stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-card__value {
+            font-weight: 700;
+            color: var(--brand-blue);
+        }
+
+        .user-card__label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .empty-search-state {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+        }
+
+        .empty-search-image {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .hero-search h1 {
+                font-size: 2.5rem;
+            }
+            .main-search-input {
+                height: 60px;
+                font-size: 1.1rem;
+            }
+            .suggestions-container {
+                height: 110px;
+            }
+            .suggestion-button {
+                padding: 10px 20px;
+                height: 45px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-search {
+                padding: 40px 0;
+            }
+            .hero-search h1 {
+                font-size: 2rem;
+            }
+            .main-search-input {
+                height: 55px;
+                padding: 10px 70px 10px 20px;
+                font-size: 1rem;
+            }
+            .search-submit {
+                width: 45px;
+                height: 45px;
+                right: 5px;
+                top: 5px;
+                font-size: 1.1rem;
+            }
+            .category-items {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+            .suggestions-container {
+                height: 100px;
+            }
+            .suggestion-button {
+                padding: 8px 16px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-logo {
+                font-size: 1.5rem;
+                left: 16px;
+            }
+            .search-menu-icon {
+                right: 16px;
+            }
+            .hero-search h1 {
+                font-size: 1.8rem;
+            }
+            .main-search-input {
+                height: 50px;
+            }
+            .search-submit {
+                width: 40px;
+                height: 40px;
+            }
+            .category-items {
+                grid-template-columns: 1fr;
+            }
+            .category-title {
+                font-size: 1.4rem;
+            }
+            .suggestions-container {
+                height: 90px;
+            }
+            .suggestion-button {
+                padding: 6px 12px;
+                height: 36px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="search-header">
+        <div class="search-header-content">
+            <div class="search-logo" onclick="window.location.href='index.html'">SkillScape</div>
+            <div class="search-menu-icon" id="menuIcon">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    
+    <div class="main-content">
+        <div class="hero-search">
+            <h1>Find the perfect talent & services</h1>
+            <form class="search-form" id="searchForm" action="search.html" method="get">
+                <input type="text" id="searchInput" name="q" class="main-search-input" placeholder="Search for skills, services, or freelancers..." autocomplete="off">
+                <button type="submit" class="search-submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+            
+            <div class="suggestions-container">
+                <div class="suggestions-row row-1">
+                    <div class="suggestions-track">
+                        <button class="suggestion-button"><i class="fas fa-laptop-code"></i> Web Development</button>
+                        <button class="suggestion-button"><i class="fas fa-paint-brush"></i> Graphic Design</button>
+                        <button class="suggestion-button"><i class="fas fa-mobile-alt"></i> App Development</button>
+                        <button class="suggestion-button"><i class="fas fa-pencil-alt"></i> Content Writing</button>
+                        <button class="suggestion-button"><i class="fas fa-camera"></i> Photography</button>
+                        <button class="suggestion-button"><i class="fas fa-video"></i> Video Editing</button>
+                        <button class="suggestion-button"><i class="fas fa-chart-line"></i> Digital Marketing</button>
+                        <button class="suggestion-button"><i class="fas fa-music"></i> Music Production</button>
+                        <button class="suggestion-button"><i class="fas fa-language"></i> Translation</button>
+                        <button class="suggestion-button"><i class="fas fa-laptop-code"></i> Web Development</button>
+                        <button class="suggestion-button"><i class="fas fa-paint-brush"></i> Graphic Design</button>
+                        <button class="suggestion-button"><i class="fas fa-mobile-alt"></i> App Development</button>
+                    </div>
+                </div>
+                <div class="suggestions-row row-2">
+                    <div class="suggestions-track">
+                        <button class="suggestion-button"><i class="fas fa-ad"></i> Advertising</button>
+                        <button class="suggestion-button"><i class="fas fa-file-alt"></i> Resume Writing</button>
+                        <button class="suggestion-button"><i class="fas fa-globe"></i> SEO</button>
+                        <button class="suggestion-button"><i class="fas fa-code"></i> WordPress</button>
+                        <button class="suggestion-button"><i class="fas fa-lightbulb"></i> Logo Design</button>
+                        <button class="suggestion-button"><i class="fas fa-edit"></i> Copywriting</button>
+                        <button class="suggestion-button"><i class="fas fa-microphone"></i> Voice Over</button>
+                        <button class="suggestion-button"><i class="fas fa-headset"></i> Virtual Assistant</button>
+                        <button class="suggestion-button"><i class="fas fa-ad"></i> Advertising</button>
+                        <button class="suggestion-button"><i class="fas fa-file-alt"></i> Resume Writing</button>
+                        <button class="suggestion-button"><i class="fas fa-globe"></i> SEO</button>
+                        <button class="suggestion-button"><i class="fas fa-code"></i> WordPress</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results-container" class="search-results" style="display: none;">
+            <div class="search-results-header">
+                <h2 class="search-results-title">Results for: <span class="search-query" id="query-display">...</span></h2>
+            </div>
+
+            <section class="category-section" id="listings-section">
+                <div class="category-header">
+                    <h3 class="category-title"><i class="fas fa-clipboard-list"></i> Listings</h3>
+                    <a href="#" class="view-all">View all <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="category-items">
+                    <div class="item-card">
+                        <img src="https://source.unsplash.com/random/600x400/?website" alt="Web Design Project" class="item-card__image">
+                        <div class="item-card__content">
+                            <div class="item-card__user">
+                                <div class="item-card__avatar">
+                                    <img src="https://source.unsplash.com/random/100x100/?face" alt="User">
+                                </div>
+                                <div class="item-card__username">@webdesigner</div>
+                            </div>
+                            <h4 class="item-card__title">Professional Website Design & Development</h4>
+                            <div class="item-card__footer">
+                                <div class="item-card__price">$450</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 4.9
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://source.unsplash.com/random/600x400/?app" alt="App Development" class="item-card__image">
+                        <div class="item-card__content">
+                            <div class="item-card__user">
+                                <div class="item-card__avatar">
+                                    <img src="https://source.unsplash.com/random/100x100/?man" alt="User">
+                                </div>
+                                <div class="item-card__username">@appdeveloper</div>
+                            </div>
+                            <h4 class="item-card__title">iOS & Android App Development Services</h4>
+                            <div class="item-card__footer">
+                                <div class="item-card__price">$1,200</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 4.8
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://source.unsplash.com/random/600x400/?design" alt="Logo Design" class="item-card__image">
+                        <div class="item-card__content">
+                            <div class="item-card__user">
+                                <div class="item-card__avatar">
+                                    <img src="https://source.unsplash.com/random/100x100/?woman" alt="User">
+                                </div>
+                                <div class="item-card__username">@logodesigner</div>
+                            </div>
+                            <h4 class="item-card__title">Premium Logo & Brand Identity Design</h4>
+                            <div class="item-card__footer">
+                                <div class="item-card__price">$120</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 5.0
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-section" id="gigs-section">
+                <div class="category-header">
+                    <h3 class="category-title"><i class="fas fa-briefcase"></i> Gigs</h3>
+                    <a href="#" class="view-all">View all <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="category-items">
+                    <div class="item-card">
+                        <img src="https://source.unsplash.com/random/600x400/?writing" alt="Content Writing" class="item-card__image">
+                        <div class="item-card__content">
+                            <div class="item-card__user">
+                                <div class="item-card__avatar">
+                                    <img src="https://source.unsplash.com/random/100x100/?writer" alt="User">
+                                </div>
+                                <div class="item-card__username">@contentwriter</div>
+                            </div>
+                            <h4 class="item-card__title">SEO Optimized Blog & Article Writing</h4>
+                            <div class="item-card__footer">
+                                <div class="item-card__price">$50</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 4.7
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://source.unsplash.com/random/600x400/?video" alt="Video Editing" class="item-card__image">
+                        <div class="item-card__content">
+                            <div class="item-card__user">
+                                <div class="item-card__avatar">
+                                    <img src="https://source.unsplash.com/random/100x100/?videoeditor" alt="User">
+                                </div>
+                                <div class="item-card__username">@videoeditor</div>
+                            </div>
+                            <h4 class="item-card__title">Professional Video Editing & Production</h4>
+                            <div class="item-card__footer">
+                                <div class="item-card__price">$80</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 4.9
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://source.unsplash.com/random/600x400/?translation" alt="Translation" class="item-card__image">
+                        <div class="item-card__content">
+                            <div class="item-card__user">
+                                <div class="item-card__avatar">
+                                    <img src="https://source.unsplash.com/random/100x100/?translator" alt="User">
+                                </div>
+                                <div class="item-card__username">@translator</div>
+                            </div>
+                            <h4 class="item-card__title">English to Spanish Translation Services</h4>
+                            <div class="item-card__footer">
+                                <div class="item-card__price">$25</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 4.6
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-section" id="users-section">
+                <div class="category-header">
+                    <h3 class="category-title"><i class="fas fa-user"></i> Freelancers</h3>
+                    <a href="#" class="view-all">View all <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="category-items">
+                    <div class="item-card">
+                        <div class="user-card">
+                            <img src="https://source.unsplash.com/random/300x300/?developer" alt="Web Developer" class="user-card__image">
+                            <div class="item-card__content">
+                                <h4 class="user-card__name">John Smith</h4>
+                                <div class="user-card__title">Senior Web Developer</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 4.9 (125 reviews)
+                                </div>
+                                <div class="user-card__stats">
+                                    <div class="user-card__stat">
+                                        <div class="user-card__value">87</div>
+                                        <div class="user-card__label">Projects</div>
+                                    </div>
+                                    <div class="user-card__stat">
+                                        <div class="user-card__value">4y+</div>
+                                        <div class="user-card__label">Experience</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <div class="user-card">
+                            <img src="https://source.unsplash.com/random/300x300/?designer" alt="Graphic Designer" class="user-card__image">
+                            <div class="item-card__content">
+                                <h4 class="user-card__name">Sarah Johnson</h4>
+                                <div class="user-card__title">Graphic Designer</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 5.0 (89 reviews)
+                                </div>
+                                <div class="user-card__stats">
+                                    <div class="user-card__stat">
+                                        <div class="user-card__value">132</div>
+                                        <div class="user-card__label">Projects</div>
+                                    </div>
+                                    <div class="user-card__stat">
+                                        <div class="user-card__value">6y+</div>
+                                        <div class="user-card__label">Experience</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <div class="user-card">
+                            <img src="https://source.unsplash.com/random/300x300/?writer" alt="Content Writer" class="user-card__image">
+                            <div class="item-card__content">
+                                <h4 class="user-card__name">Michael Brown</h4>
+                                <div class="user-card__title">Content Writer</div>
+                                <div class="item-card__rating">
+                                    <i class="fas fa-star"></i> 4.8 (56 reviews)
+                                </div>
+                                <div class="user-card__stats">
+                                    <div class="user-card__stat">
+                                        <div class="user-card__value">74</div>
+                                        <div class="user-card__label">Projects</div>
+                                    </div>
+                                    <div class="user-card__stat">
+                                        <div class="user-card__value">3y+</div>
+                                        <div class="user-card__label">Experience</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-section" id="categories-section">
+                <div class="category-header">
+                    <h3 class="category-title"><i class="fas fa-th-large"></i> Categories</h3>
+                    <a href="#" class="view-all">View all <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="category-items">
+                    <div class="item-card">
+                        <div class="category-card">
+                            <div class="category-card__icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h4 class="category-card__title">Programming</h4>
+                            <div class="category-card__count">1,245 freelancers</div>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <div class="category-card">
+                            <div class="category-card__icon">
+                                <i class="fas fa-paint-brush"></i>
+                            </div>
+                            <h4 class="category-card__title">Design</h4>
+                            <div class="category-card__count">879 freelancers</div>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <div class="category-card">
+                            <div class="category-card__icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <h4 class="category-card__title">Marketing</h4>
+                            <div class="category-card__count">634 freelancers</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="empty-state" class="empty-search-state">
+            <img src="https://cdn-icons-png.flaticon.com/512/6195/6195696.png" alt="Search" class="empty-search-image">
+            <h2>Start your search</h2>
+            <p>Discover top-quality services and talented freelancers</p>
+        </div>
+    </div>
+
+    <div class="quick-menu" id="quickMenu">
+        <a href="freelancer/home.html" class="quick-menu-item">
+            <i class="fas fa-laptop-code"></i>
+            <span>Freelancer</span>
+        </a>
+        <a href="customer/home.html" class="quick-menu-item">
+            <i class="fas fa-briefcase"></i>
+            <span>Customer</span>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+            const resultsContainer = document.getElementById('results-container');
+            const emptyState = document.getElementById('empty-state');
+            const queryDisplay = document.getElementById('query-display');
+            const menuIcon = document.getElementById('menuIcon');
+            const quickMenu = document.getElementById('quickMenu');
+            const suggestionButtons = document.querySelectorAll('.suggestion-button');
+            
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+                if (query) {
+                    performSearch(query);
+                }
+            });
+            
+            suggestionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const query = this.textContent.trim();
+                    searchInput.value = query;
+                    performSearch(query);
+                });
+            });
+            
+            menuIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                quickMenu.classList.toggle('open');
+                
+                const closeMenuOnClick = (event) => {
+                    if (!quickMenu.contains(event.target) && !menuIcon.contains(event.target)) {
+                        quickMenu.classList.remove('open');
+                        document.removeEventListener('click', closeMenuOnClick);
+                    }
+                };
+                
+                document.addEventListener('click', closeMenuOnClick);
+            });
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryParam = urlParams.get('q');
+            
+            if (queryParam && queryParam.trim() !== '') {
+                searchInput.value = queryParam;
+                performSearch(queryParam);
+            }
+            
+            function performSearch(query) {
+                const url = new URL(window.location);
+                url.searchParams.set('q', query);
+                window.history.pushState({}, '', url);
+                
+                document.title = `${query} - Search Results | SkillScape`;
+                queryDisplay.textContent = query;
+                resultsContainer.style.display = 'block';
+                emptyState.style.display = 'none';
+                
+            }
+        });
+    </script>
+</body>
+</html>

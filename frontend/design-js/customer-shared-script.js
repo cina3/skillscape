@@ -88,6 +88,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function setupEventListeners() {
         const menuIcon = document.querySelector('.site-header .menu-icon');
+        
+        const quickMenu = document.createElement('div');
+        quickMenu.className = 'quick-menu';
+        quickMenu.innerHTML = `
+            <a href="../freelancer/home.html" class="quick-menu-item">
+                <i class="fas fa-laptop-code"></i>
+                <span>Freelancer</span>
+            </a>
+            <a href="../customer/home.html" class="quick-menu-item">
+                <i class="fas fa-briefcase"></i>
+                <span>Customer</span>
+            </a>
+        `;
+        document.body.appendChild(quickMenu);
+        
+        if (menuIcon) {
+            menuIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                quickMenu.classList.toggle('open');
+                
+                
+                const closeMenuOnClick = (event) => {
+                    if (!quickMenu.contains(event.target) && !menuIcon.contains(event.target)) {
+                        quickMenu.classList.remove('open');
+                        document.removeEventListener('click', closeMenuOnClick);
+                    }
+                };
+                
+                document.addEventListener('click', closeMenuOnClick);
+            });
+        }
+
         const hamburgerMenu = document.getElementById('hamburgerMenu');
         const closeMenuBtn = document.getElementById('closeMenuBtn');
 
