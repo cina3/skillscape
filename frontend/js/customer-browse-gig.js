@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ORDERS_ENDPOINT = `${API_BASE_URL}/orders`;
   const TOKEN           = localStorage.getItem('authToken') || localStorage.getItem('token');
   let orderButtonClickHandler = null; 
-  let orderSpecificStylesInjected = false; c
+  let orderSpecificStylesInjected = false; 
   window.aiChatInstance = null; 
 
   window.AITools = {
@@ -880,7 +880,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (gigDescriptionEl) gigDescriptionEl.textContent = gig.description || 'No description available.';
     if (providerNameEl) providerNameEl.textContent = gig.userDisplayName || 'Unknown Seller';
     if (gigPriceEl) gigPriceEl.textContent = `$${Number(gig.price || 0).toFixed(2)}`;
-    if (priceUnitEl) priceUnitEl.textContent = gig.isPerHourPricing ? '/ hour' : '/ each';
+    if (priceUnitEl) priceUnitEl.textContent = gig.perHourPricing ? '/ hour' : '/ each';
     if (gigCoverImageEl) gigCoverImageEl.src = gig.coverImageUrl || '../assets/temp.png';
     if (providerAvatarEl) providerAvatarEl.src = gig.providerAvatarUrl || '../assets/temp.png';
 

@@ -103,23 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         document.body.appendChild(quickMenu);
         
-        if (menuIcon) {
-            menuIcon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                quickMenu.classList.toggle('open');
-                
-                
-                const closeMenuOnClick = (event) => {
-                    if (!quickMenu.contains(event.target) && !menuIcon.contains(event.target)) {
-                        quickMenu.classList.remove('open');
-                        document.removeEventListener('click', closeMenuOnClick);
-                    }
-                };
-                
-                document.addEventListener('click', closeMenuOnClick);
-            });
-        }
-
         const hamburgerMenu = document.getElementById('hamburgerMenu');
         const closeMenuBtn = document.getElementById('closeMenuBtn');
 

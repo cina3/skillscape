@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (window.openGigModal) {
                                 window.openGigModal(modalData);
                             } else {
-                                console.error('openGigModal function not found');
+                                console.error('openGigModal function not found. Ensure it is defined in customer-browse-gig.js and attached to the window object.');
                             }
                         } catch (error) {
                             console.error('Error fetching gig details:', error);
