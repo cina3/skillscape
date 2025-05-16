@@ -652,8 +652,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const gigId = window.currentGigData.id;
         const requirements = document.getElementById('orderDescription').value.trim();
-        const uploadEls = document.querySelectorAll('.uploaded-file');
-        const uploadUrls = Array.from(uploadEls).map(el => el.dataset.filename);
+        const uploadEls = document.querySelectorAll('.uploaded-file:not(.error):not(.uploading)');
+        
+        const uploadUrls = Array.from(uploadEls).map(el => ({
+          id: el.dataset.fileId || null,
+          url: el.dataset.filename
+        }));
+        
         const requested = requestedInput ? Number(requestedInput.value) : null;
 
         if (!requirements) {
@@ -767,7 +772,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleFileUpload(files, container) {
     if (!container) return;
     
-    Array.from(files).forEach(file => {
+    if (!window.uploadSingleFile) {
+      console.error('uploadSingleFile function not available. Make sure file.js is loaded correctly.');
+      return;
+    }
+
+    Array.from(files).forEach(async (file) => {
       if (file.size > 25 * 1024 * 1024) {
         errorMessage(`${file.name} exceeds 25MB.`);
         return;
@@ -777,28 +787,54 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
-      const size = file.size;
-      let sizeStr = '';
-      if (size < 1024) {
-        sizeStr = `${size} B`;
-      } else if (size < 1024 * 1024) {
-        sizeStr = `${(size / 1024).toFixed(1)} KB`;
-      } else {
-        sizeStr = `${(size / (1024 * 1024)).toFixed(1)} MB`;
-      }
-      
-      const div = document.createElement('div');
-      div.className = 'uploaded-file';
-      div.dataset.filename = file.name;
-      div.innerHTML = `
-        <i class="fas fa-file"></i>
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'uploaded-file uploading';
+      loadingDiv.innerHTML = `
+        <i class="fas fa-spinner fa-spin"></i>
         <span>${escapeHTML(file.name)}</span>
-        <span class="file-size">${sizeStr}</span>
-        <button class="remove-file" title="Remove file"><i class="fas fa-times"></i></button>
+        <span class="file-status">Uploading...</span>
       `;
+      container.appendChild(loadingDiv);
       
-      div.querySelector('.remove-file').addEventListener('click', () => div.remove());
-      container.appendChild(div);
+      try {
+        const response = await window.uploadSingleFile(file);
+        console.log('File uploaded successfully:', response);
+        
+        const size = file.size;
+        let sizeStr = '';
+        if (size < 1024) {
+          sizeStr = `${size} B`;
+        } else if (size < 1024 * 1024) {
+          sizeStr = `${(size / 1024).toFixed(1)} KB`;
+        } else {
+          sizeStr = `${(size / (1024 * 1024)).toFixed(1)} MB`;
+        }
+        
+        const div = document.createElement('div');
+        div.className = 'uploaded-file';
+        div.dataset.filename = response.url || file.name;
+        div.dataset.fileId = response.id || '';
+        div.innerHTML = `
+          <i class="fas fa-file"></i>
+          <span>${escapeHTML(file.name)}</span>
+          <span class="file-size">${sizeStr}</span>
+          <button class="remove-file" title="Remove file"><i class="fas fa-times"></i></button>
+        `;
+        
+        div.querySelector('.remove-file').addEventListener('click', () => div.remove());
+        container.replaceChild(div, loadingDiv);
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        loadingDiv.className = 'uploaded-file error';
+        loadingDiv.innerHTML = `
+          <i class="fas fa-exclamation-circle"></i>
+          <span>${escapeHTML(file.name)}</span>
+          <span class="file-status">Upload failed</span>
+          <button class="remove-file" title="Remove"><i class="fas fa-times"></i></button>
+        `;
+        
+        loadingDiv.querySelector('.remove-file').addEventListener('click', () => loadingDiv.remove());
+      }
     });
   }
 

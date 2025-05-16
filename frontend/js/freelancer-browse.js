@@ -92,6 +92,36 @@ function initializeModal() {
     if (bidDeliveryTimeInput) {
         bidDeliveryTimeInput.addEventListener('input', updateBidSummary);
     }
+
+    // Add file upload listeners if elements exist
+    const fileUploadArea = document.getElementById('bidFileUploadArea');
+    const fileUploadInput = document.getElementById('bidFileUpload');
+    const uploadedFilesContainer = document.getElementById('bidUploadedFiles');
+    
+    if (fileUploadArea && fileUploadInput) {
+        fileUploadArea.addEventListener('click', () => fileUploadInput.click());
+        
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('drag-over');
+        });
+        
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('drag-over');
+        });
+        
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('drag-over');
+            if (e.dataTransfer?.files) {
+                handleFileUpload(e.dataTransfer.files, uploadedFilesContainer);
+            }
+        });
+        
+        fileUploadInput.addEventListener('change', (e) => {
+            handleFileUpload(e.target.files, uploadedFilesContainer);
+        });
+    }
 }
 
 function loadLayout() {
@@ -292,9 +322,21 @@ function updateBidSummary() {
     const fee = bidAmount * 0.1;
     const total = bidAmount - fee;
     
+    // Remove existing price changed classes
+    bidSummaryAmount.classList.remove('price-changed');
+    bidSummaryFee.classList.remove('price-changed');
+    bidSummaryTotal.classList.remove('price-changed');
+    
+    // Update display values
     bidSummaryAmount.textContent = '$' + bidAmount.toFixed(2);
     bidSummaryFee.textContent = '-$' + fee.toFixed(2);
     bidSummaryTotal.textContent = '$' + total.toFixed(2);
+    
+    // Check if price is different from original and highlight it
+    if (currentListingForBid && bidAmount !== (currentListingForBid.price || 0)) {
+        bidSummaryAmount.classList.add('price-changed');
+        bidSummaryTotal.classList.add('price-changed');
+    }
     
     if (deliveryTime > 0) {
         const dayText = deliveryTime === 1 ? 'day' : 'days';
@@ -302,6 +344,78 @@ function updateBidSummary() {
     } else {
         bidSummaryDelivery.textContent = 'Not specified';
     }
+}
+
+function handleFileUpload(files, container) {
+    if (!container) return;
+    
+    if (!window.uploadSingleFile && typeof uploadSingleFile !== 'function') {
+        console.error('uploadSingleFile function not available. Make sure file.js is loaded correctly.');
+        return;
+    }
+    
+    Array.from(files).forEach(async (file) => {
+        if (file.size > 25 * 1024 * 1024) {
+            alert(`${file.name} exceeds 25MB.`);
+            return;
+        }
+        if (container.children.length >= 5) {
+            alert('Maximum 5 files allowed.');
+            return;
+        }
+        
+        // Create a loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'uploaded-file uploading';
+        loadingDiv.innerHTML = `
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>${file.name}</span>
+            <span class="file-status">Uploading...</span>
+        `;
+        container.appendChild(loadingDiv);
+        
+        try {
+            // Use the uploadSingleFile function from file.js
+            const response = await window.uploadSingleFile(file);
+            console.log('File uploaded successfully:', response);
+            
+            // Replace loading indicator with the successful upload
+            const size = file.size;
+            let sizeStr = '';
+            if (size < 1024) {
+                sizeStr = `${size} B`;
+            } else if (size < 1024 * 1024) {
+                sizeStr = `${(size / 1024).toFixed(1)} KB`;
+            } else {
+                sizeStr = `${(size / (1024 * 1024)).toFixed(1)} MB`;
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'uploaded-file';
+            div.dataset.filename = response.url || file.name;
+            div.dataset.fileId = response.id || '';
+            div.innerHTML = `
+                <i class="fas fa-file"></i>
+                <span>${file.name}</span>
+                <span class="file-size">${sizeStr}</span>
+                <button class="remove-file" title="Remove file"><i class="fas fa-times"></i></button>
+            `;
+            
+            div.querySelector('.remove-file').addEventListener('click', () => div.remove());
+            container.replaceChild(div, loadingDiv);
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            loadingDiv.className = 'uploaded-file error';
+            loadingDiv.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${file.name}</span>
+                <span class="file-status">Upload failed</span>
+                <button class="remove-file" title="Remove"><i class="fas fa-times"></i></button>
+            `;
+            
+            loadingDiv.querySelector('.remove-file').addEventListener('click', () => loadingDiv.remove());
+        }
+    });
 }
 
 async function handleBidSubmission() {
@@ -332,11 +446,24 @@ async function handleBidSubmission() {
         return;
     }
 
+    // Add file uploads to bid if they exist
+    const uploadedFiles = document.querySelectorAll('.uploaded-file:not(.error):not(.uploading)');
+    const attachments = Array.from(uploadedFiles).map(el => ({
+        id: el.dataset.fileId || null,
+        url: el.dataset.filename
+    }));
+
     submitBidBtn.disabled = true;
     submitBidBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
     try {
-        await placeBid(currentListingForBid.id, amount, description, deliveryTime);
+        await placeBid(
+            currentListingForBid.id, 
+            amount, 
+            description, 
+            deliveryTime,
+            attachments
+        );
         submitBidBtn.innerHTML = '<i class="fas fa-check"></i> Bid Placed Successfully!';
         submitBidBtn.classList.add('success');
         
@@ -350,13 +477,14 @@ async function handleBidSubmission() {
     }
 }
 
-async function placeBid(listingId, amount, description, deliveryTime) {
+async function placeBid(listingId, amount, description, deliveryTime, attachments = []) {
   try {
     const dto = { 
         listingId, 
         requestedPrice: amount, 
         description,
-        estimatedDeliveryTime: deliveryTime 
+        estimatedDeliveryTime: deliveryTime,
+        attachments
     };
     await apiFetch(`http://localhost:8080/api/listings/${listingId}/bids`, {
       method: 'POST',

@@ -10,6 +10,199 @@
     <link rel="stylesheet" href="../css/freelancer-browse-style.css">
     <link rel="stylesheet" href="../css/freelancer-browse-gig-style.css">
     <script src="../js/settings-modal.js"></script>
+    <style>
+        .file-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background-color: #f8faff;
+            cursor: pointer;
+            margin-bottom: 15px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-area:hover {
+            border-color: var(--brand-blue);
+            background-color: #eef5ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39,67,125,0.08);
+        }
+        
+        .file-upload-area i {
+            font-size: 3rem;
+            color: var(--brand-blue);
+            margin-bottom: 20px;
+            display: block;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .file-upload-area:hover i {
+            transform: translateY(-5px) scale(1.1);
+        }
+        
+        .file-upload-area p {
+            margin: 10px 0;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+        
+        .file-upload-area .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        #bidUploadedFiles {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .uploaded-file {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+        }
+        
+        .uploaded-file:hover {
+            background-color: #f9fafd;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .uploaded-file .fas,
+        .uploaded-file i {
+            margin-right: 12px;
+            color: var(--brand-blue);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .uploaded-file span {
+            flex-grow: 1;
+            margin-right: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text-dark);
+        }
+        
+        .uploaded-file .file-size,
+        .uploaded-file .file-status {
+            margin-left: auto;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.03);
+            padding: 4px 10px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        
+        .uploaded-file .remove-file {
+            background: none;
+            border: none;
+            color: #d93025;
+            opacity: 0.7;
+            cursor: pointer;
+            margin-left: 12px;
+            transition: all 0.2s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .uploaded-file .remove-file:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            background-color: rgba(217, 48, 37, 0.1);
+        }
+        
+        .price-changed {
+            color: #2e7d32 !important;
+            font-weight: 700 !important;
+        }
+        
+        #bidSummaryAmount.price-changed, 
+        #bidSummaryTotal.price-changed {
+            color: #2e7d32 !important;
+        }
+        
+        .bid-grid-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        @media (max-width: 768px) {
+            .bid-grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 28px;
+        }
+        
+        .bid-summary-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .bid-summary-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        
+        .file-upload-area.drag-over {
+            border-color: var(--brand-blue);
+            background-color: #e6f0ff;
+            box-shadow: 0 5px 15px rgba(39,67,125,0.1);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(39,67,125,0.3); }
+            70% { box-shadow: 0 0 0 8px rgba(39,67,125,0); }
+            100% { box-shadow: 0 0 0 0 rgba(39,67,125,0); }
+        }
+        
+        .browse-files {
+            color: var(--brand-blue);
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-block;
+            padding: 0 2px;
+        }
+        
+        .browse-files:hover {
+            text-decoration: none;
+            background-color: rgba(39,67,125,0.05);
+            border-radius: 3px;
+            transform: translateY(-1px);
+        }
+    </style>
 </head>
 <body>
     <div id="header-placeholder"></div>
@@ -144,6 +337,7 @@
                     <i class="fas fa-times"></i>
                 </button>
                 
+                <!-- Project details view -->
                 <div class="gig-layout-container" id="projectDetailView">
                     <div class="gig-image-column">
                         <div class="gig-image-container">
@@ -286,11 +480,12 @@
                     </div>
                 </div>
 
+                <!-- Bid form view -->
                 <div class="order-form-container" id="projectBidFormView" style="display: none; padding: 20px; height: 100%; overflow-y: auto;">
                     <div class="order-form">
                         <div class="order-header">
                             <button class="back-to-gig" id="backToDetailsBtn"><i class="fas fa-arrow-left"></i></button>
-                            <h2 class="order-title" style="margin-left: 15px;">Place Your Bid</h2>
+                            <h2 class="order-title">Place Your Bid</h2>
                         </div>
                         
                         <h3 id="bidFormProjectTitle" class="project-title"></h3>
@@ -315,6 +510,17 @@
                                 <div class="form-group">
                                     <label for="bidCoverLetter">Cover Letter / Proposal</label>
                                     <textarea id="bidCoverLetter" name="bidCoverLetter" rows="8" placeholder="Describe why you're a good fit for this project, your experience, and how you'll approach the work..." required class="form-control"></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Attachments <small>(max 5 × 25MB)</small></label>
+                                    <div id="bidFileUploadArea" class="file-upload-area">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Drag & drop files here or <span class="browse-files">browse</span> files</p>
+                                        <p class="upload-hint">Include portfolio samples, certifications, or relevant examples</p>
+                                        <input type="file" id="bidFileUpload" multiple style="display:none">
+                                    </div>
+                                    <div id="bidUploadedFiles" class="uploaded-files"></div>
                                 </div>
                             </div>
                             
@@ -369,6 +575,7 @@
     <script src="../design-js/customer-shared-script.js"></script>
     <script src="../design-js/freelancer-shared-script.js"></script> 
     <script src="../design-js/freelancer-browse-script.js"></script> 
+    <script src="../js/file.js"></script>
     <script src="../js/freelancer-browse.js"></script> 
     <script src="../js/logout.js"></script>
     <script src="../js/settings-modal.js"></script>
