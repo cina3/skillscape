@@ -10,7 +10,7 @@ async function handleLogin(event) {
         password: password
     };
 
-    const backendUrl = 'http://3.75.88.34:8080/api/auth/signin';
+    const backendUrl = 'http://localhost:8080/api/auth/signin';
 
     try {
         const response = await fetch(backendUrl, {

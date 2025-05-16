@@ -101,7 +101,7 @@ public class AuthController {
             UserEntity user = userOptional.get();
             String token = userService.createPasswordResetTokenForUser(user);
             
-            String frontendBaseUrl = "http://3.75.88.34:8000";
+            String frontendBaseUrl = "http://localhost:8000";
             String resetUrl = frontendBaseUrl + "/auth/reset-password.html?token=" + token;
             
             emailService.sendPasswordResetEmail(user.getEmail(), resetUrl);

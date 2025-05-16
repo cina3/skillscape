@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ratingModal = document.getElementById('ratingModal');
     const reportIssueModal = document.getElementById('reportIssueModal');
     
-    const API_BASE_URL = 'http://3.75.88.34:8080/api';
+    const API_BASE_URL = 'http://localhost:8080/api';
     const TOKEN = localStorage.getItem('authToken') || localStorage.getItem('token');
 
     let currentOrderForModal = null; 

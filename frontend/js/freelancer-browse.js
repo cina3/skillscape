@@ -124,7 +124,7 @@ function apiFetch(path, opts = {}) {
 
 async function fetchListings() {
   try {
-    const data = await apiFetch('http://3.75.88.34:8080/api/listings');
+    const data = await apiFetch('http://localhost:8080/api/listings');
     allListings = data.filter(l => l.status === 'ACTIVE');
     applyActiveCategoryFilter();
   } catch (e) {
@@ -358,7 +358,7 @@ async function placeBid(listingId, amount, description, deliveryTime) {
         description,
         estimatedDeliveryTime: deliveryTime 
     };
-    await apiFetch(`http://3.75.88.34:8080/api/listings/${listingId}/bids`, {
+    await apiFetch(`http://localhost:8080/api/listings/${listingId}/bids`, {
       method: 'POST',
       body: JSON.stringify(dto)
     });

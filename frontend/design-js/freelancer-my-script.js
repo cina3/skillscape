@@ -1,6 +1,6 @@
 console.log('[My-Gigs] script loaded');
 
-const API_BASE = 'http://3.75.88.34:8080/api';
+const API_BASE = 'http://localhost:8080/api';
 const TOKEN    = localStorage.getItem('authToken') || localStorage.getItem('token');
 
 const ok  = typeof successMessage === 'function' ? successMessage : m => alert(m);

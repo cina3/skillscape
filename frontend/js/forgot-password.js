@@ -12,7 +12,7 @@ async function handleForgotPassword(event) {
         email: email
     };
 
-    const backendUrl = 'http://3.75.88.34:8080/api/auth/forgot-password';
+    const backendUrl = 'http://localhost:8080/api/auth/forgot-password';
     const submitButton = form.querySelector('button[type="submit"]');
 
     try {

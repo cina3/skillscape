@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const listingGrid  = document.querySelector('.listing-grid');
-    const API_BASE_URL = 'http://3.75.88.34:8080/api';
+    const API_BASE_URL = 'http://localhost:8080/api';
     const TOKEN = localStorage.getItem('authToken') || localStorage.getItem('token');
     let allGigsCache = []; 
     let activeFilters = {}; 

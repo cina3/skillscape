@@ -29,7 +29,7 @@ async function handleResetPassword(event) {
         newPassword: newPassword
     };
 
-    const backendUrl = 'http://3.75.88.34:8080/api/auth/reset-password';
+    const backendUrl = 'http://localhost:8080/api/auth/reset-password';
     const submitButton = form.querySelector('button[type="submit"]');
     let isSuccess = false;
 

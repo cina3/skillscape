@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const modal           = document.getElementById('gigModal');
   const closeBtn        = document.getElementById('closeGigModal');
-  const API_BASE_URL    = 'http://3.75.88.34:8080/api';
+  const API_BASE_URL    = 'http://localhost:8080/api';
   const ORDERS_ENDPOINT = `${API_BASE_URL}/orders`;
   const TOKEN           = localStorage.getItem('authToken') || localStorage.getItem('token');
   let orderButtonClickHandler = null; 

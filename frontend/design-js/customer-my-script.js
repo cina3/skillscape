@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let listingsData = [];
 
   function fetchListings() {
-    fetch('http://3.75.88.34:8080/api/listings/my', {
+    fetch('http://localhost:8080/api/listings/my', {
       headers: {
         'Content-Type': 'application/json',
         ...(localStorage.getItem('authToken') && {
@@ -206,14 +206,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function deleteListing(id) {
     if (!confirm('Delete this listing?')) return;
-    fetch(`http://3.75.88.34:8080/api/listings/${id}`, { method:'DELETE', headers:{ 'Content-Type':'application/json', ...(localStorage.getItem('authToken')&&{'Authorization':'Bearer '+localStorage.getItem('authToken')}) }})
+    fetch(`http://localhost:8080/api/listings/${id}`, { method:'DELETE', headers:{ 'Content-Type':'application/json', ...(localStorage.getItem('authToken')&&{'Authorization':'Bearer '+localStorage.getItem('authToken')}) }})
       .then(r => { if(!r.ok) throw ''; listingsData = listingsData.filter(x=>x.id!==id); renderListings(); alert('Deleted'); })
       .catch(()=>alert('Delete failed'));
   }
 
   function awardBid(listingId, bidId) {
     if (!confirm('Award this freelancer?')) return;
-    fetch(`http://3.75.88.34:8080/api/listings/${listingId}/award`, {
+    fetch(`http://localhost:8080/api/listings/${listingId}/award`, {
       method:'POST',
       headers:{ 'Content-Type':'application/json', ...(localStorage.getItem('authToken')&&{'Authorization':'Bearer '+localStorage.getItem('authToken')}) },
       body: JSON.stringify({ bidId: parseInt(bidId) })
