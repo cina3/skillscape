@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('[FreelancerNewScript] DOM fully loaded and parsed.');
     
+    let coverImageFile = null;
+    let galleryFiles = [];
+    
     const fileUploadArea = document.getElementById('fileUploadArea');
     const fileInput = document.getElementById('fileInput');
     const uploadedFiles = document.getElementById('uploadedFiles');
@@ -71,6 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
+                galleryFiles.push(file);
+                
                 const reader = new FileReader();
                 const fileItem = document.createElement('div');
                 fileItem.className = 'gallery-thumb';
@@ -107,6 +112,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         e.stopPropagation();
                         totalGallerySize -= parseInt(fileItem.dataset.filesize, 10) || 0;
                         
+                        galleryFiles = galleryFiles.filter(f => 
+                            f.name !== file.name || f.size !== file.size || f.lastModified !== file.lastModified);
+                            
                         URL.revokeObjectURL(e.target.result); 
                         fileItem.remove();
                         updateGalleryCount();
@@ -117,6 +125,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 reader.onerror = function() {
                     fileItem.remove();
+                    galleryFiles = galleryFiles.filter(f => 
+                        f.name !== file.name || f.size !== file.size || f.lastModified !== file.lastModified);
                     showFileError(`Error reading ${file.name}`);
                 };
                 
@@ -206,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         item.remove();
                     });
+                    galleryFiles = []; 
                     totalGallerySize = 0; 
                     updateGalleryCount();
                 }
@@ -227,6 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (file.size > MAX_COVER_SIZE) {
                     showCoverError(`Cover image exceeds 2MB limit.`);
                     this.value = '';
+                    coverImageFile = null; 
                     return;
                 }
                 
@@ -234,8 +246,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) {
                     showCoverError(`Cover must be an image (JPG, PNG, GIF).`);
                     this.value = '';
+                    coverImageFile = null; 
                     return;
                 }
+                
+                coverImageFile = file;
                 
                 const reader = new FileReader();
                 const img = coverImagePreviewContainer.querySelector('img');
@@ -275,6 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.onerror = function() {
                     showCoverError(`Error reading ${file.name}`);
                     resetCoverImage();
+                    coverImageFile = null; 
                 };
                 
                 reader.readAsDataURL(file);
@@ -285,6 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
             coverImageRemoveBtn.addEventListener('click', function() {
                 resetCoverImage();
                 coverImageInput.value = '';
+                coverImageFile = null; 
             });
         }
         
@@ -371,4 +388,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    window.getCoverImageFileToUpload = () => {
+        console.log('[FreelancerNewScript] getCoverImageFileToUpload called, returning:', coverImageFile);
+        return coverImageFile;
+    };
+    window.getGalleryFilesToUpload = () => {
+        const filesToUpload = galleryFiles.filter(f => f);
+        console.log('[FreelancerNewScript] getGalleryFilesToUpload called, returning', filesToUpload.length, 'files:', filesToUpload.map(f=>f.name));
+        return filesToUpload;
+    };
 });

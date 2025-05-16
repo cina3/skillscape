@@ -66,6 +66,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/gigs", "/api/gigs/*").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/gigs").authenticated()          
                 .requestMatchers("/api/gigs/my-gigs").authenticated()                  
+                .requestMatchers(HttpMethod.POST, "/api/files/upload", "/api/files/uploadMultiple").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/files/download/**").permitAll()
                 .anyRequest().authenticated()
             );
 
