@@ -40,7 +40,7 @@ async function handleLogin(event) {
 
             showMessage('Login successful!', 'success');
             setTimeout(() => {
-                window.location.href = '../customer/home.html';
+                window.location.href = '../auth/choose-account.html';
             }, 1500);
 
         } else {

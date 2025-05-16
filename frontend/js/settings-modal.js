@@ -6,6 +6,11 @@ function showSettings() {
         return false;
     }
     
+    // Ensure the modal is attached to the body for proper visibility
+    if (settingsModal.parentElement !== document.body) {
+        document.body.appendChild(settingsModal);
+    }
+    
     settingsModal.style.display = 'flex';
     document.body.classList.add('modal-open');
     
@@ -15,18 +20,50 @@ function showSettings() {
             e.preventDefault();
             closeSettingsModal();
             const passwordModal = document.getElementById('passwordModal');
+            
+            // Ensure password modal is attached to body
+            if (passwordModal && passwordModal.parentElement !== document.body) {
+                document.body.appendChild(passwordModal);
+            }
+            
             if (passwordModal) passwordModal.style.display = 'flex';
         };
     }
     
     const deleteAccountOption = document.getElementById('deleteAccountOption');
     if (deleteAccountOption) {
-        deleteAccountOption.onclick = function(e) {
+        deleteAccountOption.onclick = async function(e) { 
             e.preventDefault();
             if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('currentUser');
-                window.location.href = '../auth/login.html';
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    alert('Authentication token not found. Please log in again.');
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:8080/api/auth/delete', { 
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Account deleted successfully.');
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('currentUser');
+                        window.location.href = '../auth/login.html';
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: 'Failed to delete account. Please try again.' }));
+                        alert(`Error: ${errorData.message || response.statusText}`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting account:', error);
+                    alert('An error occurred while trying to delete your account. Please check your network connection and try again.');
+                }
             }
         };
     }
@@ -50,7 +87,7 @@ function closePasswordModal() {
     }
 }
 
-function changePassword() {
+async function changePassword() {
     const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmNewPassword = document.getElementById('confirmNewPassword').value;
@@ -65,24 +102,44 @@ function changePassword() {
         return;
     }
 
-    alert('Password changed successfully!');
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        alert('Authentication token not found. Please log in again.');
+        window.location.href = '../auth/login.html';
+        return;
+    }
 
-    document.getElementById('currentPassword').value = '';
-    document.getElementById('newPassword').value = '';
-    document.getElementById('confirmNewPassword').value = '';
-    
-    closePasswordModal();
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/change-password', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                currentPassword: currentPassword,
+                newPassword: newPassword
+            })
+        });
+
+        if (response.ok) {
+            alert('Password changed successfully!');
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+            closePasswordModal();
+        } else {
+            const errorData = await response.json().catch(() => ({ message: 'Failed to change password. Please try again.' }));
+            alert(`Error: ${errorData.message || response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Error changing password:', error);
+        alert('An error occurred while trying to change your password. Please check your network connection and try again.');
+    }
 }
 
 function showInbox() {
     console.log("Inbox function called");
-    return false;
-}
-
-function signOut() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('currentUser');
-    window.location.href = '../auth/login.html';
     return false;
 }
 
@@ -102,19 +159,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const sm = document.getElementById('settingsModal');
-    const pm = document.getElementById('passwordModal');
+    // Always move modals to body for proper display
+    const settingsModal = document.getElementById('settingsModal');
+    const passwordModal = document.getElementById('passwordModal');
     
-    if (sm && sm.parentElement !== document.body) {
-        document.body.appendChild(sm);
-    }
-    if (pm && pm.parentElement !== document.body) {
-        document.body.appendChild(pm);
+    if (settingsModal && settingsModal.parentElement !== document.body) {
+        document.body.appendChild(settingsModal);
     }
     
-    const signOutLinks = document.querySelectorAll('.sign-out-link');
-    signOutLinks.forEach(link => {
-        link.removeEventListener('click', signOut);
-        link.addEventListener('click', signOut);
-    });
+    if (passwordModal && passwordModal.parentElement !== document.body) {
+        document.body.appendChild(passwordModal);
+    }
 });

@@ -95,4 +95,14 @@ public class UserService implements UserDetailsService {
     public void deletePasswordResetToken(String token) {
         passwordResetTokenRepository.deleteByToken(token);
     }
+
+    @Transactional
+    public void deleteUserByEmail(String email) {
+        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            UserEntity user = userOptional.get();
+            passwordResetTokenRepository.findByUser(user).ifPresent(passwordResetTokenRepository::delete);
+            userRepository.deleteByEmail(email);
+        }
+    }
 }

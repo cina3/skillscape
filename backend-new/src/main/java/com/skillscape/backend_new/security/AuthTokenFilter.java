@@ -1,5 +1,6 @@
-package com.skillscape.backend_new.security; 
+package com.skillscape.backend_new.security;
 
+import com.skillscape.backend_new.service.TokenBlacklistService;
 import com.skillscape.backend_new.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,33 +22,44 @@ import java.io.IOException;
 
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
+
     @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
+
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, 
-                                    @NonNull HttpServletResponse response, 
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String email = jwtUtils.getEmailFromJwtToken(jwt);
+            if (jwt != null) {
+                if (tokenBlacklistService.isTokenBlacklisted(jwt)) {
+                    logger.warn("JWT token is blacklisted: {}", jwt);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Token is blacklisted. Please login again.");
+                    return; 
+                } else if (jwtUtils.validateJwtToken(jwt)) {
+                    String email = jwtUtils.getEmailFromJwtToken(jwt);
 
-                UserDetails userDetails = userService.loadUserByUsername(email); 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null, 
-                                userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UserDetails userDetails = userService.loadUserByUsername(email);
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e.getMessage());

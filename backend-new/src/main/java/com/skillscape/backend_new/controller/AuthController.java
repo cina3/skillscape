@@ -1,5 +1,6 @@
 package com.skillscape.backend_new.controller; 
 
+import com.skillscape.backend_new.dto.ChangePasswordRequest; 
 import com.skillscape.backend_new.dto.ForgotPasswordRequest;
 import com.skillscape.backend_new.dto.LoginRequest;
 import com.skillscape.backend_new.dto.ResetPasswordRequest;
@@ -10,16 +11,19 @@ import com.skillscape.backend_new.repository.UserRepository;
 import com.skillscape.backend_new.security.JwtUtils;
 import com.skillscape.backend_new.service.EmailService; 
 import com.skillscape.backend_new.service.UserService;  
+import com.skillscape.backend_new.service.TokenBlacklistService;
 
 import jakarta.servlet.http.HttpServletRequest; 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus; 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -46,6 +50,9 @@ public class AuthController {
 
     @Autowired
     EmailService emailService; 
+
+    @Autowired
+    TokenBlacklistService tokenBlacklistService; 
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -121,5 +128,75 @@ public class AuthController {
         userService.changeUserPassword(user, resetPasswordRequest.getNewPassword());
         
         return ResponseEntity.ok("Password has been reset successfully.");
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAccount(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal().toString())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: User not authenticated.");
+        }
+
+        String userEmail = authentication.getName();
+
+        Optional<UserEntity> userOptional = userService.findUserByEmail(userEmail);
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Authenticated user not found in database.");
+        }
+
+        UserEntity userToDelete = userOptional.get();
+        
+        try {
+            userService.deleteUserByEmail(userToDelete.getEmail()); 
+            
+            SecurityContextHolder.clearContext(); 
+            
+            return ResponseEntity.ok("Account deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: Could not delete account. " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+        String jwt = parseJwt(request);
+        if (jwt != null) {
+            tokenBlacklistService.blacklistToken(jwt);
+        }
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok("Logout successful. Token has been added to blacklist.");
+    }
+
+    private String parseJwt(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7);
+        }
+        return null;
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(Authentication authentication, @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal().toString())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: User not authenticated.");
+        }
+
+        String userEmail = authentication.getName();
+        Optional<UserEntity> userOptional = userService.findUserByEmail(userEmail);
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Authenticated user not found in database.");
+        }
+
+        UserEntity user = userOptional.get();
+
+        if (!encoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
+            return ResponseEntity.badRequest().body("Error: Incorrect current password.");
+        }
+
+        userService.changeUserPassword(user, changePasswordRequest.getNewPassword());
+
+        return ResponseEntity.ok("Password changed successfully.");
     }
 }

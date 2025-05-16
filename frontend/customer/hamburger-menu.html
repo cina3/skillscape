@@ -53,7 +53,7 @@
                 <span class="user-name">john doe</span>
                 <span class="user-skillcoins">42 SkillCoins</span>
             </div>
-            <a href="#" class="sign-out-link">Sign out</a>
+            <a href="#" class="sign-out-link" onclick="performSignOut(); return false;">Sign out</a>
         </div>
     </div>
 </div>
@@ -116,113 +116,6 @@
         </div>
     </div>
 </div>
-
-<script>
-function showSettings() {
-    console.log("Settings function called directly");
-    const settingsModal = document.getElementById('settingsModal');
-    settingsModal.style.display = 'flex';
-    document.body.classList.add('modal-open');
-    
-    const changePasswordOption = document.getElementById('changePasswordOption');
-    if (changePasswordOption) {
-        changePasswordOption.onclick = function(e) {
-            e.preventDefault();
-            closeSettingsModal();
-            const passwordModal = document.getElementById('passwordModal');
-            passwordModal.style.display = 'flex';
-        };
-    }
-    const deleteAccountOption = document.getElementById('deleteAccountOption');
-    if (deleteAccountOption) {
-        deleteAccountOption.onclick = function(e) {
-            e.preventDefault();
-            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('currentUser');
-                window.location.href = '../auth/login.html';
-            }
-        };
-    }
-    
-    return false;
-}
-
-function closeSettingsModal() {
-    const modal = document.getElementById('settingsModal');
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
-}
-
-function closePasswordModal() {
-    const modal = document.getElementById('passwordModal');
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
-}
-
-function changePassword() {
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-
-    if (!currentPassword || !newPassword || !confirmNewPassword) {
-        alert('Please fill in all password fields');
-        return;
-    }
-
-    if (newPassword !== confirmNewPassword) {
-        alert('New passwords do not match');
-        return;
-    }
-
-    alert('Password changed successfully!');
-
-    document.getElementById('currentPassword').value = '';
-    document.getElementById('newPassword').value = '';
-    document.getElementById('confirmNewPassword').value = '';
-    
-    closePasswordModal();
-}
-
-function showInbox() {
-    console.log("Inbox function called");
-    return false;
-}
-
-function signOut() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('currentUser');
-    window.location.href = '../auth/login.html';
-    return false;
-}
-
-document.addEventListener('click', function(e) {
-    const settingsModal = document.getElementById('settingsModal');
-    const passwordModal = document.getElementById('passwordModal');
-    
-    if (e.target === settingsModal) {
-        closeSettingsModal();
-    }
-    
-    if (e.target === passwordModal) {
-        closePasswordModal();
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const sm = document.getElementById('settingsModal');
-    const pm = document.getElementById('passwordModal');
-    console.log("Settings modal found:", !!sm);
-    console.log("Password modal found:", !!pm);
-    
-    if (sm && sm.parentElement !== document.body) {
-        document.body.appendChild(sm);
-    }
-    if (pm && pm.parentElement !== document.body) {
-        document.body.appendChild(pm);
-    }
-});
-</script>
 
 <style>
 .modal-overlay {
@@ -380,3 +273,5 @@ body.modal-open {
     }
 }
 </style>
+<script src="../js/logout.js"></script>
+<script src="../js/settings-modal.js"></script>
