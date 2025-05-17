@@ -63,7 +63,7 @@ In another terminal go to skillscape (project root) folder (Python required)
 3 - API Key
 
 **Things you can do**
-
+**Note: You can buy your own gigs/listing for quick testing purposes**
 *Auth*
 Login
 Register
