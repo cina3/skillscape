@@ -1,6 +1,7 @@
 While developing SkillScape we used macOS or Ubuntu on AWS so this is for those operating systems but Windows should be similar too.
 
 **Database**
+
 1 - Open terminal
 
 2 - Install PostgreSQL 
@@ -35,6 +36,7 @@ While developing SkillScape we used macOS or Ubuntu on AWS so this is for those 
     \q
 
 **Java Project - Maven**
+
 Run 
 "mvn clean compile spring-boot:run"
 in the backend-new folder.
@@ -51,6 +53,7 @@ or
 Now go to localhost:8000/landing.html in your browser
 
 **AI Service**
+
 In another terminal go to skillscape (project root) folder (Python required)
 1 - Activate virtual python envoriment, run
     source venv/bin/activate
@@ -59,6 +62,7 @@ In another terminal go to skillscape (project root) folder (Python required)
 3 - API Key
 
 **Things you can do**
+
 *Auth*
 Login
 Register
@@ -94,6 +98,7 @@ Premium
 Inbox
 
 **Technologies we used**
+
 *Java*
 Maven
 - Spring Boot
