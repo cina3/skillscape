@@ -45,6 +45,7 @@ If it does not compile or run it is probably because database credentials in app
 username and password are correct. You can find dependencies we used in pom.xml file.
 
 **Frontend**
+
 In another terminal go to frontend folder enter the command (Python required)
 "python3 -m http.server 8000"
 or 
