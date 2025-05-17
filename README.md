@@ -60,7 +60,7 @@ In another terminal go to skillscape (project root) folder (Python required)
     source venv/bin/activate
 2 - run the AI service
     uvicorn ai_service:app --reload --port 5001
-3 - API Key
+3 - Since we are using free services for AI, it is easy to hit limits. Also, normally we do not hard code API keys into our code, we use environment variables. The API key will expire in 1 week.
 
 **Things you can do**
 **Note: You can buy your own gigs/listing for quick testing purposes**
