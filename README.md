@@ -92,12 +92,6 @@ Download Files
 Delete Account
 Landing Page
 
-*Not fully completed*
-Search & Filtering
-Events
-Premium
-Inbox
-
 **Technologies we used**
 
 *Java*
