@@ -144,6 +144,4 @@ async def chat_stream(req: ChatReq):
 if __name__ == "__main__":
     import uvicorn
     print("Starting AI service on port 5000...")
-    print("API base URL:", os.getenv("OPENAI_API_BASE") or "Not set")
-    print("API key:", "Set" if os.getenv("OPENAI_API_KEY") else "Not set")
     uvicorn.run(app, host="0.0.0.0", port=5000)
