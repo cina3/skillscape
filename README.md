@@ -1,6 +1,6 @@
 # SkillScape
 
-While developing SkillScape we used macOS or Ubuntu on AWS, but Windows should be similar too.
+While developing SkillScape we used macOS and Ubuntu on AWS, but Windows should be similar too.
 
 ---
 
