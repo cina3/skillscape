@@ -68,6 +68,7 @@ async function handleLogin(event) {
     }
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     if (token) {
