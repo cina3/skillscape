@@ -1,6 +1,9 @@
+> ⚠️ **Archived:** This was a CS102 project (2024–2025). It’s no longer maintained.
+
 # SkillScape
 
 While developing SkillScape we used macOS and Ubuntu on AWS, but Windows should be similar too.
+
 
 ---
 
