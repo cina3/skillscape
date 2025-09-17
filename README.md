@@ -1,4 +1,3 @@
-
 # SkillScape
 
 While developing SkillScape we used macOS or Ubuntu on AWS, but Windows should be similar too.
@@ -140,12 +139,6 @@ In another terminal, go to the SkillScape (project root) folder (Python required
 ### Java
 - Maven
     - Spring Boot
-        - Spring Boot JPA
-        - Spring Boot Security
-        - Spring Boot Validation
-        - Spring Boot Web
-        - Spring Boot Test
-        - Spring Boot Security Test
 - PostgreSQL
 - Lombok
 - JWT
@@ -153,9 +146,7 @@ In another terminal, go to the SkillScape (project root) folder (Python required
     - JWT IMPL
     - JWT Jackson
 
-### Plain JavaScript
-
-### CSS & HTML
+### CSS & HTML & JS
 
 ### Python
 - FastAPI
